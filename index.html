@@ -918,7 +918,8 @@ h2 .pix{width:26px;height:26px}
 
 /* рост рейтинга */
 .rp .rt-num{display:inline;font-size:15px;font-weight:800;color:var(--text);white-space:nowrap}
-.rp small{white-space:nowrap}
+.rp > div{min-width:0}
+.rp small{white-space:normal;line-height:1.3}
 .rp .rt-pop{font-size:13px;font-weight:900;padding:1px 7px;border-radius:7px;margin-left:4px;vertical-align:1px}
 .rp .rt-pop.up{background:rgba(62,138,87,.16)}
 .rp .rt-pop.down{background:rgba(192,72,47,.16)}
@@ -931,7 +932,7 @@ h2 .pix{width:26px;height:26px}
 .puz-no{font-family:var(--fd);color:var(--muted);font-size:15px}
 .puz-wrap{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center;margin-bottom:12px}
 .mini-board.puz-board{border-width:4px;width:auto}
-.mini-board.puz-board[style*="--mc:8"]{width:128px}
+.mini-board.puz-board[style*="--mc:8"]{width:150px}
 .mini-board.puz-board[style*="--mc:4"]{width:72px}
 .puz-txt{margin:0 0 4px;font-weight:700;line-height:1.35}
 .puz-streak{margin:6px 0 0;font-weight:800;color:var(--gold)}
@@ -945,6 +946,103 @@ h2 .pix{width:26px;height:26px}
 .puz-left span{margin-left:6px}
 .big-ico .pix{width:64px;height:64px;margin:0 auto}
 .modal .res-cup{margin-top:0}
+
+/* =====================================================================
+   v11: шахматы — фигуры (6 тем), переключатель «Шашки / Шахматы», шах
+   ===================================================================== */
+.cp{width:90%;height:90%;display:grid;place-items:center}
+.cp svg{width:100%;height:100%;overflow:visible;filter:drop-shadow(0 2px 2px rgba(0,0,0,.35))}
+.cp .f{fill:var(--pf);stroke:var(--ps);stroke-width:1.5;stroke-linejoin:round}
+.cp .l{fill:none;stroke:var(--pd);stroke-width:1.5;stroke-linecap:round}
+.cp .d{fill:var(--pd)}
+.w .cp,.pcw.w .cp{--pf:#f8f5ee;--ps:#1d1d1d;--pd:#1d1d1d}
+.b .cp,.pcw.b .cp{--pf:#2a2a2a;--ps:#050505;--pd:#e9e6df}
+.pt-wood .w .cp{--pf:#ecc995;--ps:#5a3415;--pd:#5a3415}
+.pt-wood .b .cp{--pf:#5b2e14;--ps:#22100a;--pd:#f0d2a6}
+.pt-glossy .w .cp{--pf:#ffffff;--ps:#7d7d7d;--pd:#555}
+.pt-glossy .w .cp svg{filter:drop-shadow(0 3px 3px rgba(0,0,0,.4)) brightness(1.03)}
+.pt-glossy .b .cp{--pf:#111;--ps:#000;--pd:#bbb}
+.pt-marble .w .cp{--pf:#eceef2;--ps:#8d9096;--pd:#6b6e74}
+.pt-marble .b .cp{--pf:#454a50;--ps:#16181b;--pd:#d9dadd}
+.pt-neon .w .cp{--pf:rgba(94,242,255,.16);--ps:#5ef2ff;--pd:#5ef2ff}
+.pt-neon .b .cp{--pf:rgba(255,79,216,.16);--ps:#ff4fd8;--pd:#ff4fd8}
+.pt-neon .w .cp svg{filter:drop-shadow(0 0 4px #5ef2ff)}
+.pt-neon .b .cp svg{filter:drop-shadow(0 0 4px #ff4fd8)}
+.pt-metal .w .cp{--pf:#dfe3e8;--ps:#5e656d;--pd:#4a5058}
+.pt-metal .b .cp{--pf:#f2c94c;--ps:#7a5900;--pd:#7a5900}
+.piece.chess{transition:left .18s ease,top .18s ease,opacity .2s}
+.mini-board .pcw.chess .cp{width:92%;height:92%}
+.sq.hl-check{box-shadow:inset 0 0 0 999px rgba(230,40,40,.25),inset 0 0 18px 6px rgba(230,30,30,.85)}
+.chess-taken{font-size:15px;line-height:12px;letter-spacing:-2px;color:var(--text);gap:0}
+.chess-ico{display:block;flex:none}
+.chess-ico .f{fill:currentColor;stroke:currentColor;stroke-width:1.2}
+.chess-ico .l{fill:none;stroke:var(--bg);stroke-width:1.5}
+.chess-ico .d{fill:var(--bg)}
+.gtype .chess-ico{height:26px;width:26px}
+.var .chess-ico{color:var(--text)}
+
+/* переключатель «Шашки / Шахматы» */
+.page-head{flex-wrap:wrap}
+.disc-sw{position:relative;display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--card-line);border-radius:999px;padding:5px;background:var(--panel);min-width:290px;margin-bottom:6px}
+.disc-sw .knob{position:absolute;top:5px;bottom:5px;left:5px;width:calc(50% - 5px);border-radius:999px;background:var(--gold);box-shadow:0 4px 14px rgba(0,0,0,.18);transition:left .32s cubic-bezier(.4,1.4,.5,1)}
+.disc-sw.chess .knob{left:50%}
+.disc-sw button{position:relative;z-index:1;border:0;background:none;padding:10px 16px;border-radius:999px;font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center;gap:8px;color:var(--muted);transition:color .25s}
+.disc-sw button.on{color:var(--gold-ink)}
+.disc-sw:not(.chess) button[data-d="draughts"],.disc-sw.chess button[data-d="chess"]{color:var(--gold-ink)}
+.disc-sw.chess button[data-d="draughts"],.disc-sw:not(.chess) button[data-d="chess"]{color:var(--muted)}
+.ds-ico.ds-ch{width:20px;height:20px;border-radius:50%;background:radial-gradient(circle,#2a2a2a 0 50%,#5a5a5a 52% 60%,#111 62%);border:1.5px solid #000;flex:none}
+.disc-sw .chess-ico{color:currentColor}
+.disc-sw .chess-ico .l{stroke:var(--gold)}
+.disc-sw:not(.chess) button[data-d="chess"] .chess-ico .l{stroke:var(--panel)}
+.rules-sep{margin-top:28px;padding-top:18px;border-top:1px solid var(--line)}
+.rules-sep:first-child{margin-top:0;padding-top:0;border-top:0}
+@media (max-width:600px){ .disc-sw{min-width:0;width:100%} .disc-sw button{padding:9px 8px;font-size:14px} }
+
+/* =====================================================================
+   v12: пиксельные фигуры, превращение, задачи по темам, PGN
+   ===================================================================== */
+.pt-pixel .w .disc,.pt-pixel .w.k .disc{background:url(icons/chkw.png) center/100% no-repeat;border:0;box-shadow:none;color:#b8860b}
+.pt-pixel .b .disc,.pt-pixel .b.k .disc{background:url(icons/chkb.png) center/100% no-repeat;border:0;box-shadow:none;color:#f4c430}
+.pt-pixel .disc svg{width:46%;filter:drop-shadow(0 1px 1px rgba(0,0,0,.6))}
+.pt-pixel .cp svg{display:none}
+.pt-pixel .cp{background:center bottom/contain no-repeat;filter:drop-shadow(0 2px 2px rgba(0,0,0,.35))}
+.pt-pixel .w .cp.t1{background-image:url(icons/cwP.png)} .pt-pixel .b .cp.t1{background-image:url(icons/cbP.png)}
+.pt-pixel .w .cp.t2{background-image:url(icons/cwN.png)} .pt-pixel .b .cp.t2{background-image:url(icons/cbN.png)}
+.pt-pixel .w .cp.t3{background-image:url(icons/cwB.png)} .pt-pixel .b .cp.t3{background-image:url(icons/cbB.png)}
+.pt-pixel .w .cp.t4{background-image:url(icons/cwR.png)} .pt-pixel .b .cp.t4{background-image:url(icons/cbR.png)}
+.pt-pixel .w .cp.t5{background-image:url(icons/cwQ.png)} .pt-pixel .b .cp.t5{background-image:url(icons/cbQ.png)}
+.pt-pixel .w .cp.t6{background-image:url(icons/cwK.png)} .pt-pixel .b .cp.t6{background-image:url(icons/cbK.png)}
+.piece .cp{width:86%;height:86%}
+
+/* превращение пешки */
+.promo{display:flex;gap:10px;justify-content:center;margin:14px 0 4px}
+.promo button{width:72px;height:72px;border-radius:14px;border:1px solid var(--card-line);background:var(--light);display:grid;place-items:center;padding:4px;transition:transform .15s,box-shadow .15s}
+.promo button:hover{transform:translateY(-3px);box-shadow:0 0 0 3px var(--gold)}
+.promo .pcw{width:100%;height:100%;display:grid;place-items:center}
+
+/* задачи по темам */
+.pz-grid{display:grid;grid-template-columns:300px minmax(0,1fr);gap:20px;align-items:start}
+.pz-me{display:grid;gap:16px;justify-items:start}
+.pz-me > .pix{width:64px;height:64px}
+.pz-me small{display:block;color:var(--muted);font-weight:600;font-size:12px}
+.pz-me b{font-family:var(--fd);font-size:40px;font-weight:600;line-height:1}
+.pz-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+.pz-t{display:flex;align-items:center;gap:12px;border:1px solid var(--card-line);background:transparent;border-radius:14px;padding:12px;text-align:left;transition:border-color .15s,transform .15s}
+.pz-t .pix{width:40px;height:40px}
+.pz-t b{display:block;font-size:16px}
+.pz-t small{color:var(--muted);font-weight:600}
+.pz-t:hover{transform:translateY(-2px);border-color:var(--text)}
+.pz-t.on{border-color:var(--gold);box-shadow:inset 0 0 0 1px var(--gold);background:var(--panel2)}
+.pz-all,.pgn-link{margin-top:10px;font-size:13.5px}
+.pz-all .pix,.pgn-link .pix{width:20px;height:20px}
+.pz-rt{font-weight:700}
+.resm.rs-loss .cup.cup-mate{filter:drop-shadow(0 6px 14px rgba(0,0,0,.35));opacity:1}
+.status .pix{display:inline-block;width:24px;height:24px;vertical-align:-4px;margin-right:4px}
+.disc-sw .pix{width:24px;height:24px}
+#rvPgnRow .btn{font-size:14px}
+@media (max-width:900px){ .pz-grid{grid-template-columns:1fr} .pz-me{grid-template-columns:auto 1fr 1fr;align-items:center} .pz-me b{font-size:30px} }
+#rvPgnRow .btn{font-size:13px;padding:10px 6px;gap:6px}
+#rvPgnRow .btn span{white-space:normal;text-align:left;line-height:1.2}
 </style>
 </head>
 <body>
@@ -955,6 +1053,7 @@ h2 .pix{width:26px;height:26px}
     <button data-go="players"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="9" r="3.4"/><path d="M3 19c.6-3.4 3-5.3 6-5.3s5.4 1.9 6 5.3"/><circle cx="17" cy="8" r="2.6"/><path d="M16.5 13.2c2.6 0 4.2 1.6 4.6 4.3"/></svg><span>Игроки</span></button>
     <button data-go="profile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4.5 4.5-6.5 8-6.5s7 2 8 6.5"/></svg><span>Профиль</span></button>
     <button data-go="rules"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M3 5c3-1.5 6-1.5 9 1 3-2.5 6-2.5 9-1v14c-3-1.5-6-1.5-9 1-3-2.5-6-2.5-9-1z"/><path d="M12 6v14"/></svg><span>Правила</span></button>
+    <button data-go="puzzles"><img class="pix" src="icons/target.png" alt=""><span>Задачи</span></button>
     <button data-go="settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/></svg><span>Настройки</span></button>
     <button data-go="admin" id="navAdmin" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7.5 3v5.5c0 4.6-3.2 8.3-7.5 9.5-4.3-1.2-7.5-4.9-7.5-9.5V6z"/><path d="M8.8 12.2l2.2 2.2 4.3-4.6"/></svg><span>Админ</span></button>
   </nav>
@@ -976,6 +1075,7 @@ h2 .pix{width:26px;height:26px}
 
 <main>
   <div class="crumb-slot" id="crumbSlot"></div>
+  <section id="scr-puzzles" class="screen" hidden><div id="puzzlesBox"></div></section>
   <section id="scr-admin" class="screen" hidden><div id="adminBox"></div></section>
   <section id="scr-home" class="screen"><div id="homeBox"></div></section>
   <section id="scr-bots" class="screen" hidden><div id="botsBox"></div></section>
@@ -1035,6 +1135,7 @@ h2 .pix{width:26px;height:26px}
             <button class="btn" id="rvHint">💡 Лучший ход</button>
             <button class="btn" id="rvRestore">↺ Вернуть партию</button>
           </div>
+          <div class="rv-tools" id="rvPgnRow" hidden><button class="btn" id="rvPgn"><img class="pix" src="icons/book2.png" alt=""><span>Скачать PGN</span></button><button class="btn" id="rvPgnIn"><img class="pix" src="icons/board.png" alt=""><span>Открыть PGN</span></button></div>
           <div id="anBox"></div>
         </div>
         <button class="btn" id="btnExit">← В меню</button>
@@ -1227,7 +1328,9 @@ const tcLabel = (tc, inc) => tcById(tc).short + (inc ? ` +${inc}с` : '');
 
 const VARIANTS = {
   '32': { id:'32', label:'Шашки 32', size:'доска 4×8, по 4 шашки', cols:4, rows:8, per:4,  rule:'short' },
-  '64': { id:'64', label:'Шашки 64', size:'доска 8×8, по 12 шашек', cols:8, rows:8, per:12, rule:'ru' }
+  '64': { id:'64', label:'Шашки 64', size:'доска 8×8, по 12 шашек', cols:8, rows:8, per:12, rule:'ru' },
+  'chess': { id:'chess', label:'Шахматы', size:'классика 8×8, по 16 фигур', cols:8, rows:8, per:16, rule:'chess', chess:true },
+  'c960': { id:'c960', label:'Шахматы 960', size:'случайная расстановка фигур', cols:8, rows:8, per:16, rule:'chess', chess:true, c960:true }
 };
 let V = VARIANTS['32'], COLS = 4, ROWS = 8, N = 32;
 function setVariant(id){
@@ -1373,6 +1476,7 @@ const CROSS = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke
 // значок варианта игры: маленькая доска 4×8 или 8×8
 function variantIcon(v, h){
   h = h || 26;
+  if(v === 'chess' || v === 'c960') return `<img class="pix" src="icons/${v === 'c960' ? 'dice' : 'cwN'}.png" style="width:${h}px;height:${h}px" alt="">`;
   const cols = v === '64' ? 8 : 4, cs = 4, W = cols*cs, H = 8*cs;
   let cells = '';
   for(let r=0;r<8;r++) for(let c=0;c<cols;c++) if((r+c)%2) cells += `<rect x="${c*cs}" y="${r*cs}" width="${cs}" height="${cs}" fill="#8b3d0e"/>`;
@@ -1522,7 +1626,7 @@ function applyMove(b, m){
 }
 
 const sqName = s => 'abcdefgh'[colOf(s)] + (ROWS - rowOf(s));
-const notation = m => sqName(m.from) + (m.caps.length ? ':' : '-') + m.path.map(sqName).join(m.caps.length ? ':' : '-');
+const dNotation = m => sqName(m.from) + (m.caps.length ? ':' : '-') + m.path.map(sqName).join(m.caps.length ? ':' : '-');
 
 /* =========================================================
    5. ИСКУССТВЕННЫЙ ИНТЕЛЛЕКТ
@@ -1542,6 +1646,8 @@ function evaluate(b){              // оценка за белых: 100 ≈ од
     else if(v === 2){ wk++; s += center*2; }
     else { bk++; s -= center*2; }
   }
+  // только дамки: 1 на 1, 2 на 1, 3 на 2 … — ничья (выиграть можно, только если дамок хотя бы втрое больше)
+  if(!wm && !bm && wk && bk && Math.max(wk, bk) < 3*Math.min(wk, bk)) return 0;
   s += (wm-bm)*100 + (wk-bk)*300;
   const wt = wm*100 + wk*300, bt = bm*100 + bk*300, left = wm+wk+bm+bk;
   if(wt > bt) s += (2*V.per - left)*8; else if(bt > wt) s -= (2*V.per - left)*8;
@@ -1627,6 +1733,308 @@ function chooseBotMove(b, side, bot, timeMs){
   }
   return searchBest(b, side, bot.depth, timeMs);
 }
+
+
+/* =========================================================
+   4b. ШАХМАТЫ: правила и движок
+   Доска — 64 клетки (0 = a8 … 63 = h1) + 3 служебные ячейки:
+   [64] права на рокировку (1 — белые O-O, 2 — белые O-O-O, 4 — чёрные O-O, 8 — чёрные O-O-O),
+   [65] клетка взятия на проходе + 1 (0 — нет), [66] ходы без взятий и ходов пешкой (для правила 50 ходов),
+   [67] и [68] — вертикали ладей для короткой и длинной рокировки (в обычных шахматах h и a; в шахматах 960 — где стоят).
+   Фигуры: 1 пешка, 2 конь, 3 слон, 4 ладья, 5 ферзь, 6 король; плюс — белые, минус — чёрные.
+   ========================================================= */
+const CP = { P:1, N:2, B:3, R:4, Q:5, K:6 };
+const C_KN = [[-2,-1],[-2,1],[-1,-2],[-1,2],[1,-2],[1,2],[2,-1],[2,1]];
+const C_KG = [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]];
+const C_DIAG = [[-1,-1],[-1,1],[1,-1],[1,1]], C_ORTH = [[-1,0],[1,0],[0,-1],[0,1]];
+const cIn = (r, c) => r >= 0 && r < 8 && c >= 0 && c < 8;
+function cInit(back){
+  back = back || [4,2,3,5,6,3,2,4];
+  const b = new Array(69).fill(0);
+  for(let c = 0; c < 8; c++){ b[c] = -back[c]; b[8 + c] = -1; b[48 + c] = 1; b[56 + c] = back[c]; }
+  const k = back.indexOf(6);
+  b[64] = 15; b[67] = back.lastIndexOf(4); b[68] = back.indexOf(4);
+  if(b[67] < k) b[67] = 7; if(b[68] > k) b[68] = 0;
+  return b;
+}
+// расстановка шахмат 960 по номеру 0…959 (518 — обычная)
+function c960Back(n){
+  const r = Array(8).fill(0), free = () => r.map((v, i) => v ? -1 : i).filter(i => i >= 0);
+  let q = n;
+  r[(q % 4) * 2 + 1] = 3; q = Math.floor(q / 4);
+  r[(q % 4) * 2] = 3; q = Math.floor(q / 4);
+  r[free()[q % 6]] = 5; q = Math.floor(q / 6);
+  const KN = [[0,1],[0,2],[0,3],[0,4],[1,2],[1,3],[1,4],[2,3],[2,4],[3,4]][q], f = free();
+  r[f[KN[0]]] = 2; r[f[KN[1]]] = 2;
+  const f2 = free(); r[f2[0]] = 4; r[f2[1]] = 6; r[f2[2]] = 4;
+  return r;
+}
+// бьёт ли сторона by клетку s
+function cAttacked(b, s, by){
+  const r = s >> 3, c = s & 7;
+  const pr = r + by;                                     // пешка by стоит на ряд «ниже» по ходу
+  for(const dc of [-1, 1]){ const rr = pr, cc = c + dc; if(cIn(rr, cc) && b[rr*8 + cc] === by) return true; }
+  for(const [dr, dc] of C_KN){ const rr = r + dr, cc = c + dc; if(cIn(rr, cc) && b[rr*8 + cc] === 2*by) return true; }
+  for(const [dr, dc] of C_KG){ const rr = r + dr, cc = c + dc; if(cIn(rr, cc) && b[rr*8 + cc] === 6*by) return true; }
+  for(const [dr, dc] of C_DIAG){ let rr = r + dr, cc = c + dc; while(cIn(rr, cc)){ const v = b[rr*8 + cc]; if(v){ if(v === 3*by || v === 5*by) return true; break; } rr += dr; cc += dc; } }
+  for(const [dr, dc] of C_ORTH){ let rr = r + dr, cc = c + dc; while(cIn(rr, cc)){ const v = b[rr*8 + cc]; if(v){ if(v === 4*by || v === 5*by) return true; break; } rr += dr; cc += dc; } }
+  return false;
+}
+const cKing = (b, side) => { for(let i = 0; i < 64; i++) if(b[i] === 6*side) return i; return -1; };
+const cInCheck = (b, side) => { const k = cKing(b, side); return k >= 0 && cAttacked(b, k, -side); };
+function cPseudo(b, side, out){
+  const ep = b[65] - 1;
+  for(let s = 0; s < 64; s++){
+    const v = b[s]; if(v * side <= 0) continue;
+    const t = Math.abs(v), r = s >> 3, c = s & 7;
+    const add = (to, extra) => { const cap = b[to] ? [to] : []; out.push(Object.assign({ from: s, to, path: [to], caps: cap, promote: 0 }, extra)); };
+    if(t === 1){
+      const dr = -side, r1 = r + dr, last = side === 1 ? 0 : 7, start = side === 1 ? 6 : 1;
+      const push = (to, cap, extra) => {
+        if((to >> 3) === last) for(const p of [5, 2, 4, 3]) out.push({ from: s, to, path: [to], caps: cap, promote: p });
+        else out.push(Object.assign({ from: s, to, path: [to], caps: cap, promote: 0 }, extra));
+      };
+      if(cIn(r1, c) && !b[r1*8 + c]){
+        push(r1*8 + c, []);
+        const r2 = r + 2*dr;
+        if(r === start && !b[r2*8 + c]) push(r2*8 + c, [], { dbl: 1 });
+      }
+      for(const dc of [-1, 1]){
+        const cc = c + dc; if(!cIn(r1, cc)) continue;
+        const to = r1*8 + cc;
+        if(b[to] * side < 0) push(to, [to]);
+        else if(to === ep) push(to, [r*8 + cc], { ep: 1 });
+      }
+    } else if(t === 2 || t === 6){
+      for(const [dr, dc] of (t === 2 ? C_KN : C_KG)){ const rr = r + dr, cc = c + dc; if(!cIn(rr, cc)) continue; const to = rr*8 + cc; if(b[to] * side <= 0) add(to); }
+      if(t === 6){
+        // рокировка: король встаёт на g/c, ладья — на f/d; всё между ними пусто, король не проходит через битые поля
+        const rank = side === 1 ? 7 : 0, ks = side === 1 ? 1 : 4, qs = side === 1 ? 2 : 8;
+        if(r === rank && (b[64] & (ks | qs)) && !cAttacked(b, s, -side)){
+          const is960 = !(c === 4 && b[67] === 7 && b[68] === 0);
+          for(const [bit, rf, kf, tf, tag] of [[ks, b[67], 6, 5, 'K'], [qs, b[68], 2, 3, 'Q']]){
+            if(!(b[64] & bit)) continue;
+            const rsq = rank*8 + rf; if(b[rsq] !== 4*side) continue;
+            const lo = Math.min(c, rf, kf, tf), hi = Math.max(c, rf, kf, tf);
+            let ok = true;
+            for(let f = lo; f <= hi && ok; f++){ const q = rank*8 + f; if(q !== s && q !== rsq && b[q]) ok = false; }
+            for(let f = Math.min(c, kf); f <= Math.max(c, kf) && ok; f++) if(cAttacked(b, rank*8 + f, -side)) ok = false;
+            if(ok){ const kt = rank*8 + kf; out.push({ from: s, to: is960 ? rsq : kt, path: [is960 ? rsq : kt], caps: [], promote: 0, castle: tag, rf: rsq, kt, rt: rank*8 + tf }); }
+          }
+        }
+      }
+    } else {
+      const dirs = t === 3 ? C_DIAG : t === 4 ? C_ORTH : C_DIAG.concat(C_ORTH);
+      for(const [dr, dc] of dirs){ let rr = r + dr, cc = c + dc; while(cIn(rr, cc)){ const to = rr*8 + cc; if(b[to] * side > 0) break; add(to); if(b[to]) break; rr += dr; cc += dc; } }
+    }
+  }
+  return out;
+}
+const C_VAL = [0, 100, 320, 330, 500, 900, 0];
+function cGen(b, side){
+  const res = [];
+  for(const m of cPseudo(b, side, [])) if(!cInCheck(cApply(b, m), side)) res.push(m);
+  // сначала взятия (выгодные первыми) и превращения — так быстрее считает движок
+  res.sort((x, y) => ((y.caps.length ? C_VAL[Math.abs(b[y.caps[0]])] * 10 - C_VAL[Math.abs(b[y.from])] : 0) + (y.promote === 5 ? 9000 : 0))
+                   - ((x.caps.length ? C_VAL[Math.abs(b[x.caps[0]])] * 10 - C_VAL[Math.abs(b[x.from])] : 0) + (x.promote === 5 ? 9000 : 0)));
+  return res;
+}
+function cApply(b, m){
+  const nb = b.slice(), v = nb[m.from], side = Math.sign(v), t = Math.abs(v);
+  if(m.ep) nb[m.caps[0]] = 0;
+  if(m.castle){ nb[m.from] = 0; nb[m.rf] = 0; nb[m.kt] = 6 * side; nb[m.rt] = 4 * side; }
+  else { nb[m.to] = m.promote ? m.promote * side : v; nb[m.from] = 0; }
+  let cr = nb[64];
+  if(t === 6) cr &= side === 1 ? ~3 : ~12;
+  for(const [sq, bit] of [[56 + b[67], 1], [56 + b[68], 2], [b[67], 4], [b[68], 8]]) if(m.from === sq || m.to === sq) cr &= ~bit;
+  nb[64] = cr;
+  nb[65] = m.dbl ? ((m.from + m.to) >> 1) + 1 : 0;
+  nb[66] = (t === 1 || b[m.to]) ? 0 : b[66] + 1;
+  return nb;
+}
+const C_LET = { 2:'n', 3:'b', 4:'r', 5:'q' };
+const cNotation = m => sqName(m.from) + sqName(m.to) + (m.promote ? C_LET[m.promote] : '');
+const C_ASCII = { 1:'', 2:'N', 3:'B', 4:'R', 5:'Q', 6:'K' };
+const C_FIG = { 1:'', 2:'♘', 3:'♗', 4:'♖', 5:'♕', 6:'♔' };
+// запись хода как в книгах: ♘f3, exd5, O-O, e8=♕+, ♕h7#
+function cSan(b, m, ascii){
+  const FIG = ascii ? C_ASCII : C_FIG, X = ascii ? 'x' : '×';
+  const v = b[m.from], t = Math.abs(v), side = Math.sign(v);
+  let s;
+  if(m.castle) s = m.castle === 'K' ? 'O-O' : 'O-O-O';
+  else {
+    s = FIG[t];
+    if(t === 1){ if(m.caps.length) s = 'abcdefgh'[m.from & 7]; }
+    else {
+      const same = cGen(b, side).filter(x => x.to === m.to && x.from !== m.from && b[x.from] === v);
+      if(same.length){
+        if(!same.some(x => (x.from & 7) === (m.from & 7))) s += 'abcdefgh'[m.from & 7];
+        else if(!same.some(x => (x.from >> 3) === (m.from >> 3))) s += 8 - (m.from >> 3);
+        else s += sqName(m.from);
+      }
+    }
+    if(m.caps.length) s += X;
+    s += sqName(m.to);
+    if(m.promote) s += '=' + FIG[m.promote];
+  }
+  const nb = cApply(b, m);
+  if(cInCheck(nb, -side)) s += cGen(nb, -side).length ? '+' : '#';
+  return s;
+}
+// мало фигур для мата: короли, или король с одним конём/слоном
+function cNoMaterial(b){
+  const left = [];
+  for(let i = 0; i < 64; i++){ const t = Math.abs(b[i]); if(t && t !== 6) left.push(t); }
+  return !left.length || (left.length === 1 && (left[0] === 2 || left[0] === 3));
+}
+// оценка за белых: материал + где стоят фигуры
+const C_PST = {
+  1: [0,0,0,0,0,0,0,0, 50,50,50,50,50,50,50,50, 10,10,20,30,30,20,10,10, 5,5,10,25,25,10,5,5, 0,0,0,20,20,0,0,0, 5,-5,-10,0,0,-10,-5,5, 5,10,10,-20,-20,10,10,5, 0,0,0,0,0,0,0,0],
+  2: [-50,-40,-30,-30,-30,-30,-40,-50, -40,-20,0,0,0,0,-20,-40, -30,0,10,15,15,10,0,-30, -30,5,15,20,20,15,5,-30, -30,0,15,20,20,15,0,-30, -30,5,10,15,15,10,5,-30, -40,-20,0,5,5,0,-20,-40, -50,-40,-30,-30,-30,-30,-40,-50],
+  3: [-20,-10,-10,-10,-10,-10,-10,-20, -10,0,0,0,0,0,0,-10, -10,0,5,10,10,5,0,-10, -10,5,5,10,10,5,5,-10, -10,0,10,10,10,10,0,-10, -10,10,10,10,10,10,10,-10, -10,5,0,0,0,0,5,-10, -20,-10,-10,-10,-10,-10,-10,-20],
+  4: [0,0,0,0,0,0,0,0, 5,10,10,10,10,10,10,5, -5,0,0,0,0,0,0,-5, -5,0,0,0,0,0,0,-5, -5,0,0,0,0,0,0,-5, -5,0,0,0,0,0,0,-5, -5,0,0,0,0,0,0,-5, 0,0,0,5,5,0,0,0],
+  5: [-20,-10,-10,-5,-5,-10,-10,-20, -10,0,0,0,0,0,0,-10, -10,0,5,5,5,5,0,-10, -5,0,5,5,5,5,0,-5, 0,0,5,5,5,5,0,-5, -10,5,5,5,5,5,0,-10, -10,0,5,0,0,0,0,-10, -20,-10,-10,-5,-5,-10,-10,-20],
+  6: [-30,-40,-40,-50,-50,-40,-40,-30, -30,-40,-40,-50,-50,-40,-40,-30, -30,-40,-40,-50,-50,-40,-40,-30, -30,-40,-40,-50,-50,-40,-40,-30, -20,-30,-30,-40,-40,-30,-30,-20, -10,-20,-20,-20,-20,-20,-20,-10, 20,20,0,0,0,0,20,20, 20,30,10,0,0,10,30,20],
+  7: [-50,-40,-30,-20,-20,-30,-40,-50, -30,-20,-10,0,0,-10,-20,-30, -30,-10,20,30,30,20,-10,-30, -30,-10,30,40,40,30,-10,-30, -30,-10,30,40,40,30,-10,-30, -30,-10,20,30,30,20,-10,-30, -30,-30,0,0,0,0,-30,-30, -50,-30,-30,-30,-30,-30,-30,-50]
+};
+function cEval(b){
+  let s = 0, mat = 0;
+  for(let i = 0; i < 64; i++){ const t = Math.abs(b[i]); if(t && t !== 6 && t !== 1) mat += C_VAL[t]; }
+  const endgame = mat <= 1300;
+  for(let i = 0; i < 64; i++){
+    const v = b[i]; if(!v) continue;
+    const t = Math.abs(v), tab = C_PST[t === 6 && endgame ? 7 : t];
+    if(v > 0) s += C_VAL[t] + tab[i]; else s -= C_VAL[t] + tab[(7 - (i >> 3)) * 8 + (i & 7)];
+  }
+  return s;
+}
+// поиск: альфа-бета + «тихий» досчёт взятий, чтобы бот не зевал фигуры
+function cQuiesce(b, side, alpha, beta, ply){
+  if((++nodes & 1023) === 0 && performance.now() > deadline) abort = true;
+  if(abort) return 0;
+  const stand = side * cEval(b);
+  if(stand >= beta) return stand;
+  if(stand > alpha) alpha = stand;
+  if(ply > 40) return stand;
+  for(const m of cGen(b, side)){
+    if(!m.caps.length && m.promote !== 5) continue;
+    const sc = -cQuiesce(cApply(b, m), -side, -beta, -alpha, ply + 1);
+    if(abort) return 0;
+    if(sc >= beta) return sc;
+    if(sc > alpha) alpha = sc;
+  }
+  return alpha;
+}
+function cNegamax(b, side, depth, alpha, beta, ply){
+  if((++nodes & 1023) === 0 && performance.now() > deadline) abort = true;
+  if(abort) return 0;
+  if(b[66] >= 100 || cNoMaterial(b)) return 0;
+  const moves = cGen(b, side);
+  if(!moves.length) return cInCheck(b, side) ? -WIN + ply : 0;
+  if(depth <= 0) return cQuiesce(b, side, alpha, beta, ply);
+  let best = -INF;
+  for(const m of moves){
+    const sc = -cNegamax(cApply(b, m), -side, depth - 1, -beta, -alpha, ply + 1);
+    if(abort) return 0;
+    if(sc > best) best = sc;
+    if(sc > alpha) alpha = sc;
+    if(alpha >= beta) break;
+  }
+  return best;
+}
+// примерные ходы «на будущее» для премувов: куда фигура могла бы пойти, если путь откроется
+function cPseudoTargets(s, vb){
+  const v = vb[s]; if(!v) return [];
+  const t = Math.abs(v), side = Math.sign(v), r = s >> 3, c = s & 7, res = [];
+  const addRC = (rr, cc) => { if(cIn(rr, cc)) res.push(rr*8 + cc); };
+  if(t === 1){ addRC(r - side, c); if(r === (side === 1 ? 6 : 1)) addRC(r - 2*side, c); addRC(r - side, c - 1); addRC(r - side, c + 1); }
+  else if(t === 2) C_KN.forEach(([dr, dc]) => addRC(r + dr, c + dc));
+  else if(t === 6){ C_KG.forEach(([dr, dc]) => addRC(r + dr, c + dc)); if(r === (side === 1 ? 7 : 0)){ addRC(r, 6); addRC(r, 2); addRC(r, vb[67]); addRC(r, vb[68]); } }
+  else {
+    const dirs = t === 3 ? C_DIAG : t === 4 ? C_ORTH : C_DIAG.concat(C_ORTH);
+    for(const [dr, dc] of dirs){ let rr = r + dr, cc = c + dc; while(cIn(rr, cc)){ res.push(rr*8 + cc); rr += dr; cc += dc; } }
+  }
+  return res;
+}
+// премув на «воображаемой» доске: просто переставляем фигуру (пешка на последнем ряду — ферзь)
+function cVirtualMove(vb, from, to){
+  const v = vb[from]; if(!v) return;
+  const t = Math.abs(v), side = Math.sign(v);
+  vb[from] = 0;
+  vb[to] = (t === 1 && (to >> 3) === (side === 1 ? 0 : 7)) ? 5 * side : v;
+  if(t === 6 && (to >> 3) === (from >> 3) && (Math.abs(to - from) === 2 || (to & 7) === vb[67] || (to & 7) === vb[68])){   // рокировка
+    const rank = from & ~7, king = (to & 7) === vb[67] || (to & 7) === 6;
+    const rf = rank + (king ? vb[67] : vb[68]);
+    if(vb[rf] === 4 * side){ vb[from] = 0; vb[rf] = 0; vb[to] = 0; vb[rank + (king ? 6 : 2)] = 6 * side; vb[rank + (king ? 5 : 3)] = 4 * side; }
+  }
+}
+
+/* ---------- PGN: запись партии текстом (её понимают lichess, chess.com и другие программы) ---------- */
+function cFen(b, side){
+  const L = { 1:'p', 2:'n', 3:'b', 4:'r', 5:'q', 6:'k' };
+  let f = '';
+  for(let r = 0; r < 8; r++){ let e = 0; for(let c = 0; c < 8; c++){ const v = b[r*8 + c]; if(!v){ e++; continue; } if(e){ f += e; e = 0; } f += v > 0 ? L[v].toUpperCase() : L[-v]; } if(e) f += e; if(r < 7) f += '/'; }
+  const F = 'ABCDEFGH', std = b[67] === 7 && b[68] === 0;
+  let cr = '';
+  if(b[64] & 1) cr += std ? 'K' : F[b[67]]; if(b[64] & 2) cr += std ? 'Q' : F[b[68]];
+  if(b[64] & 4) cr += std ? 'k' : F[b[67]].toLowerCase(); if(b[64] & 8) cr += std ? 'q' : F[b[68]].toLowerCase();
+  return f + ' ' + (side === 1 ? 'w' : 'b') + ' ' + (cr || '-') + ' ' + (b[65] ? sqName(b[65] - 1) : '-') + ' ' + b[66] + ' 1';
+}
+function cParseFen(fen){
+  const [pos, side, cast, ep, half] = fen.trim().split(/\s+/), b = new Array(69).fill(0), M = { p:1, n:2, b:3, r:4, q:5, k:6 };
+  let i = 0;
+  for(const ch of pos){ if(ch === '/') continue; if(/\d/.test(ch)){ i += +ch; continue; } const t = M[ch.toLowerCase()]; if(!t) throw new Error('fen'); b[i++] = ch === ch.toUpperCase() ? t : -t; }
+  const wk = b.indexOf(6) & 7;
+  b[67] = 7; b[68] = 0;
+  for(const ch of (cast || '-')){
+    if(ch === '-') continue;
+    const white = ch === ch.toUpperCase(), u = ch.toUpperCase(), rank = white ? 56 : 0;
+    let file = u === 'K' ? [7,6,5].find(f => b[rank + f] === (white ? 4 : -4)) : u === 'Q' ? [0,1,2].find(f => b[rank + f] === (white ? 4 : -4)) : 'ABCDEFGH'.indexOf(u);
+    if(file == null || file < 0) continue;
+    const king = file > wk;
+    if(king){ b[67] = file; b[64] |= white ? 1 : 4; } else { b[68] = file; b[64] |= white ? 2 : 8; }
+  }
+  if(ep && ep !== '-') b[65] = (8 - +ep[1]) * 8 + 'abcdefgh'.indexOf(ep[0]) + 1;
+  b[66] = +half || 0;
+  return { b, side: side === 'b' ? -1 : 1 };
+}
+const cNormSan = t => t.replace(/[+#!?]/g, '').replace(/0-0-0/g, 'O-O-O').replace(/0-0/g, 'O-O').replace(/[×:]/g, 'x').replace(/=/g, '').replace(/ep$/i, '');
+// разобрать PGN: заголовки + ходы. Ошибка — исключение с понятным текстом.
+function cParsePGN(text){
+  const tags = {};
+  text.replace(/\[(\w+)\s+"([^"]*)"\]/g, (_, k, v) => { tags[k] = v; return ''; });
+  let body = text.replace(/\[[^\]]*\]/g, ' ').replace(/\{[^}]*\}/g, ' ').replace(/;[^\n]*/g, ' ');
+  while(/\([^()]*\)/.test(body)) body = body.replace(/\([^()]*\)/g, ' ');            // варианты в скобках пропускаем
+  body = body.replace(/\$\d+/g, ' ').replace(/\d+\.(\.\.)?/g, ' ').replace(/(1-0|0-1|1\/2-1\/2|\*)\s*$/, ' ');
+  const tokens = body.split(/\s+/).filter(Boolean);
+  const start = tags.FEN ? cParseFen(tags.FEN) : { b: cInit(), side: 1 };
+  let b = start.b.slice(), side = start.side;
+  const moves = [];
+  for(const tok of tokens){
+    const want = cNormSan(tok);
+    const m = cGen(b, side).find(x => cNormSan(cSan(b, x, true)) === want || (x.castle && cNormSan(x.castle === 'K' ? 'O-O' : 'O-O-O') === want));
+    if(!m) throw new Error('Ход ' + (moves.length + 1) + ' «' + tok + '» не получается сыграть');
+    moves.push(Object.assign({}, m, { san: cSan(b, m) }));
+    b = cApply(b, m); side = -side;
+  }
+  return { tags, moves, start: start.b, side: start.side };
+}
+// собрать PGN из записи партии
+function cMakePGN(tags, start, moves){
+  let b = start ? start.slice() : cInit(), side = 1, out = '', n = 1;
+  moves.forEach((m, i) => { if(side === 1) out += n + '. '; out += cSan(b, m, true) + ' '; if(side === -1) n++; b = cApply(b, m); side = -side; });
+  const head = Object.entries(tags).map(([k, v]) => '[' + k + ' "' + String(v).replace(/"/g, "'") + '"]').join('\n');
+  return head + '\n\n' + (out + (tags.Result || '*')).replace(/(.{1,78})(\s|$)/g, '$1\n').trim() + '\n';
+}
+
+/* ---------- одна точка входа для шашек и шахмат: вызывается нужный движок ---------- */
+const DR = { initBoard, genMoves, applyMove, evaluate, negamax };
+initBoard = () => V.chess ? cInit() : DR.initBoard();
+genMoves = (b, side) => V.chess ? cGen(b, side) : DR.genMoves(b, side);
+applyMove = (b, m) => V.chess ? cApply(b, m) : DR.applyMove(b, m);
+evaluate = b => V.chess ? cEval(b) : DR.evaluate(b);
+negamax = (b, side, d, a, be, p) => V.chess ? cNegamax(b, side, d, a, be, p) : DR.negamax(b, side, d, a, be, p);
+const notation = m => V.chess ? cNotation(m) : dNotation(m);
 
 /* =========================================================
    6. ЗВУКИ (браузер синтезирует их сам)
@@ -1825,7 +2233,7 @@ function go(name, force){
   document.querySelectorAll('.sidebar nav button').forEach(b => b.classList.toggle('active', b.dataset.go === navName));
   $('#crumb').innerHTML = CRUMBS[name] ? CRUMBS[name]() : '';
   closeNotif();
-  const R = { admin: renderAdmin, home: renderHome, bots: renderBots, friend: renderFriendSetup, online: renderOnline, players: renderPlayers,
+  const R = { puzzles: renderPuzzles, admin: renderAdmin, home: renderHome, bots: renderBots, friend: renderFriendSetup, online: renderOnline, players: renderPlayers,
               profile: renderProfile, settings: renderSettings, rules: renderRules };
   if(R[name]) R[name]();
   if(name === 'game' && game){ setVariant(game.variant); renderAll(); }
@@ -1837,6 +2245,7 @@ const back = (to, label) => `<button class="crumb-back" onclick="go('${to}')">�
 const CRUMBS = {
   home: () => '<span class="eyebrow">Главная</span>',
   admin: () => '<span class="eyebrow">Админ-панель</span>',
+  puzzles: () => '<span class="eyebrow">Задачи</span>',
   bots: () => back('home', 'Играть') + '<span class="eyebrow">Против бота</span>',
   friend: () => back('home', 'Играть') + '<span class="eyebrow">С другом рядом</span>',
   online: () => back('home', 'Играть') + '<span class="eyebrow">Онлайн</span>',
@@ -1992,7 +2401,7 @@ const RES_NAME = { win:'Победа', draw:'Ничья', loss:'Поражени
 function oppAvaHTML(g){            // аватарка соперника в истории
   if(g.friend) return FRIEND_SVG;
   if(g.online) return avatarHTML(g.oppAva || { type:'preset', id:'cat' });
-  const b = BOTS.find(x => x.name === g.opp); return b ? botFace(b.face) : FRIEND_SVG;
+  const b = ALL_BOTS().find(x => x.name === g.opp); return b ? botFace(b.face) : FRIEND_SVG;
 }
 function statusDot(key){
   const s = statusOf(key);
@@ -2012,7 +2421,7 @@ function optsHTML(o){
   const colors = [['white','⚪ Белые'],['black','⚫ Чёрные'],['random','🎲 Случайно']];
   return `
     <div class="lbl">Вариант</div>
-    <div class="var-list">${Object.values(VARIANTS).map(v => `<button class="var ${v.id===m.variant?'on':''}" data-v="${v.id}">${variantIcon(v.id, 40)}<span><b>${v.label}</b><small>${v.size}</small></span></button>`).join('')}</div>
+    <div class="var-list">${discVariants().map(v => `<button class="var ${v.id===m.variant?'on':''}" data-v="${v.id}">${variantIcon(v.id, 40)}<span><b>${v.label}</b><small>${v.size}</small></span></button>`).join('')}</div>
     <div class="lbl">Контроль времени</div>
     <div class="chips">${TCS.map(t => `<button class="chip ${t.id===m.tc?'on':''}" data-tc="${t.id}">${t.label}</button>`).join('')}</div>
     <div class="lbl">Добавка за ход</div>
@@ -2034,7 +2443,7 @@ function miniBoard(variant){
   const b = initBoard(), cells = [];
   for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++){
     const v = b[idx(r,c)];
-    cells.push(`<div class="sq ${isDark(r,c) ? 'dark' : 'light'}">${v ? `<span class="pcw ${v > 0 ? 'w' : 'b'}"><span class="disc"></span></span>` : ''}</div>`);
+    cells.push(`<div class="sq ${isDark(r,c) ? 'dark' : 'light'}">${v ? pieceMini(v) : ''}</div>`);
   }
   return `<div class="mini-board bt-${db.settings.boardTheme} pt-${db.settings.pieceTheme}" style="--mc:${COLS}">${cells.join('')}</div>`;
 }
@@ -2058,11 +2467,11 @@ function renderHome(){
         ${last.mv ? `<button class="link" id="qLastRv">Разбор партии ${ICON.arrow}</button>` : ''}
       </div>` : '<p class="muted small">Пока нет сыгранных партий</p>';
   $('#homeBox').innerHTML = `
-    <div class="page-head"><div><div class="eyebrow">Привет, ${esc(u.nick)}</div><h1 class="display">Играть</h1></div></div>
+    <div class="page-head"><div><div class="eyebrow">Привет, ${esc(u.nick)}</div><h1 class="display">${isChessMenu() ? 'Шахматы' : 'Играть'}</h1></div>${discSwitch()}</div>
     <div class="home-grid">
       <div class="home-main">
         <div class="mode-row">
-          ${modeCard('bots', ICON.robot, 'Против бота', '8 ботов от 100 до 2000 Эло. Тренируйся и расти.', 'Выбрать бота')}
+          ${modeCard('bots', ICON.robot, 'Против бота', (isChessMenu() ? '6 ботов от 400 до 2200 Эло. От новичка до мастера.' : '8 ботов от 100 до 2000 Эло. Тренируйся и расти.'), 'Выбрать бота')}
           ${modeCard('friend', ICON.duo, 'С другом рядом', 'Одно устройство — ходите по очереди.', 'Играть')}
           ${modeCard('online', ICON.globe, 'Онлайн', 'Позови друга по сети или найди соперника.', 'Играть онлайн')}
         </div>
@@ -2070,7 +2479,7 @@ function renderHome(){
           <div class="quick-set">
             <h2>Быстрая игра</h2>
             <div class="q-row"><span class="q-ico">${ICON.shuffle}</span><div><div class="lbl">Режим игры</div>
-              <select id="qVar">${Object.values(VARIANTS).map(v => `<option value="${v.id}" ${v.id===m.variant?'selected':''}>${v.label}</option>`).join('')}</select></div></div>
+              <select id="qVar">${discVariants().map(v => `<option value="${v.id}" ${v.id===m.variant?'selected':''}>${v.label}</option>`).join('')}</select></div></div>
             <div class="q-row"><span class="q-ico">${ICON.clock}</span><div><div class="lbl">Контроль времени</div>
               <div class="sel2"><select id="qTc">${TCS.map(t => `<option value="${t.id}" ${t.id===m.tc?'selected':''}>${t.label}</option>`).join('')}</select>
               <select id="qInc" ${m.tc==='0'?'disabled':''}>${INCS.map(n => `<option value="${n}" ${n===+m.inc?'selected':''}>${n ? '+' + n + ' с' : '+0'}</option>`).join('')}</select></div></div></div>
@@ -2102,6 +2511,8 @@ function renderHome(){
   $('#qInc').onchange = e => setM('inc', +e.target.value);
   $('#qSearch').onclick = startSearch;
   $('#qBot').onclick = () => go('bots');
+  $('#discSw').querySelectorAll('[data-d]').forEach(b => b.onclick = () => setDiscipline(b.dataset.d));
+  if(isChessMenu()){ $('#qBot').insertAdjacentHTML('afterend', `<button class="link pgn-link" id="qPgn">${PIX('book2')} ${tr('Открыть партию из PGN')}</button>`); $('#qPgn').onclick = importPGN; }
   if($('#qLastRv')) $('#qLastRv').onclick = () => openReview(0);
   renderFriendsCard(); renderTopCard(); renderPuzzleCard();
 }
@@ -2142,13 +2553,13 @@ function renderBots(){
     <div class="page-head"><div><div class="eyebrow">Тренировка</div><h1 class="display">Боты</h1></div></div>
     <div class="setup-grid">
       <div class="card"><h2>Выбери соперника</h2>
-        <div class="bot-list">${BOTS.map((b,i) => `<button class="bot ${i===m.bot?'on':''}" data-i="${i}">
+        <div class="bot-list">${botList().map((b,i) => `<button class="bot ${i===(m[botKey()] || 0)?'on':''}" data-i="${i}">
           <span class="ava">${botFace(b.face)}</span><span><b>${b.name}</b><span class="elo">${b.elo} Эло</span><small>${b.about}</small></span></button>`).join('')}</div>
       </div>
       <div class="card setup-opts" id="botOpts">${optsHTML({ color:true, undo:'bot' })}
         <button class="btn primary big" id="botPlay">${ICON.playFill} Играть с ботом</button></div>
     </div>`;
-  $('#botsBox').querySelectorAll('.bot').forEach(el => el.onclick = () => { m.bot = +el.dataset.i; save(); renderBots(); });
+  $('#botsBox').querySelectorAll('.bot').forEach(el => el.onclick = () => { m[botKey()] = +el.dataset.i; save(); renderBots(); });
   bindOpts($('#botOpts'), renderBots);
   $('#botPlay').onclick = () => startGame('bot');
 }
@@ -2360,8 +2771,8 @@ function searchTick(){
   // партию начинает тот, кто пришёл в поиск позже
   if(other && !s.offer && (other.joined < s.joined || (other.joined === s.joined && other.key < db.current))){
     const myColor = Math.random() < .5 ? 'white' : 'black';
-    s.offer = { gid: uid(), to: other.key, color: myColor, t: now };
-    netSend(other.key, 'match', { gid: s.offer.gid, variant: s.variant, tc: s.tc, inc: s.inc, color: myColor === 'white' ? 'black' : 'white', ...meCard(s.variant, s.tc) });
+    s.offer = { gid: uid(), to: other.key, color: myColor, t: now, seed: Math.floor(Math.random() * 960) };
+    netSend(other.key, 'match', { gid: s.offer.gid, seed: s.offer.seed, variant: s.variant, tc: s.tc, inc: s.inc, color: myColor === 'white' ? 'black' : 'white', ...meCard(s.variant, s.tc) });
   }
 }
 const meCard = (variant, tc) => ({ nick: me().nick, avatar: me().avatar, rating: rating(variant, tc) });
@@ -2370,13 +2781,13 @@ netHandlers.match = msg => {
   if(!s || s.offer || d.variant !== s.variant || d.tc !== s.tc || d.inc !== s.inc) return;
   netSend(msg.from, 'match_ok', { gid: d.gid, ...meCard(d.variant, d.tc) });
   stopSearch(true);
-  startOnlineGame({ gid: d.gid, oppKey: msg.from, opp: d, color: d.color, variant: d.variant, tc: d.tc, inc: d.inc });
+  startOnlineGame({ gid: d.gid, oppKey: msg.from, opp: d, color: d.color, variant: d.variant, tc: d.tc, inc: d.inc, seed: d.seed });
 };
 netHandlers.match_ok = msg => {
   const s = search; if(!s || !s.offer || s.offer.gid !== msg.data.gid) return;
   const o = s.offer;
   stopSearch(true);
-  startOnlineGame({ gid: o.gid, oppKey: msg.from, opp: msg.data, color: o.color, variant: s.variant, tc: s.tc, inc: s.inc });
+  startOnlineGame({ gid: o.gid, oppKey: msg.from, opp: msg.data, color: o.color, variant: s.variant, tc: s.tc, inc: s.inc, seed: o.seed });
 };
 
 /* ---------- приглашения на партию ---------- */
@@ -2502,14 +2913,14 @@ netHandlers.invite_accept = msg => {
   sentInvite = null; closeModal();
   if(game && !game.over && !game.review){ netSend(msg.from, 'invite_decline', { iid: s.iid }); return; }
   const myColor = s.color === 'random' ? (Math.random() < .5 ? 'white' : 'black') : s.color;
-  const gid = uid();
-  netSend(msg.from, 'match_start', { gid, iid: s.iid, variant: s.variant, tc: s.tc, inc: s.inc, color: myColor === 'white' ? 'black' : 'white', ...meCard(s.variant, s.tc) });
-  startOnlineGame({ gid, oppKey: msg.from, opp: msg.data, color: myColor, variant: s.variant, tc: s.tc, inc: s.inc });
+  const gid = uid(), seed = Math.floor(Math.random() * 960);
+  netSend(msg.from, 'match_start', { gid, seed, iid: s.iid, variant: s.variant, tc: s.tc, inc: s.inc, color: myColor === 'white' ? 'black' : 'white', ...meCard(s.variant, s.tc) });
+  startOnlineGame({ gid, oppKey: msg.from, opp: msg.data, color: myColor, variant: s.variant, tc: s.tc, inc: s.inc, seed });
 };
 netHandlers.match_start = msg => {
   const d = msg.data;
   if(game && !game.over && !game.review) return;
-  startOnlineGame({ gid: d.gid, oppKey: msg.from, opp: d, color: d.color, variant: d.variant, tc: d.tc, inc: d.inc });
+  startOnlineGame({ gid: d.gid, oppKey: msg.from, opp: d, color: d.color, variant: d.variant, tc: d.tc, inc: d.inc, seed: d.seed });
 };
 
 /* ---------- колокольчик: заявки в друзья и вызовы ---------- */
@@ -2544,7 +2955,7 @@ $('#logoutSide').onclick = () => logout();
 /* ---------- онлайн-партия ---------- */
 function startOnlineGame(p){
   closeModal();
-  launchGame({ variant: p.variant, tc: p.tc, inc: p.inc, color: p.color, friend: false, bot: null, undo: false,
+  launchGame({ variant: p.variant, tc: p.tc, inc: p.inc, color: p.color, friend: false, bot: null, undo: false, seed: p.seed,
     online: { key: p.oppKey, gid: p.gid, nick: p.opp.nick, avatar: p.opp.avatar, rating: p.opp.rating } });
   SND.draw();
   toast(`Партия против ${p.opp.nick}!`);
@@ -2593,7 +3004,7 @@ function startGame(kind){
   m.opp = kind; save();
   const friend = kind === 'friend';
   const color = m.color === 'random' ? (Math.random() < .5 ? 'white' : 'black') : m.color;
-  launchGame({ variant: m.variant, tc: m.tc, inc: m.inc, color, friend, bot: friend ? null : BOTS[m.bot], undo: !!m.undo,
+  launchGame({ variant: m.variant, tc: m.tc, inc: m.inc, color, friend, bot: friend ? null : botList()[m[botKey()] || 0], undo: !!m.undo,
     friendName: (m.friendName || '').trim() || 'Друг', friendFlip: !!m.friendFlip });
 }
 const liveOnline = () => !!(game && game.online && !game.over && !game.review);
@@ -2612,6 +3023,10 @@ function launchGame(o){
     undo: !!o.undo && !o.online, hist: [], botToken: 0, netQueue: []
   };
   game.flipped = game.friendFlip ? false : game.me === -1;
+  if(V.c960){                      // шахматы 960: расстановка по номеру (в онлайне номер у обоих один)
+    game.seed = o.seed != null ? o.seed : Math.floor(Math.random() * 960);
+    game.start = cInit(c960Back(game.seed)); game.board = game.start.slice();
+  }
   countRep();
   setPanelMode(false);
   $('#undoRow').hidden = !game.undo;
@@ -2622,7 +3037,7 @@ function launchGame(o){
   clearInterval(timer); timer = setInterval(tick, 100);
   if(game.bot && game.turn !== game.me) scheduleBot();
 }
-const posKey = () => game.board.join('') + '|' + game.turn;
+const posKey = () => (V.chess ? game.board.slice(0, 66) : game.board).join('') + '|' + game.turn;
 function countRep(){ const k = posKey(), n = (game.reps.get(k) || 0) + 1; game.reps.set(k, n); return n; }
 
 function tick(){
@@ -2684,6 +3099,12 @@ function renderClocks(){
   }
 }
 function takenDots(side){
+  if(V.chess){
+    const init = { 1:8, 2:2, 3:2, 4:2, 5:1 }, cnt = {}, G = side === 1 ? { 5:'♛', 4:'♜', 3:'♝', 2:'♞', 1:'♟' } : { 5:'♕', 4:'♖', 3:'♗', 2:'♘', 1:'♙' };
+    for(let i = 0; i < 64; i++){ const v = game.board[i]; if(v * side < 0) cnt[Math.abs(v)] = (cnt[Math.abs(v)] || 0) + 1; }
+    let h = ''; for(const t of [5, 4, 3, 2, 1]) h += G[t].repeat(Math.max(0, init[t] - (cnt[t] || 0)));
+    return `<div class="taken chess-taken">${h}</div>`;
+  }
   if(game.puzzle) return '<div class="taken"></div>';      // в задаче шашек изначально меньше — счёт не нужен
   const left = game.board.filter(v => v*side < 0).length;
   const col = side === 1 ? '#111' : '#eee';
@@ -2699,7 +3120,7 @@ function sideInfo(side){
   if(game.friend) return { ava: FRIEND_SVG, name: esc(game.friendName), sub: colorName };
   if(game.online) return { ava: avatarHTML(game.online.avatar || { type:'preset', id:'cat' }), name: esc(game.online.nick),
     sub: (game.online.rating ? game.online.rating + ' · ' : '') + colorName + ' · онлайн' };
-  if(game.puzzle) return { ava: PIX('hint'), name: tr('Задача дня'), sub: tr(colorName) + (game.thinking ? ' · <span class="thinking">думает…</span>' : '') };
+  if(game.puzzle) return { ava: PIX(game.puzzle.pz ? 'target' : 'hint'), name: tr(game.puzzle.p.title || 'Задача дня'), sub: tr(colorName) + (game.thinking ? ' · <span class="thinking">думает…</span>' : '') };
   return { ava: botFace(game.bot.face), name: game.bot.name, sub: `${game.bot.elo} Эло · ${colorName}` + (game.thinking ? ' · <span class="thinking">думает…</span>' : '') };
 }
 function renderBars(){
@@ -2747,6 +3168,7 @@ function updateGameBanner(){
 /* ---------- премувы (цепочка ходов заранее) ---------- */
 function virtualBoard(){      // доска «как будто» премувы уже сделаны
   const vb = game.board.slice();
+  if(V.chess){ for(const p of game.premoves) cVirtualMove(vb, p.from, p.to); return vb; }
   for(const p of game.premoves){
     const v = vb[p.from]; if(!v) continue;
     vb[p.from] = 0;
@@ -2755,6 +3177,7 @@ function virtualBoard(){      // доска «как будто» премувы
   return vb;
 }
 function pseudoTargets(s, vb){
+  if(V.chess) return cPseudoTargets(s, vb);
   const v = vb[s], r = rowOf(s), c = colOf(s), res = [];
   if(!v) return res;
   for(let r2=0;r2<ROWS;r2++) for(let c2=0;c2<COLS;c2++){
@@ -2781,6 +3204,7 @@ function renderSquares(){
   const tg = new Set(currentTargets());
   const pm = premoveMode();
   const last = game.last;
+  const chk = V.chess && !game.review && cInCheck(game.board, game.turn) ? cKing(game.board, game.turn) : -1;   // король под шахом
   const preNum = new Map(); game.premoves.forEach((p,i) => preNum.set(p.to, i+1));
   const preSq = new Set(); game.premoves.forEach(p => { preSq.add(p.from); preSq.add(p.to); });
   for(let s=0;s<N;s++){
@@ -2791,6 +3215,7 @@ function renderSquares(){
     if(game.sel === s) el.classList.add(pm ? 'hl-presel' : 'hl-sel');
     if(game.stepPath.includes(s)) el.classList.add('hl-path');
     if(tg.has(s) && (db.settings.hints || pm)){ el.classList.add('dot'); if(pm) el.classList.add('pre'); }
+    if(s === chk) el.classList.add('hl-check');
     if(preSq.has(s)) el.classList.add('hl-pre');
     if(preNum.has(s) && game.premoves.length > 1) el.innerHTML = `<span class="pm-n">${preNum.get(s)}</span>`;
   }
@@ -2802,7 +3227,7 @@ function renderPieces(){
   let must = new Set();
   if(myTurn() && game.sel == null){
     const ms = legalMine();
-    if(ms.length && ms[0].caps.length) must = new Set(ms.map(m => m.from));
+    if(!V.chess && ms.length && ms[0].caps.length) must = new Set(ms.map(m => m.from));
   }
   // v9: шашки, которые стоят на месте, не пересоздаются (раньше вся доска перерисовывалась каждый ход)
   const old = new Map();
@@ -2815,11 +3240,11 @@ function renderPieces(){
     const v = game.board[s];
     let el = old.get(s); old.delete(s);
     if(!v){ if(el) el.remove(); continue; }
-    const cls = 'piece ' + (v > 0 ? 'w' : 'b') + (Math.abs(v) === 2 ? ' k' : '') + (must.has(s) ? ' must' : '');
+    const cls = 'piece ' + (v > 0 ? 'w' : 'b') + (V.chess ? ' chess' : (Math.abs(v) === 2 ? ' k' : '')) + (must.has(s) ? ' must' : '');
     if(!el){ el = document.createElement('div'); el.dataset.sq = s; box.appendChild(el); }
     if(el.className !== cls) el.className = cls;
     placeEl(el, s);
-    setHTML(el, `<div class="disc">${Math.abs(v) === 2 ? CROWN : ''}</div>`);
+    setHTML(el, V.chess ? `<div class="cp t${Math.abs(v)}">${cpSVG(Math.abs(v))}</div>` : `<div class="disc">${Math.abs(v) === 2 ? CROWN : ''}</div>`);
   }
   old.forEach(el => el.remove());
   // значок оценки хода на клетке, куда пришла шашка
@@ -2863,7 +3288,8 @@ function renderStatus(){
   if(game.turn === mySide()){
     const ms = legalMine();
     const who = game.friend ? `Ходит ${esc(nameOf(game.turn))} (${game.turn === 1 ? 'белые' : 'чёрные'})` : 'Твой ход';
-    if(ms.length && ms[0].caps.length){ st.textContent = who + ' — бить обязательно!'; st.classList.add('cap'); }
+    if(V.chess && cInCheck(game.board, game.turn)){ st.innerHTML = PIX('bolt') + ' ' + who + ' — шах!'; st.classList.add('cap'); }
+    else if(!V.chess && ms.length && ms[0].caps.length){ st.textContent = who + ' — бить обязательно!'; st.classList.add('cap'); }
     else st.textContent = who;
   } else {
     st.textContent = (game.online ? `Ходит ${game.online.nick}…` : `${game.bot.name} думает…`) + (game.premoves.length ? `  (премувы: ${game.premoves.map(p => sqName(p.from)+'-'+sqName(p.to)).join(', ')})` : '');
@@ -2878,7 +3304,7 @@ function renderMoves(){
       const m = rv.line[k]; if(!m) return '<span></span>';
       const isVar = !rv.orig[k] || notation(rv.orig[k]) !== notation(m);
       const ic = (!isVar && an && an[k]) ? mcIcon(an[k].c, 15) : '';
-      return `<span class="mv ${k+1 === rv.pos ? 'cur' : ''} ${isVar ? 'var' : ''}" data-i="${k+1}">${ic}${notation(m)}</span>`;
+      return `<span class="mv ${k+1 === rv.pos ? 'cur' : ''} ${isVar ? 'var' : ''}" data-i="${k+1}">${ic}${m.san || notation(m)}</span>`;
     };
     for(let k=0;k<rv.line.length;k+=2) rows.push(`<div class="row"><span class="n">${k/2+1}.</span>${cell(k)}${cell(k+1)}</div>`);
     box.innerHTML = rows.join('') || '<span class="muted">В этой партии нет ходов.</span>';
@@ -2922,7 +3348,7 @@ function selectSq(s){
   game.cands = myTurn() ? legalMine().filter(m => m.from === s) : null;
   if(game.cands && !game.cands.length){
     const all = legalMine();
-    if(all.length && all[0].caps.length) toast('Взятие обязательно — бей другой шашкой');
+    if(!V.chess && all.length && all[0].caps.length) toast('Взятие обязательно — бей другой шашкой');
   }
   renderSquares(); renderPieces();
 }
@@ -2933,13 +3359,13 @@ function tryTarget(s){
   if(game.cands){
     let ms = game.cands.filter(m => m.path[game.step] === s);
     if(ms.length){
-      if(samePath(ms)){ commit(ms[0]); return true; }
+      if(samePath(ms)){ pickPromo(ms, commit); return true; }
       game.step++; game.stepPath.push(s); game.cands = ms;
       renderSquares(); return true;
     }
     ms = game.cands.filter(m => m.to === s);
     if(ms.length){
-      if(samePath(ms)){ commit(ms[0]); return true; }
+      if(samePath(ms)){ pickPromo(ms, commit); return true; }
       toast('Сюда можно прийти разными путями — кликай по шагам');
       return true;
     }
@@ -2979,9 +3405,12 @@ function makeMove(m){
     playMoveSound(m);
     if(game.undo) game.hist.push({ board: game.board.slice(), turn: side, nMoves: game.moves.length, last: game.last,
       ply: game.ply, lastCapPly: game.lastCapPly, reps: new Map(game.reps), flipped: game.flipped });
+    const san = V.chess ? cSan(game.board, m) : notation(m);
     game.board = applyMove(game.board, m);
-    game.moves.push(notation(m));
-    game.mvs.push({ from:m.from, path:m.path, caps:m.caps, to:m.to, promote:m.promote });
+    if(V.chess && cInCheck(game.board, -side)) setTimeout(SND.check, 70);
+    game.moves.push(san);
+    game.mvs.push(V.chess ? { from:m.from, path:m.path, caps:m.caps, to:m.to, promote:m.promote, castle:m.castle, ep:m.ep, dbl:m.dbl, san }
+                          : { from:m.from, path:m.path, caps:m.caps, to:m.to, promote:m.promote });
     game.last = m; game.ply++;
     if(m.caps.length) game.lastCapPly = game.ply;
     if(game.tc.sec && game.inc && !game.over) game.clocks[side] += game.inc * 1000;   // добавка за ход
@@ -2992,12 +3421,19 @@ function makeMove(m){
     game.turn = -side; game.animating = false;
     if(game.over){ renderAll(); return; }
     const next = genMoves(game.board, game.turn);
-    if(!next.length){
-      const hasPieces = game.board.some(v => v*game.turn > 0);
-      endGame(game.turn === game.me ? 'loss' : 'win', hasPieces ? 'blocked' : 'nopieces');
-      return;
+    if(V.chess){
+      if(!next.length){ if(cInCheck(game.board, game.turn)) endGame(game.turn === game.me ? 'loss' : 'win', 'mate'); else endGame('draw', 'stalemate'); return; }
+      if(game.board[66] >= 100){ endGame('draw', 'fifty'); return; }
+      if(cNoMaterial(game.board)){ endGame('draw', 'material'); return; }
+      if(countRep() >= 3){ endGame('draw', 'repetition3'); return; }
+    } else {
+      if(!next.length){
+        const hasPieces = game.board.some(v => v*game.turn > 0);
+        endGame(game.turn === game.me ? 'loss' : 'win', hasPieces ? 'blocked' : 'nopieces');
+        return;
+      }
+      if(countRep() >= 5){ endGame('draw', 'repetition'); return; }
     }
-    if(countRep() >= 5){ endGame('draw', 'repetition'); return; }
     if(game.puzzle && side === game.me && puzzleAfterMove()) return;
     if(game.friend && game.friendFlip){ game.flipped = game.turn === -1; buildBoard(); }
     if(game.bot && side !== game.me && !game.puzzle) maybeBotOffersDraw();
@@ -3138,6 +3574,7 @@ function endGame(result, reason, silent){
     opp: oppName(), oppElo, color: game.me === 1 ? 'white' : 'black', tc: game.tc.id, inc: game.inc, result, reason,
     moves: game.moves.length, rating: Math.round(R + delta), delta, mv: game.mvs.slice(), unrated: !game.friend && game.undo };
   if(game.online){ rec.online = true; rec.oppKey = game.online.key; rec.oppAva = game.online.avatar; }
+  if(game.start){ rec.start = game.start.slice(); rec.seed = game.seed; }
   u.history.unshift(rec); cloudAddGame(rec);
   if(u.history.length > 500) u.history.length = 500;
   save(); renderMeMini();
@@ -3290,16 +3727,16 @@ function setPanelMode(review){
   $('#evalBar').hidden = !review;
   $('#btnExit').textContent = review ? '← К профилю' : '← Выйти из партии';
 }
-function openReview(i, ownerKey){
+function openReview(i, ownerKey, recIn){
   const owner = ownerKey && ownerKey !== db.current ? db.accounts[ownerKey] : me();
-  const g = owner && owner.history[i];
+  const g = recIn || (owner && owner.history[i]);
   if(!g || !g.mv){ toast('Для этой партии запись ходов не сохранилась (сыграна в старой версии)'); return; }
   if(liveOnline()){ toast('Сначала закончи онлайн-партию'); go('game'); return; }
   game = {
     review: true, rec: g, id: Date.now() + Math.random(), variant: g.variant || '32',
     owner: owner === me() ? null : owner, ownerKey: owner === me() ? null : ownerKey,
     online: g.online ? { nick: g.opp, avatar: g.oppAva, rating: g.oppElo, key: g.oppKey } : null,
-    friend: !!g.friend, friendName: g.opp, bot: (g.friend || g.online) ? null : (BOTS.find(b => b.name === g.opp) || BOTS[0]),
+    friend: !!g.friend, friendName: g.opp, bot: (g.friend || g.online) ? null : (ALL_BOTS().find(b => b.name === g.opp) || BOTS[0]),
     board: null, turn: 1, me: g.color === 'white' ? 1 : -1,
     tc: Object.assign({}, tcById(g.tc), { sec: 0 }), inc: 0, clocks: { 1:0, '-1':0 },
     moves: [], last: null, over: false, premoves: [], sel: null, step: 0, stepPath: [], cands: null,
@@ -3307,7 +3744,7 @@ function openReview(i, ownerKey){
     rv: { orig: g.mv, line: g.mv.slice(), pos: 0 }
   };
   setVariant(game.variant);
-  game.board = initBoard();
+  game.board = g.start ? g.start.slice() : initBoard();
   game.flipped = game.me === -1;
   clearInterval(timer);
   closeModal();
@@ -3315,6 +3752,7 @@ function openReview(i, ownerKey){
   buildBoard();
   go('game', true);
   setPos(0);
+  $('#rvPgnRow').hidden = !V.chess;
   if(!g.an) analyzeGame(g, game.id);
 }
 function isVaried(){
@@ -3329,7 +3767,7 @@ function lineMatches(pos){
 function setPos(i){
   const rv = game.rv;
   i = Math.max(0, Math.min(rv.line.length, i));
-  let b = initBoard();
+  let b = game.rec.start ? game.rec.start.slice() : initBoard();
   for(let k=0;k<i;k++) b = applyMove(b, rv.line[k]);
   rv.pos = i; game.board = b; game.turn = i % 2 ? -1 : 1;
   game.last = i ? rv.line[i-1] : null; game.hint = null; game.animating = false;
@@ -3348,6 +3786,7 @@ function reviewMove(m){
   game.animating = true;
   animate(m, () => {
     playMoveSound(m);
+    if(V.chess && cInCheck(applyMove(game.board, m), -Math.sign(game.board[m.from]))) setTimeout(SND.check, 70);
     const same = rv.line[k] && notation(rv.line[k]) === notation(m);
     if(!same) rv.line = rv.line.slice(0, k).concat([m]);
     setPos(k + 1);
@@ -3417,7 +3856,7 @@ function renderReviewExtras(){
     else if(an && an[rv.pos-1]){
       const a = an[rv.pos-1];
       const better = (a.c === 'blunder' || a.c === 'inacc' || a.c === 'good') && a.b !== notation(m) ? ` Лучше: ${a.b}` : '';
-      note = `${mcIcon(a.c, 34)}<span>${notation(m)} — ${MC[a.c].name}<small>${MC[a.c].tip}.${better}</small></span>`;
+      note = `${mcIcon(a.c, 34)}<span>${m.san || notation(m)} — ${MC[a.c].name}<small>${a.c === 'book' && a.o ? tr('Дебют') + ': ' + a.o : MC[a.c].tip + '.'}${better}</small></span>`;
     } else note = `<span><b>${notation(m)}</b><small>Оценка хода появится после анализа</small></span>`;
   }
   $('#moveNote').innerHTML = note;
@@ -3436,7 +3875,7 @@ function renderReviewExtras(){
     return `<td><button class="jump" data-s="${side}" data-k="${k}" ${list.length ? '' : 'disabled'} title="${list.length ? 'Показать этот ход' : ''}">${list.length}${sub}</button></td>`;
   };
   $('#anBox').innerHTML = `<table class="an-table"><tr><th></th><th>${esc((game.owner || me()).nick)}</th><th>${esc(rec.opp)}</th></tr>
-    ${MC_ORDER.map(k => `<tr><td>${mcIcon(k, 20)}${MC[k].name}</td>${cell(game.me, k)}${cell(-game.me, k)}</tr>`).join('')}</table>`;
+    ${MC_ORDER.filter(k => k !== 'book' || V.chess).map(k => `<tr><td>${mcIcon(k, 20)}${MC[k].name}</td>${cell(game.me, k)}${cell(-game.me, k)}</tr>`).join('')}</table>`;
   $('#anBox').querySelectorAll('.jump').forEach(b => b.onclick = () => {
     if(game.animating) return;
     const list = idxs(+b.dataset.s, b.dataset.k); if(!list.length) return;
@@ -3492,7 +3931,7 @@ function renderEval(w){
     const p = Math.abs(w / 100);
     label = (w > 0 ? '+' : w < 0 ? '−' : '') + p.toFixed(1);
     text = p < .3 ? 'Примерно равно' : `${w > 0 ? 'Белые' : 'Чёрные'} ${p < 1 ? 'чуть лучше' : p < 2.5 ? 'лучше' : 'с большим перевесом'}`;
-    sub = `оценка ${label} (1.0 ≈ одна лишняя шашка)`;
+    sub = `оценка ${label} ${V.chess ? "(1.0 ≈ одна лишняя пешка)" : "(1.0 ≈ одна лишняя шашка)"}`;
   }
   fill.style.height = (frac * 100).toFixed(1) + '%';
   bar.classList.toggle('flip', game.flipped);
@@ -3991,6 +4430,29 @@ function renderSettings(){
 const LANG = () => db.settings.lang === 'en' ? 'en' : 'ru';
 const LOC = () => LANG() === 'en' ? 'en-GB' : 'ru-RU';        // формат дат
 const EN = {
+  'Шахматы 960':'Chess960','случайная расстановка фигур':'random piece setup','Пиксели':'Pixel','Превращение':'Promotion','Во что превратить пешку?':'Promote the pawn to?',
+  'Ферзь':'Queen','Ладья':'Rook','Слон':'Bishop','Конь':'Knight','Задачи':'Puzzles','Мат в 1 ход':'Mate in 1','Мат в 2 хода':'Mate in 2','Мат в 3 хода':'Mate in 3',
+  'Вилка':'Fork','Связка':'Pin','Микс':'Mix','Поставь мат одним ходом.':'Checkmate in one move.','Белые ставят мат в 2 хода.':'White mates in 2.','Белые ставят мат в 3 хода.':'White mates in 3.',
+  'Найди ход, который нападает сразу на две фигуры, и выиграй материал.':'Find a move that attacks two pieces at once and win material.',
+  'Свяжи фигуру соперника — она не сможет уйти — и выиграй материал.':'Pin an enemy piece — it can’t escape — and win material.',
+  'Рейтинг в задачах':'Puzzle rating','Решено':'Solved','Выбери тему':'Choose a theme','Решать':'Solve','задач':'puzzles','Шахматы · тренировка':'Chess · training',
+  'Задачи по темам и свой рейтинг в задачах сейчас есть в шахматах. Для шашек — задача дня на главной.':'Themed puzzles and a puzzle rating are available for chess. For checkers there is the daily puzzle on the home page.',
+  'Перейти к шахматам':'Go to chess','Верно! Теперь забери материал':'Correct! Now win the material','Повтор — рейтинг не меняется':'Retry — the rating doesn’t change',
+  'Этот ход не решает задачу.':'This move doesn’t solve the puzzle.','Ходы закончились, а мата нет.':'Out of moves and no mate.','С подсказкой рейтинг не растёт.':'With a hint the rating doesn’t go up.',
+  'Отлично!':'Great!','К задачам':'To puzzles','Ещё раз':'Again','Следующая':'Next','Скачать PGN':'Download PGN','Открыть PGN':'Open PGN','Открыть партию из PGN':'Open a game from PGN',
+  'Вставь запись партии (например, с lichess или chess.com) или выбери файл .pgn.':'Paste a game record (e.g. from lichess or chess.com) or choose a .pgn file.',
+  'Из файла':'From file','Открыть разбор':'Open review','В записи нет ходов':'There are no moves in the record','PGN сохранён и скопирован':'PGN saved and copied','PGN сохранён':'PGN saved',
+  'Пока открываются только партии, где первыми ходят белые':'Only games where White moves first can be opened for now','Партия открыта: ходов':'Game opened, moves:',
+  'Задачи по темам: вилка, связка, маты':'Themed puzzles: fork, pin, mates',
+  'Шахматы':'Chess','Режим: шахматы':'Mode: chess','Режим: шашки':'Mode: checkers','классика 8×8, по 16 фигур':'classic 8×8, 16 pieces each',
+  '6 ботов от 400 до 2200 Эло. От новичка до мастера.':'6 bots from 400 to 2200 Elo. From beginner to master.',
+  'Пешка Петя':'Pawn Pete','Только выучил, как ходит конь':'Just learned how the knight moves','Конь Костя':'Knight Kostya','Любит вилки':'Loves forks',
+  'Слон Саша':'Bishop Sasha','Держит диагонали':'Holds the diagonals','Ладья Лиза':'Rook Lisa','Сильна в эндшпиле':'Strong in endgames',
+  'Ферзь Фёдор':'Queen Fyodor','Атакует без пощады':'Attacks without mercy','Король Артур':'King Arthur','Считает очень глубоко':'Calculates very deep',
+  'мат!':'checkmate!','тебе поставили мат':'you were checkmated','пат — ходов нет, но и шаха нет':'stalemate — no moves, but no check',
+  '50 ходов без взятий и ходов пешкой':'50 moves without captures or pawn moves','мало фигур, чтобы поставить мат':'not enough material to mate',
+  'позиция повторилась 3 раза':'the position repeated 3 times','шах!':'check!','Теоретический':'Book','Ход из известной дебютной теории':'A move from known opening theory',
+  'Дебют':'Opening','Белые начинают и ставят мат в 2 хода.':'White to move and mate in 2.','Шашки':'Checkers',
   'Задача дня':'Daily puzzle','Белые начинают и выигрывают за 3 хода.':'White to move and win in 3 moves.','Решить':'Solve','Решено · ещё раз':'Solved · again',
   'Серия':'Streak','день':'day','дня':'days','дней':'days','Осталось ходов':'Moves left','Подсказка':'Hint','Заново':'Restart','Задача решена!':'Puzzle solved!',
   'Этот ход упускает победу.':'This move misses the win.','Ходы закончились, а соперник ещё может ходить.':'You are out of moves, and the opponent can still move.','Ты сдался.':'You resigned.',
@@ -4050,7 +4512,7 @@ const EN = {
   'Для этой партии запись ходов не сохранилась (сыграна в старой версии)':'The moves of this game were not saved (played in an old version)','Ты и так смотришь сыгранную партию':'You are already viewing the played game',
   'В этой позиции ходов нет':'There are no moves in this position','Движок советует':'The engine suggests','Начальная позиция. Жми ▶ или стрелку →':'Starting position. Press ▶ or the → key','Свой вариант — без оценки':'Your own line — no evaluation',
   'Лучше':'Better','Оценка хода появится после анализа':'The move rating will appear after the analysis','Анализ партии…':'Analysing the game…','Белые':'White','Чёрные':'Black','победили':'won','выигрывают':'are winning',
-  'у соперника нет ходов':'the opponent has no moves','при точной игре — за':'with exact play — for','оценка':'evaluation','(1.0 ≈ одна лишняя шашка)':'(1.0 ≈ one extra piece)','В друзьях':'Friends',
+  'у соперника нет ходов':'the opponent has no moves','при точной игре — за':'with exact play — for','оценка':'evaluation','(1.0 ≈ одна лишняя шашка)':'(1.0 ≈ one extra piece)','(1.0 ≈ одна лишняя пешка)':'(1.0 ≈ one extra pawn)','В друзьях':'Friends',
   'Заявка отправлена · отменить':'Request sent · cancel','Принять заявку':'Accept request','Пригласить в друзья':'Add friend','Редактировать «о себе»':'Edit “About me”','Отправить запрос на партию':'Challenge to a game',
   'Побед':'Wins','Игр':'Games','Аватарка':'Avatar','Предложенные':'Suggested','Выбрать из галереи':'Choose from gallery','Закрыть':'Close','Назад':'Back','Не получилось открыть картинку':'Could not open the picture',
   '0 игр':'0 games','Сыграй рейтинговую партию':'Play a rated game','здесь появится график':'the chart will appear here','Партий':'Games','Сейчас':'Now','Первая партия':'First game','Сыграй 1 партию':'Play 1 game',
@@ -4390,8 +4852,10 @@ function runAnalysis(rec, onProg, onDone, alive){
   (function step(){
     if(alive && !alive()) return;
     setVariant(rec.variant || '32');               // вариант мог смениться (мини-доска на главной)
-    if(!b) b = initBoard();
+    if(!b) b = rec.start ? rec.start.slice() : initBoard();
     if(k >= line.length){ rec.an = an; if(onDone) onDone(an); return; }
+    const bk = V.chess && !rec.start ? bookAt(line, k) : null;          // ход из дебютной теории — движок не нужен
+    if(bk){ an.push({ c:'book', b: notation(line[k]), o: bk }); b = applyMove(b, line[k]); k++; if(onProg) onProg(k, line.length); setTimeout(step, 0); return; }
     const side = k % 2 ? -1 : 1, pn = notation(line[k]);
     const list = rootScores(b, side, per);
     const pl = list.find(x => notation(x.m) === pn) || list[0];
@@ -4408,7 +4872,7 @@ function reportOf(rec, side){
     if((i % 2 ? -1 : 1) !== side) return;
     c.all++;
     if(a.c === 'brilliant' || a.c === 'best'){ c.good++; c.best++; }
-    else if(a.c === 'good') c.good++;
+    else if(a.c === 'good' || a.c === 'book') c.good++;
     else if(a.c === 'inacc') c.inacc++;
     else if(a.c === 'blunder') c.blunder++;
     else c.forced++;
@@ -4438,7 +4902,7 @@ function showResult(o){
   const root = $('#modalRoot');
   root.innerHTML = `<div class="overlay res-ov"><div class="modal resm rs-${g.friend ? "win" : res}" role="dialog">
     <button class="res-x" id="resX" title="${tr('Посмотреть доску')}">${ICON.x}</button>
-    <div class="res-cup">${LAUREL('l')}<img class="cup" src="icons/trophy.png" alt="">${LAUREL('r')}</div>
+    <div class="res-cup">${LAUREL('l')}<img class="cup cup-${resCup(g, res, o.reason)}" src="icons/${resCup(g, res, o.reason)}.png" alt="">${LAUREL('r')}</div>
     <h2 class="res-title">${esc(title)}</h2>
     <p class="res-sub">${esc(sub)}</p>
     <div class="res-players">
@@ -4492,8 +4956,8 @@ function showResult(o){
     close();
     const m = db.menu;
     if(g.online){ m.variant = g.variant; m.tc = g.tc.id; m.inc = g.inc; save(); go('home', true); startSearch(); return; }
-    const i = BOTS.indexOf(g.bot);
-    if(res === 'win' && i >= 0 && i < BOTS.length - 1){ m.bot = i + 1; toast(`${tr('Следующий соперник')}: ${BOTS[i + 1].name}`); }
+    const BL = CHESS_BOTS.includes(g.bot) ? CHESS_BOTS : BOTS, i = BL.indexOf(g.bot), bk = BL === CHESS_BOTS ? 'cbot' : 'bot';
+    if(res === 'win' && i >= 0 && i < BL.length - 1){ m[bk] = i + 1; toast(`${tr('Следующий соперник')}: ${tr(BL[i + 1].name)}`); }
     save(); startGame('bot');
   };
 }
@@ -4747,12 +5211,16 @@ function animRating(root){
    120 позиций заранее найдены программой (у каждой ровно одно правильное начало), каждый день — следующая. */
 const PUZZLES = ["64:............w..........b.........w.w...b...............w........:e7-d8","32:...b.....w.........bw...........:a3-b4","64:.....b....W......w...w.............b...w....................w...:e1-d2","32:.b.........w.......w.......b..w.:d4-c5","64:.......b..................................b............W..w.....:h2-e5","32:.W.b.....W..........b....w......:b2-c3","32:....b.w....b........W.w.........:c7-d8","64:..........w.w..........b...............wb........w..............:b2-c3","32:....b.........w..w.b..........w.:b4-a5","64:.....b.b...........w.w..w............b.W.........b.....w........:d6-e7","32:...........b..w..w.b.....w......:c5-b6","64:.....b....b.w......................w.w........w...............w.:f4-e5","64:..........w........................w.b..b.w.....................:c7-b8","32:....W......ww....b....b.........:a7-c5","32:....b.......b.w..........w......:b2-c3","32:...b...............b.....w.W....:d2-a5","32:...b..w....b.......W............:c7-b8","64:...................b....b........w..........w......w....w.......:d2-c3","32:.B....w.....b.W..........w......:b2-a3","32:....b......b.....w.w............:d4-c5","64:.......bb............w.w....w....................W...w..........:b2-d4","64:.......b......b...........w...w........W........................:g5-h6","32:....b.......b.w..w....w.........:c3-d4","64:.......b...........w...w......w........b.............w......w...:g5-f6","64:.b.W....w...w........w........................b....W............:d2-e3","32:....b......ww.......b....w......:b2-c3","32:......w.............w.b..b....w.:a3-b4","64:.......b.............b.w...........w........W...........w.....w.:d4-e5","32:....b......w.......bw.W.........:d6-c7","32:....w.w..W..b.b....b............:c7-b8","32:...B..w.....W......b..w.........:c3-b4","64:..........b.................w.W...............b...............w.:g5-d8","32:...W........b......bW.........w.:c1-b2","64:............w...........b..........b.............w......w...w...:b2-c3","32:.b..b.......w.w..w..............:a5-b6","64:..........w......w......b...............b.....w..B..........w...:c7-b8","32:....W......b.....w....w....b....:b4-a5","64:..........B...w......w..w.b..........w......w...................:g7-h8","64:............w......b.w....w............w..W.b...................:c3-a5","64:........w.................W...b........................b..w.w...:c5-g1","32:...........bw.b.....w.......W...:a1-d4","32:.b..b....w.......w..............:b4-c5","64:.....b........................w....w...b.............w.w..w.....:g5-f6","32:....b......B..w..........w..w...:b2-a3","32:...........wb.w.....b.W.........:c5-b6","32:...b.....w.w........b....w......:b2-c3","32:...b.....w..........b......w....:d2-c3","32:...bw......w........b.......w...:d6-c7","32:....w.b..........w.bb.........w.:a7-b8","64:..........................w......b...W.wb..............w....w...:f4-b8","32:.b..w.......b.w.......W.........:c5-d6","32:...b........w.......b.........w.:a5-b6","64:..........w........w.............w.b.b.w..................w.....:c7-b8","64:............................b...........b..........w......w.....:d2-e3","64:..............b...........W.w...........b..............W......w.:c5-b4","64:........................b..........w......b......w......w...w...:d4-c5","64:...B....................W.....w.............b..........w....w...:h2-g3","32:....w.b..........w.........b..w.:b4-a5","32:...bb....w.wW...................:b6-c7","32:....w.........b..........w.b..W.:a7-b8","64:............b...........b...w.................W.................:g3-e1","64:...................................w...b..b......W.....w........:b2-a1","64:.W.....b..w.................b.b..w......b.....b...............w.:b8-a7","32:.........w.Bw.W.....b....b......:b6-a7","64:..............w....w......w..........b..b...............w.....w.:g1-f2","64:...W........w........b..w.....b...........w.............w.......:c3-d4","64:..........w............b...........b.............w...w.w........:c7-d8","32:....b............w.b.......ww...:b4-a5","32:.b....b....w........W...........:a3-c5","32:...bw....w.b........w...........:a3-b4","32:.W.bb.......w.......w...........:b8-c7","64:.......bw.................w...b..b......W..............w........:a7-b8","32:....w......bb....w............w.:c1-d2","32:...Wb......b........w......b..w.:a3-b4","32:...........b.....w.wb...........:d4-c5","32:.........b.......w.......W.b....:b2-c1","32:...........wb.......b.W....w....:c3-b4","32:...b.....w.........b........w...:a1-b2","32:....b......b.....w.w.......w....:d4-c5","64:........w.....b........b......w...............w..w.....w........:g3-f4","32:...b..w............b.......ww...:c7-b8","64:.....b........................w...........b............w..w.....:g5-f6","64:...b....w.....w.............w.............b............w..w.....:e5-d6","32:....b....w..w......bW.b.........:a3-d6","64:............w.w..w.....W..................b...b...............w.:g7-h8","64:........................b.....w........bw...W...............w...:e3-d4","32:...b.......b..w..w............w.:c5-b6","32:...b.......ww.......b....w......:b2-c3","32:....b..............wb.W....w....:d4-c5","64:.......b...........w.w..b..........................w........w...:d2-c3","32:...b........w......wb.......w...:a5-b6","32:.b....w.............w......b..w.:c7-d8","64:..........................................b.w........w.b......w.:e3-d4","32:....b.......w.b....bw......w....:a5-b6","32:...bb......W.......w.......w....:d4-c5","32:...b.....W..........b.........w.:b6-a5","32:.b..b.w.....w.w.................:c7-d8","64:.....b...........W.w........w..........b.............w..w.......:e5-f6","64:.....b......w....w.....bw.....w.........................w.......:b6-a7","32:...b.......ww....W.........b....:b4-c3","32:...bw.......b.W.................:a7-b8","64:........w.................w......b.W...bw.......................:a7-b8","32:.b....w..w..b......w............:c7-d8","64:........................b..........w.b....w.................w.w.:g1-h2","32:...........b.....w.bw....w......:b2-c3","64:........b.....w...............W........b.........w..............:g7-h8","32:.b....w..w............b.......W.:c1-d2","32:...B.....W.......w.b............:b6-a5","64:..............w....b.w.W......................b..w..............:h6-f4","64:.b........w............b...........w...ww.......................:d4-c5","64:............w....w......b............b.w........................:e7-d8","32:.........w.b........w.b.......w.:c1-d2","64:........w...b..........b....w.w....................w..........w.:a7-b8","32:...........b..b.....w.w.......W.:c1-b2","32:......b.......w..B..w.......w...:c5-b6","32:...bw.w....W..........b.........:d6-a3","32:...b..w..........w..b.w.........:b4-a5","64:.b......................W..........w........b....w...W..w.......:f2-g1","32:....b....W.b................W...:a1-d4","64:.B...................b..w............w.................w........:a5-b6"];
 const PUZ_MAP = { '.':0, 'w':1, 'W':2, 'b':-1, 'B':-2 };
+const PUZZLES_CHESS = ["chess:...........k............B...K..Q................................:h5f7","chess:...................................K...................Q...k....:d4d3","chess:Q.........................K......N...............k..............:a8a2","chess:........................K........................BbQ.........k..:b2d4","chess:k...............K.p.............p....B.p............B...........:e2f3","chess:...............p..Q......b.............K.......p.....B..k.......:c6c2","chess:.....NK.k........................Q..............................:f8d7","chess:.................K........p.........R.........R.k...............:e4e2","chess:...............k.......P.....P....Q..........r.....K............:c4f7","chess:...k...nK.........P.........Q...p........P....p.................:e5e6","chess:........k.............p..K..B.......R.........p.................:b5c6","chess:.........R....n.......................................K.kN......:b1c3","chess:...............n..K........R...........p..............R...k.....:d5f5","chess:K............P...........P..k......................Q............:f7f8q","chess:......................R...........K...............k...pR.......r:g6g2","chess:..........K...Pnrp..k.............P..........................Q..:g7g8q","chess:.......k....K...p......................p...............R........:e7f7","chess:..........R............p.p.pK.k.............................R...:c7g7","chess:..k.....P...p..R..........K................B...p................:c5c6","chess:........k..p....................pR......K.....n...............R.:g1b1","chess:............................B....pR....K..............P........k:h4g3","chess:..................p...p.....p.......R........K.N...............k:f3g3","chess:.k..K.....................Q..............B...........n..........:c5b6","chess:...................r.....................K..NQ............k.....:f3f1","chess:...............b........p...p.......Q........K..............B.k.:e1f2","chess:.....R....R.............................K.....k.....p...........:c7g7","chess:....R.R.p......k.............K..np..............................:f5f6","chess:......k........................K....R......................R....:h5g6","chess:.............p...........Q.K................................N.k.:b5e2","chess:B....Q...........K.....................................kn.......:f8f3","chess:...........K.............Q..........p..p........N.......k.......:a2c3","chess:........P....P....K..............k............Q......p..........:f7f8q","chess:.......k.......................Kp...p...R.R.....................:h5g6","chess:........R...................K.................R....k............:a7a2","chess:...........k..........R.R.K.....................................:a5a7","chess:.K..k.......P..................................P.......Q........:h2e5","chess:.........P...P.k.......n..p.....K.............Q.................:f7f8q","chess:....k......R........PK...................p..B..................b:e3b6","chess:.....k.B..........K.....................................Q.......:c6d7","chess:..K.....k...p......N........R...................................:d6c4","chess:.B..............Q........p............r.....K.....p.........k...:a6a1","chess:........pp................................K............Rk.......:c3b3","chess:.........P....P.............Q.........................pK.....k..:g7g8q","chess:..........p.P.................k.....K.....P............Q........:e7e8q","chess:.............p.................B.....p..k............Q...K......:f2c5","chess:.............R.P.....................K.........kB...............:f7g7","chess:..............K................k........Q...............B.......:a3f3","chess:...Q....k...K................B..................................:d8c7","chess:.........p.R..................................R.........k.....K.:g3g2","chess:...k........................K...................Q...............:e5d6","chess:k..........p...P..........K...........p.........P...Q...........:c5b6","chess:.........k..........K..............................Q..........B.:d2d8","chess:..K.....k.N...p............p...Q...............p................:h5g6","chess:..k......................K............n.........R..........R....:b5b6","chess:..Q...............p......p...p...........B..K...............k...:c8f5","chess:.........Q......P..P......K.....................k...............:a6a7","chess:....K.................k...................n........R.........R..:d2g2","chess:.....R......R.......K.........................................k.:e7g7","chess:....k............K.P.............p.............B..............R.:h3e6","chess:K....................................Q..........B.............k.:f4g3","chess:............R.........................p.......Kn...............k:e7e2","chess:..........P..................p....k.....Q...K....P..............:c7c8q","chess:...............k.R..........R.............K..........b..........:e5e7","chess:...............p.Q...........N....K....p........k...............:c4c3","chess:...K.....k........................R............R................:h3b3","chess:.Q..............................P.......k..K..........P.........:d3c3","chess:.rk.......P.......Q......p.P........................K...........:d5d6","chess:.......R.............................pp......R..K.........k.....:f3f2","chess:.K....b................R.....................R...k..............:h6h2","chess:....k...............B.......K.Q...p.............................:e5d6","chess:.....R.....................R.....b..............K.............k.:d5g5","chess:.......R.P...B.....................K.....................k......:d4c3","chess:..............n......N.............Q........................K..k:e1f1","chess:k........p.........K........................N............R......:d6c7","chess:.......N.......p.Q..............k......p.........K.......b......:b2c3","chess:..K...k......................................R.........R........:h2g2","chess:.......kP.......P.......p..pK......p.Q..........................:f4f7","chess:.......bQ....................N..................K......k........:a7f2","chess:........Q.......p..PK...........k.................P.............:a7b6","chess:.......k......p....Q...........K...p............................:h5g6","chess:...................K....k..................b.....Q.N............:d6c5","chess:.........p......Q..............kb....K..N.......................:a6f6","chess:.........k..........R...........................K....R..........:f2f7","chess:......Q......K...B..............p......k.....n..................:b6f2","chess:................K......R.....R............bp..................k.:h6g6","chess:..B............k.....K.....Pp....R..............................:c8f5","chess:k............K.............................pR.............n....R:e3e7","chess:......k.P.................P........K.Q..........................:f4c7","chess:......Q....P.......k................P....................K......:g8d5","chess:....Q..........P....K..k.P...p......p.................p.........:e8g8"];
+const PUZ_CMAP = { '.':0, P:1, N:2, B:3, R:4, Q:5, K:6, p:-1, n:-2, b:-3, r:-4, q:-5, k:-6 };
 function dayNum(){ const d = new Date(); return Math.floor(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) / 864e5); }
 function todayPuzzle(){
-  const day = dayNum(), [v, b, s] = PUZZLES[day % PUZZLES.length].split(':');
-  return { day, v, board: [...b].map(c => PUZ_MAP[c]), sol: s, no: day % PUZZLES.length + 1 };
+  const ch = isChessMenu(), L = ch ? PUZZLES_CHESS : PUZZLES, day = dayNum(), [v, b, s] = L[day % L.length].split(':');
+  const board = ch ? [...b].map(c => PUZ_CMAP[c]).concat([0, 0, 0]) : [...b].map(c => PUZ_MAP[c]);
+  return { day, v, board, sol: s, no: day % L.length + 1, n: ch ? 2 : 3, chess: ch };
 }
-const puzKey = () => 'shashki_puz_' + (db.current || 'guest');
+const puzKey = () => 'shashki_puz_' + (db.current || 'guest') + (isChessMenu() ? '_chess' : '');
+const puzTask = p => p.themed ? PZ_TIP[p.themed] : p.chess ? 'Белые начинают и ставят мат в 2 хода.' : 'Белые начинают и выигрывают за 3 хода.';
 function puzStore(){ try{ return JSON.parse(localStorage.getItem(puzKey())) || { done:{}, streak:0, last:0 }; }catch(e){ return { done:{}, streak:0, last:0 }; } }
 function puzSave(st){ try{ localStorage.setItem(puzKey(), JSON.stringify(st)); }catch(e){} }
 const puzStreak = st => (st.last >= dayNum() - 1 ? st.streak : 0);
@@ -4760,7 +5228,7 @@ const puzStreak = st => (st.last >= dayNum() - 1 ? st.streak : 0);
 function puzWinMove(b, side, n){
   for(const m of genMoves(b, side)){
     const b2 = applyMove(b, m), rs = genMoves(b2, -side);
-    if(!rs.length) return m;
+    if(!rs.length){ if(!V.chess || cInCheck(b2, -side)) return m; continue; }   // в шахматах нужен именно мат, пат — не победа
     if(n > 1 && rs.every(r => puzWinMove(applyMove(b2, r), side, n - 1))) return m;
   }
   return null;
@@ -4770,7 +5238,7 @@ function puzMini(p){
   const cells = [];
   for(let r = 0; r < ROWS; r++) for(let c = 0; c < COLS; c++){
     const v = p.board[idx(r, c)];
-    cells.push(`<div class="sq ${isDark(r, c) ? 'dark' : 'light'}">${v ? `<span class="pcw ${v > 0 ? 'w' : 'b'}${Math.abs(v) === 2 ? ' k' : ''}"><span class="disc">${Math.abs(v) === 2 ? CROWN : ''}</span></span>` : ''}</div>`);
+    cells.push(`<div class="sq ${isDark(r, c) ? 'dark' : 'light'}">${v ? pieceMini(v) : ''}</div>`);
   }
   setVariant(db.menu.variant);
   return `<div class="mini-board puz-board bt-${db.settings.boardTheme} pt-${db.settings.pieceTheme}" style="--mc:${COLS}">${cells.join('')}</div>`;
@@ -4780,12 +5248,13 @@ function renderPuzzleCard(){
   const p = todayPuzzle(), st = puzStore(), done = !!st.done[p.day], streak = puzStreak(st);
   box.innerHTML = `<div class="sc-head"><h2>${PIX('hint')} Задача дня</h2><span class="puz-no">№ ${p.no}</span></div>
     <div class="puz-wrap">${puzMini(p)}<div>
-      <p class="puz-txt">Белые начинают и выигрывают за 3 хода.</p>
-      <p class="muted small">${p.v === '64' ? VAR_NAMES['64'] : VAR_NAMES['32']}</p>
+      <p class="puz-txt">${puzTask(p)}</p>
+      <p class="muted small">${VAR_NAMES[p.v]}</p>
       ${streak ? `<p class="puz-streak">🔥 ${tr('Серия')}: ${streak} ${tr(streak === 1 ? 'день' : streak < 5 ? 'дня' : 'дней')}</p>` : ''}
     </div></div>
     <button class="btn ${done ? '' : 'primary'} wide" id="puzGo">${done ? `${ICON.check} Решено · ещё раз` : `${ICON.play} Решить`}</button>`;
   $('#puzGo').onclick = startPuzzle;
+  if(p.chess){ box.insertAdjacentHTML('beforeend', `<button class="link pz-all" id="pzAll">${PIX('target')} ${tr('Задачи по темам: вилка, связка, маты')} ${ICON.arrow}</button>`); $('#pzAll').onclick = () => go('puzzles'); }
 }
 const PUZ_BOT = { elo: 0, name:'Задача дня', about:'', depth: 12, random: 0, noise: 0, time: 700,
   face:{ bg:'#fff1c9', skin:'#f0c4a4', hair:'#cfcfcf', style:'side', shirt:'#5a2a2a', glasses:'round', beard:'#e2e2e2' } };
@@ -4795,7 +5264,7 @@ function startPuzzle(){
   launchGame({ variant: p.v, tc: '0', inc: 0, color: 'white', friend: false, bot: PUZ_BOT, undo: false });
   game.board = p.board.slice();
   game.reps = new Map(); countRep();
-  game.puzzle = { p, left: 3 };
+  game.puzzle = { p, left: p.n };
   $('#playActions').hidden = true;
   renderAll();
 }
@@ -4804,21 +5273,25 @@ function renderPuzzle(){
   box.hidden = !(game && game.puzzle);
   if(box.hidden) return;
   const z = game.puzzle;
-  box.innerHTML = `<div class="puz-panel"><b>${PIX('hint')} ${tr('Задача дня')} № ${z.p.no}</b>
-      <p>${tr('Белые начинают и выигрывают за 3 хода.')}</p>
-      <div class="puz-left">${[0, 1, 2].map(i => `<i class="${i < 3 - z.left ? 'used' : ''}"></i>`).join('')}<span>${tr('Осталось ходов')}: ${z.left}</span></div>
+  // тактика: когда соперник ответил, заранее считаем лучший ход — его засчитаем, даже если выигрыш проявится позже
+  if(z.tactic && z.waitBest && z.step === 1 && game.turn === game.me && !game.animating && !game.over){ z.waitBest = false; deadline = performance.now() + 900; abort = false; z.best2 = searchBest(game.board, 1, 4, 600); }
+  box.innerHTML = `<div class="puz-panel"><b>${PIX(z.p.themed ? 'target' : 'hint')} ${z.p.themed ? tr(z.p.title) + ' · ' + z.pz.rating : tr('Задача дня') + ' № ' + z.p.no}</b>
+      <p>${tr(puzTask(z.p))}</p>
+      <div class="puz-left">${[...Array(z.p.n)].map((_, i) => `<i class="${i < z.p.n - z.left ? 'used' : ''}"></i>`).join('')}<span>${tr('Осталось ходов')}: ${z.left}</span></div>
       <div class="actions"><button class="btn" id="puzHint">${PIX('hint')} ${tr('Подсказка')}</button><button class="btn" id="puzAgain">${PIX('undo')} ${tr('Заново')}</button></div></div>`;
   $('#puzHint').onclick = () => {
     if(!game || game.over || game.turn !== game.me){ toast('Подожди, пока закончится ход'); return; }
-    const m = puzWinMove(game.board, game.me, game.puzzle.left);
+    const z = game.puzzle;
+    const m = z.tactic ? (z.step === 0 ? genMoves(game.board, 1).find(x => notation(x) === z.pz.sol) : searchBest(game.board, 1, 4, 700)) : puzWinMove(game.board, game.me, z.left);
     if(!m){ toast('Отсюда уже не выиграть — начни заново'); return; }
     game.hint = m; game.puzzle.hinted = true; renderAnnot();
   };
-  $('#puzAgain').onclick = startPuzzle;
+  $('#puzAgain').onclick = () => z.pz ? startThemePuzzle(z.pickTheme, z.pz) : startPuzzle();
 }
 // после своего хода: проверяем, что выигрыш ещё возможен
 function puzzleAfterMove(){
   const z = game.puzzle;
+  if(z.tactic) return tacticAfterMove();
   z.left--;
   const replies = genMoves(game.board, -game.me);
   const ok = z.left > 0 && replies.every(r => puzWinMove(applyMove(game.board, r), game.me, z.left));
@@ -4829,6 +5302,7 @@ function puzzleAfterMove(){
 }
 function puzzleEnd(result, reason){
   if(!game || !game.puzzle || game.over) return;
+  if(game.puzzle.pz){ themedEnd(result, reason); return; }
   game.over = true; game.thinking = false; game.premoves = []; clearSel();
   const z = game.puzzle, st = puzStore();
   if(result === 'win'){
@@ -4848,9 +5322,381 @@ function puzzleEnd(result, reason){
     : `<div class="big-ico">${PIX('hint')}</div><h2>Не получилось</h2><p class="muted">${why}</p>`,
     result === 'win'
       ? [{ label:'Посмотреть доску' }, { label:'На главную', cls:'primary', onClick: () => go('home', true) }]
-      : [{ label:'Посмотреть доску' }, { label:'Показать решение', onClick: () => { startPuzzle(); game.hint = puzWinMove(game.board, 1, 3); game.puzzle.hinted = true; renderAnnot(); } },
+      : [{ label:'Посмотреть доску' }, { label:'Показать решение', onClick: () => { startPuzzle(); game.hint = puzWinMove(game.board, 1, game.puzzle.p.n); game.puzzle.hinted = true; renderAnnot(); } },
          { label:'Попробовать ещё', cls:'primary', onClick: startPuzzle }]);
 }
+
+
+/* =========================================================
+   13d. v11: ШАХМАТЫ — фигуры, боты, дебюты, переключатель «Шашки / Шахматы»
+   ========================================================= */
+const isChessMenu = () => !!(VARIANTS[db.menu.variant] || {}).chess;
+VAR_NAMES.chess = 'Шахматы'; VAR_NAMES.c960 = 'Шахматы 960';
+/* ---------- рисунки фигур (свои, простые силуэты; цвет берётся из темы) ---------- */
+const CP_PATH = {
+  1: '<path class="f" d="M22.5 9a4.5 4.5 0 0 0-3.6 7.2 6.5 6.5 0 0 0-2.9 5.3c0 2 .9 3.8 2.4 5C15.3 27.8 11 32.3 11 39h23c0-6.7-4.3-11.2-7.4-12.5a6.4 6.4 0 0 0 2.4-5 6.5 6.5 0 0 0-2.9-5.3A4.5 4.5 0 0 0 22.5 9z"/>',
+  2: '<path class="f" d="M15 39h20c0-8-.6-14.5-4-19.5-2-3-2.3-6.2-1-9.5-3.2-.4-5.5 1.2-7.5 3.2l-9.6 7.3c-2 1.8-1.2 4.4 1.2 4.4l4.4-1.2c1.6-.2 2.4 1.4 1.2 3.2L15.5 34c-.8 1.6-.5 3.2-.5 5z"/><circle class="d" cx="24.5" cy="16" r="1.4"/><path class="l" d="M28 14c1.5 3 2.5 7 2.5 12"/>',
+  3: '<circle class="f" cx="22.5" cy="8.5" r="2.6"/><path class="f" d="M22.5 11.5c-5 4-8 9-8 13.5 0 3 1.8 5 3.5 6.5h9c1.7-1.5 3.5-3.5 3.5-6.5 0-4.5-3-9.5-8-13.5z"/><path class="f" d="M13.5 33h18l1.5 3H12zM11 36h23v3H11z"/><path class="l" d="M20 22.5l5.5-5.5M20 27h5"/>',
+  4: '<path class="f" d="M9 39h27v-3H9zM12 36v-4h21v4zM11 14V9h4v2h5V9h5v2h5V9h4v5zM34 14l-3 3H14l-3-3zM31 17v12.5H14V17zM31 29.5l1.5 2.5h-20l1.5-2.5z"/>',
+  5: '<path class="f" d="M9 26l3-13 5 10 5.5-13 5.5 13 5-10 3 13zM10 26c1 3 1.5 5 1 7h23c-.5-2 0-4 1-7zM11 33h23v3H11zM10 36h25v3H10z"/><circle class="f" cx="12" cy="12" r="2.3"/><circle class="f" cx="22.5" cy="8.8" r="2.3"/><circle class="f" cx="33" cy="12" r="2.3"/><path class="l" d="M12 29.5h21"/>',
+  6: '<path class="l" d="M22.5 5.5v8M18.8 9h7.4"/><path class="f" d="M22.5 14c-3 0-5 3-4.4 6.6C12 18.6 8 23 10 28.5l2 4.5h21l2-4.5c2-5.5-2-9.9-8.1-7.9.6-3.6-1.4-6.6-4.4-6.6z"/><path class="f" d="M12 33h21v3H12zM10 36h25v3H10z"/><path class="l" d="M22.5 21v8M14 28.5h17"/>'
+};
+const cpSVG = t => `<svg viewBox="0 0 45 45" xmlns="http://www.w3.org/2000/svg">${CP_PATH[t]}</svg>`;
+// содержимое клетки на маленьких досках (главная, задачи)
+function pieceMini(v){
+  const a = Math.abs(v);
+  if(V.chess) return `<span class="pcw chess ${v > 0 ? 'w' : 'b'}"><span class="cp t${a}">${cpSVG(a)}</span></span>`;
+  return `<span class="pcw ${v > 0 ? 'w' : 'b'}${a === 2 ? ' k' : ''}"><span class="disc">${a === 2 ? CROWN : ''}</span></span>`;
+}
+const CHESS_ICON = (h = 26) => `<svg viewBox="0 0 45 45" height="${h}" class="chess-ico">${CP_PATH[2]}</svg>`;
+
+/* ---------- шахматные боты ---------- */
+const CHESS_BOTS = [
+  { elo:400,  name:'Пешка Петя',    about:'Только выучил, как ходит конь', depth:1, random:.35, noise:140, time:150,
+    face:{bg:'#ffe79a', skin:'#f9d6bb', hair:'#d9822b', style:'curl', shirt:'#4aa3e0', blush:1} },
+  { elo:800,  name:'Конь Костя',    about:'Любит вилки',                  depth:2, random:.1,  noise:70,  time:250,
+    face:{bg:'#c9f0c4', skin:'#f3c7a5', hair:'#2e2a26', style:'spiky', shirt:'#2e9e4f'} },
+  { elo:1200, name:'Слон Саша',     about:'Держит диагонали',             depth:3, random:.03, noise:30,  time:450,
+    face:{bg:'#bfe3ff', skin:'#eeb996', hair:'#5b3a22', style:'side', shirt:'#3a7bd5', glasses:'round'} },
+  { elo:1500, name:'Ладья Лиза',    about:'Сильна в эндшпиле',            depth:4, random:0,   noise:12,  time:800,
+    face:{bg:'#ffd3e3', skin:'#f6cfb0', hair:'#3d2316', style:'long', shirt:'#e86a9a'} },
+  { elo:1800, name:'Ферзь Фёдор',   about:'Атакует без пощады',           depth:6, random:0,   noise:0,   time:1300,
+    face:{bg:'#dccbff', skin:'#e7b08a', hair:'#1f1a17', style:'short', shirt:'#7a52c7', beard:'#1f1a17'} },
+  { elo:2200, name:'Король Артур',  about:'Считает очень глубоко',        depth:30, random:0,  noise:0,   time:2600,
+    face:{bg:'#f2b8b0', skin:'#f0c4a4', hair:'#cfcfcf', style:'side', shirt:'#5a2a2a', glasses:'round', beard:'#e2e2e2'} }
+];
+const ALL_BOTS = () => BOTS.concat(CHESS_BOTS);
+const botList = () => isChessMenu() ? CHESS_BOTS : BOTS;
+const botKey = () => isChessMenu() ? 'cbot' : 'bot';
+
+/* ---------- причины конца шахматной партии ---------- */
+Object.assign(REASONS.win, { mate:'мат!' });
+Object.assign(REASONS.loss, { mate:'тебе поставили мат' });
+Object.assign(REASONS.draw, { stalemate:'пат — ходов нет, но и шаха нет', fifty:'50 ходов без взятий и ходов пешкой', material:'мало фигур, чтобы поставить мат', repetition3:'позиция повторилась 3 раза' });
+
+/* ---------- дебютная теория: ходы из известных начал ---------- */
+const BOOK = [
+  ['e2e4', 'Королевская пешка', 'King’s Pawn'],
+  ['d2d4', 'Ферзевая пешка', 'Queen’s Pawn'],
+  ['e2e4 e7e5 g1f3 b8c6 f1c4 f8c5 c2c3 g8f6 d2d4 e5d4 c3d4', 'Итальянская партия', 'Italian Game'],
+  ['e2e4 e7e5 g1f3 b8c6 f1c4 f8c5 d2d3 g8f6 c2c3 d7d6', 'Итальянская партия: тихий вариант', 'Italian: Giuoco Pianissimo'],
+  ['e2e4 e7e5 g1f3 b8c6 f1c4 g8f6 d2d3 f8c5', 'Защита двух коней', 'Two Knights Defence'],
+  ['e2e4 e7e5 g1f3 b8c6 f1c4 g8f6 f3g5 d7d5 e4d5 c6a5', 'Защита двух коней', 'Two Knights Defence'],
+  ['e2e4 e7e5 g1f3 b8c6 f1b5 a7a6 b5a4 g8f6 e1g1 f8e7 f1e1 b7b5 a4b3 d7d6', 'Испанская партия', 'Ruy Lopez'],
+  ['e2e4 e7e5 g1f3 b8c6 f1b5 g8f6 e1g1 f6e4', 'Испанская партия: берлинская защита', 'Ruy Lopez: Berlin'],
+  ['e2e4 e7e5 g1f3 b8c6 d2d4 e5d4 f3d4 g8f6 d4c6 b7c6', 'Шотландская партия', 'Scotch Game'],
+  ['e2e4 e7e5 g1f3 g8f6 f3e5 d7d6 e5f3 f6e4 d2d4 d6d5', 'Русская партия', 'Petrov Defence'],
+  ['e2e4 e7e5 g1f3 d7d6 d2d4 e5d4 f3d4 g8f6 b1c3', 'Защита Филидора', 'Philidor Defence'],
+  ['e2e4 e7e5 f2f4 e5f4 g1f3 g7g5', 'Королевский гамбит', 'King’s Gambit'],
+  ['e2e4 e7e5 b1c3 g8f6 f2f4 d7d5', 'Венская партия', 'Vienna Game'],
+  ['e2e4 c7c5 g1f3 d7d6 d2d4 c5d4 f3d4 g8f6 b1c3 a7a6', 'Сицилианская защита: Найдорф', 'Sicilian: Najdorf'],
+  ['e2e4 c7c5 g1f3 d7d6 d2d4 c5d4 f3d4 g8f6 b1c3 g7g6', 'Сицилианская защита: Дракон', 'Sicilian: Dragon'],
+  ['e2e4 c7c5 g1f3 b8c6 d2d4 c5d4 f3d4 g8f6 b1c3 e7e5', 'Сицилианская защита: Свешников', 'Sicilian: Sveshnikov'],
+  ['e2e4 c7c5 g1f3 e7e6 d2d4 c5d4 f3d4 a7a6', 'Сицилианская защита: Паульсен', 'Sicilian: Paulsen'],
+  ['e2e4 c7c5 b1c3 b8c6 g2g3 g7g6 f1g2 f8g7', 'Сицилианская защита: закрытый вариант', 'Sicilian: Closed'],
+  ['e2e4 c7c5 c2c3 g8f6 e4e5 f6d5 d2d4', 'Сицилианская защита: вариант Алапина', 'Sicilian: Alapin'],
+  ['e2e4 e7e6 d2d4 d7d5 b1c3 g8f6 c1g5 f8e7', 'Французская защита', 'French Defence'],
+  ['e2e4 e7e6 d2d4 d7d5 b1c3 f8b4 e4e5 c7c5', 'Французская защита: Винавер', 'French: Winawer'],
+  ['e2e4 e7e6 d2d4 d7d5 e4e5 c7c5 c2c3 b8c6', 'Французская защита: продвижение', 'French: Advance'],
+  ['e2e4 c7c6 d2d4 d7d5 b1c3 d5e4 c3e4 c8f5 e4g3 f5g6', 'Защита Каро — Канн', 'Caro-Kann Defence'],
+  ['e2e4 c7c6 d2d4 d7d5 e4e5 c8f5', 'Защита Каро — Канн: продвижение', 'Caro-Kann: Advance'],
+  ['e2e4 d7d5 e4d5 d8d5 b1c3 d5a5 d2d4 g8f6', 'Скандинавская защита', 'Scandinavian Defence'],
+  ['e2e4 d7d6 d2d4 g8f6 b1c3 g7g6 f2f4 f8g7', 'Защита Пирца', 'Pirc Defence'],
+  ['e2e4 g7g6 d2d4 f8g7 b1c3 d7d6', 'Современная защита', 'Modern Defence'],
+  ['e2e4 g8f6 e4e5 f6d5 d2d4 d7d6 g1f3', 'Защита Алехина', 'Alekhine Defence'],
+  ['d2d4 d7d5 c2c4 e7e6 b1c3 g8f6 c1g5 f8e7 e2e3 e8g8', 'Ферзевый гамбит', 'Queen’s Gambit Declined'],
+  ['d2d4 d7d5 c2c4 d5c4 g1f3 g8f6 e2e3 e7e6', 'Принятый ферзевый гамбит', 'Queen’s Gambit Accepted'],
+  ['d2d4 d7d5 c2c4 c7c6 g1f3 g8f6 b1c3 d5c4', 'Славянская защита', 'Slav Defence'],
+  ['d2d4 d7d5 c1f4 g8f6 e2e3 c7c5 c2c3', 'Лондонская система', 'London System'],
+  ['d2d4 g8f6 c1f4 d7d5 e2e3 e7e6 g1f3', 'Лондонская система', 'London System'],
+  ['d2d4 d7d5 g1f3 g8f6 c2c4 e7e6 b1c3', 'Ферзевый гамбит', 'Queen’s Gambit Declined'],
+  ['d2d4 g8f6 c2c4 g7g6 b1c3 f8g7 e2e4 d7d6 g1f3 e8g8 f1e2 e7e5', 'Староиндийская защита', 'King’s Indian Defence'],
+  ['d2d4 g8f6 c2c4 e7e6 b1c3 f8b4 e2e3 e8g8', 'Защита Нимцовича', 'Nimzo-Indian Defence'],
+  ['d2d4 g8f6 c2c4 e7e6 g1f3 b7b6 g2g3 c8b7', 'Новоиндийская защита', 'Queen’s Indian Defence'],
+  ['d2d4 g8f6 c2c4 g7g6 b1c3 d7d5 c4d5 f6d5 e2e4 d5c3 b2c3', 'Защита Грюнфельда', 'Grünfeld Defence'],
+  ['d2d4 g8f6 c2c4 e7e6 g2g3 d7d5 f1g2 f8e7', 'Каталонское начало', 'Catalan Opening'],
+  ['d2d4 g8f6 c2c4 c7c5 d4d5 e7e6 b1c3 e6d5 c4d5 d7d6', 'Защита Бенони', 'Benoni Defence'],
+  ['d2d4 f7f5 g2g3 g8f6 f1g2 e7e6', 'Голландская защита', 'Dutch Defence'],
+  ['c2c4 e7e5 b1c3 g8f6 g2g3 d7d5', 'Английское начало', 'English Opening'],
+  ['c2c4 g8f6 b1c3 e7e6 e2e4', 'Английское начало', 'English Opening'],
+  ['g1f3 d7d5 c2c4 e7e6 g2g3 g8f6', 'Начало Рети', 'Réti Opening'],
+  ['g1f3 g8f6 c2c4 g7g6', 'Начало Рети', 'Réti Opening'],
+  ['f2f4 d7d5 g1f3 g8f6', 'Дебют Берда', 'Bird’s Opening'],
+  ['b2b3 e7e5 c1b2', 'Дебют Ларсена', 'Larsen’s Opening']
+];
+// короткие «названия-развилки»: с этого хода дебют уже узнаётся
+BOOK.push(
+  ['e2e4 e7e5', 'Открытая игра', 'Open Game'], ['e2e4 e7e5 g1f3 b8c6 f1c4', 'Итальянская партия', 'Italian Game'],
+  ['e2e4 e7e5 g1f3 b8c6 f1b5', 'Испанская партия', 'Ruy Lopez'], ['e2e4 c7c5', 'Сицилианская защита', 'Sicilian Defence'],
+  ['e2e4 e7e6', 'Французская защита', 'French Defence'], ['e2e4 c7c6', 'Защита Каро — Канн', 'Caro-Kann Defence'],
+  ['d2d4 d7d5 c2c4', 'Ферзевый гамбит', 'Queen’s Gambit'], ['d2d4 g8f6', 'Индийская защита', 'Indian Defence'],
+  ['c2c4', 'Английское начало', 'English Opening'], ['g1f3', 'Начало Рети', 'Réti Opening']
+);
+const BOOK_KEYS = new Map();          // начало партии → какие дебюты так начинаются
+for(const [line, ru, en] of BOOK){
+  const mv = line.split(' ');
+  for(let k = 1; k <= mv.length; k++){
+    const key = mv.slice(0, k).join(' ');
+    const e = BOOK_KEYS.get(key) || { names: new Map(), exact: null };
+    e.names.set(ru, en);
+    if(k === mv.length) e.exact = [ru, en];
+    BOOK_KEYS.set(key, e);
+  }
+}
+function bookName(key){
+  const e = BOOK_KEYS.get(key); if(!e) return null;
+  if(e.exact) return e.exact;
+  if(e.names.size === 1) return [...e.names][0];
+  const i = key.lastIndexOf(' ');
+  return i > 0 ? bookName(key.slice(0, i)) : ['Дебют', 'Opening'];
+}
+// название дебюта, если первые k+1 ходов партии есть в теории (иначе null)
+function bookAt(line, k){
+  const n = bookName(line.slice(0, k + 1).map(notation).join(' '));
+  return n ? (LANG() === 'en' ? n[1] : n[0]) : null;
+}
+MC.book = { name:'Теоретический', color:'#a3835c', tip:'Ход из известной дебютной теории' };
+MC_GLYPH.book = '<path d="M9 12c3.5-1.5 7-1.5 11 1 4-2.5 7.5-2.5 11-1v16c-3.5-1.5-7-1.5-11 1-4-2.5-7.5-2.5-11-1z" fill="#fff"/><path d="M20 13v16" stroke="#a3835c" stroke-width="1.6"/>';
+MC_ORDER.unshift('book');
+
+/* ---------- переключатель «Шашки / Шахматы» на главной ---------- */
+function discSwitch(){
+  const ch = isChessMenu();
+  return `<div class="disc-sw ${ch ? 'chess' : ''}" id="discSw" role="tablist">
+    <span class="knob"></span>
+    <button data-d="draughts" class="${ch ? '' : 'on'}">${PIX('chkb')}Шашки</button>
+    <button data-d="chess" class="${ch ? 'on' : ''}">${PIX('cwN')}Шахматы</button></div>`;
+}
+function setDiscipline(d){
+  const m = db.menu, toChess = d === 'chess';
+  if(toChess === isChessMenu()) return;
+  if(toChess){ m.dvar = m.variant; m.variant = m.cvar && VARIANTS[m.cvar] ? m.cvar : 'chess'; if(m.cbot == null) m.cbot = 1; }
+  else { m.cvar = m.variant; m.variant = m.dvar && !(VARIANTS[m.dvar] || {}).chess ? m.dvar : '32'; }
+  save(); renderMeMini();
+  const sw = $('#discSw'); if(sw) sw.classList.toggle('chess', toChess);
+  setTimeout(() => { if(current === 'home') renderHome(); else if(current === 'bots') renderBots(); else if(current === 'puzzles') renderPuzzles(); }, 260);
+  toast(toChess ? 'Режим: шахматы' : 'Режим: шашки');
+}
+const discVariants = () => Object.values(VARIANTS).filter(v => isChessMenu() ? v.chess : !v.chess);
+
+/* ---------- правила шахмат ---------- */
+const CHESS_RULES_RU = `<h1 class="rules-sep">Шахматы</h1>
+  <h2>Цель</h2><ul><li>Поставить мат: король соперника под ударом (шах), и уйти от удара невозможно.</li><li>Белые ходят первыми, дальше — по очереди. Пропускать ход нельзя.</li></ul>
+  <h2>Как ходят фигуры</h2><ul>
+    <li><b>Король</b> — на одну клетку в любую сторону. Нельзя вставать под удар.</li>
+    <li><b>Ферзь</b> — на любое расстояние по прямой и по диагонали.</li>
+    <li><b>Ладья</b> — по прямой (вертикали и горизонтали) на любое расстояние.</li>
+    <li><b>Слон</b> — по диагонали на любое расстояние; всегда остаётся на клетках одного цвета.</li>
+    <li><b>Конь</b> — буквой «Г»: две клетки прямо и одна вбок. Единственная фигура, которая перепрыгивает через другие.</li>
+    <li><b>Пешка</b> — вперёд на одну клетку (с начальной позиции — можно на две). Бьёт только по диагонали вперёд.</li></ul>
+  <h2>Особые ходы</h2><ul>
+    <li><b>Рокировка</b> — король идёт на две клетки к ладье, ладья перепрыгивает через него. Можно, если король и ладья ещё не ходили, между ними пусто, король не под шахом и не проходит через битое поле.</li>
+    <li><b>Взятие на проходе</b> — если пешка соперника прыгнула на две клетки и встала рядом с твоей, её можно сразу же взять так, будто она сходила на одну.</li>
+    <li><b>Превращение</b> — пешка, дошедшая до последней горизонтали, становится ферзём (здесь — автоматически).</li></ul>
+  <h2>Ничья</h2><ul>
+    <li>Пат: у того, кто ходит, нет ни одного хода, но и шаха нет.</li>
+    <li>Позиция повторилась 3 раза; 50 ходов подряд без взятий и ходов пешкой; на доске мало фигур для мата (например, король и конь против короля); по согласию.</li></ul>
+  <h2>Разбор и задачи</h2><ul>
+    <li>В разборе ходы из известных дебютов отмечаются как «Теоретический», и показывается название дебюта.</li>
+    <li>Задача дня в шахматах — мат в 2 хода.</li></ul>`;
+const CHESS_RULES_EN = `<h1 class="rules-sep">Chess</h1>
+  <h2>Goal</h2><ul><li>Checkmate: the opponent’s king is attacked (check) and cannot escape.</li><li>White moves first, then the players take turns. You cannot skip a move.</li></ul>
+  <h2>How the pieces move</h2><ul>
+    <li><b>King</b> — one square in any direction. It may not move into check.</li>
+    <li><b>Queen</b> — any distance along ranks, files and diagonals.</li>
+    <li><b>Rook</b> — any distance along ranks and files.</li>
+    <li><b>Bishop</b> — any distance diagonally; it always stays on squares of one colour.</li>
+    <li><b>Knight</b> — in an “L”: two squares straight and one to the side. The only piece that jumps over others.</li>
+    <li><b>Pawn</b> — one square forward (two from its starting square). It captures only diagonally forward.</li></ul>
+  <h2>Special moves</h2><ul>
+    <li><b>Castling</b> — the king moves two squares towards a rook and the rook jumps over it. Allowed if neither has moved, the squares between are empty, and the king is not in check and does not cross an attacked square.</li>
+    <li><b>En passant</b> — if an enemy pawn jumps two squares and lands next to your pawn, you may capture it at once as if it had moved one square.</li>
+    <li><b>Promotion</b> — a pawn reaching the last rank becomes a queen (automatically here).</li></ul>
+  <h2>Draw</h2><ul>
+    <li>Stalemate: the side to move has no legal moves but is not in check.</li>
+    <li>Threefold repetition; 50 moves without a capture or pawn move; not enough material to mate (e.g. king and knight vs king); by agreement.</li></ul>
+  <h2>Review and puzzles</h2><ul>
+    <li>In the review, moves from known openings are marked “Book” and the opening name is shown.</li>
+    <li>The chess daily puzzle is mate in 2.</li></ul>`;
+{
+  const _rr = renderRules;
+  renderRules = function(){
+    _rr();
+    $('#rulesBox').insertAdjacentHTML(isChessMenu() ? 'afterbegin' : 'beforeend', LANG() === 'en' ? CHESS_RULES_EN : CHESS_RULES_RU);
+  };
+}
+
+
+/* =========================================================
+   13e. v12: пиксельные фигуры, превращение, звук шаха, задачи по темам, PGN, шахматы 960
+   ========================================================= */
+PIECE_THEMES.push(['pixel', 'Пиксели']);
+PIECE_SOUND.pixel = 'classic';
+if(!db.settings.pix12){ db.settings.pix12 = 1; if(db.settings.pieceTheme === 'classic') db.settings.pieceTheme = 'pixel'; try{ localStorage.setItem(KEY, JSON.stringify({ settings: db.settings, menu: db.menu })); }catch(e){} }
+
+/* ---------- звук шаха: короткий двойной «дзинь» ---------- */
+SND.check = () => { const v = volMove(); tone(v * .22, 988, 0, .09, 'triangle'); tone(v * .22, 1319, .09, .14, 'triangle'); };
+
+/* ---------- выбор фигуры при превращении пешки ---------- */
+function pickPromo(ms, done){
+  if(!(V.chess && ms.length > 1 && ms[0].promote)){ done(ms[0]); return; }
+  const side = Math.sign(game.board[ms[0].from]);
+  const root = modal(`<h2>${tr('Превращение')}</h2><p class="muted">${tr('Во что превратить пешку?')}</p>
+    <div class="promo bt-${db.settings.boardTheme} pt-${db.settings.pieceTheme}">${[5, 4, 3, 2].map(t =>
+      `<button data-p="${t}" title="${tr({ 5:'Ферзь', 4:'Ладья', 3:'Слон', 2:'Конь' }[t])}">${pieceMini(t * side)}</button>`).join('')}</div>`,
+    [{ label:'Отмена', onClick: () => { clearSel(); renderSquares(); renderPieces(); } }]);
+  root.querySelectorAll('[data-p]').forEach(b => b.onclick = () => { closeModal(); done(ms.find(m => m.promote === +b.dataset.p) || ms[0]); });
+}
+
+/* ---------- задачи по темам со своим рейтингом ---------- */
+const PZ_THEMES = [
+  ['mate1', 'Мат в 1 ход', 'target', 1], ['mate2', 'Мат в 2 хода', 'target', 2], ['mate3', 'Мат в 3 хода', 'target', 3],
+  ['fork', 'Вилка', 'cwN', 0], ['pin', 'Связка', 'cwB', 0], ['mix', 'Микс', 'dice', 0]
+];
+const PZ_TIP = { mate1:'Поставь мат одним ходом.', mate2:'Белые ставят мат в 2 хода.', mate3:'Белые ставят мат в 3 хода.',
+  fork:'Найди ход, который нападает сразу на две фигуры, и выиграй материал.', pin:'Свяжи фигуру соперника — она не сможет уйти — и выиграй материал.' };
+const PZ = (() => {
+  const raw = ["mate1:.......B...........................Q..........K.k...............:d4b2:606","mate1:.......................p....p.R.K...R.............n....k........:e4h4:825","mate1:...Q........n...........................K...............k.......:d8d1:681","mate1:k.....................Q..............B.................K........:g6a6:645","mate1:..........K.....k..........................b.............Q......:b1b6:773","mate1:...R...................k..............................R......K..:d8h8:797","mate1:....k..............QK........n................................N.:d6b8:645","mate1:......................K...Q............................p...N.k..:c5f2:835","mate1:.....................R................R.............np..K.n....k:f6h6:610","mate1:.......k.R.......pR........................n........n.K.........:c6c8:716","mate1:.....................p.N....b..........k........p............KQ.:g1g4:844","mate1:.r....k.....K.............R....R..p.............................:c5g5:672","mate1:.......k...R....p........R..........................K...........:b5b8:760","mate1:.K..........R..bk...........p....................R..b...........:e7a7:690","mate1:...kB................p.......Q.............K....................:f5d7:863","mate1:........................n...........K...B......Q.......p.......k:h3f1:842","mate1:.................K....Q................k.......B........r.......:g6g4:640","mate1:....................r..............................RR...K.....kb:d2d1:815","mate1:...K..........R....R...........................k.......p........:d6h6:841","mate1:.......................K....................Q.n..p.....B.......k:e3g1:602","mate1:........B..r....k............n.r.........Q............K.........:b3b6:722","mate1:...................................Q.......K...............k.N..:d4a1:899","mate1:...........K............kpQ........N............................:c5b5:616","mate1:............p.....R......................R.................k.K..:b3d3:763","mate1:..k.K..R..p.......p......R............................p.........:e8e7:664","mate1:......k...R......R.....K........................................:b6b8:824","mate1:....n........................K.........k.....R......b.R.........:g2h2:643","mate1:.k................KR......B.....................................:d6d8:838","mate1:......k...R.......K..............................R..............:b2b8:871","mate1:.........K....p.........Q.......b....B..............b......k....:a5d2:717","mate1:...........K.......Q..........pB.r.....k........................:d6h2:892","mate1:......B...................................K.R............k......:e3e1:724","mate1:................................p..R...........p..R.....K......k:d4d1:716","mate1:...QB.......p....................p............K................k:d8d1:856","mate1:.....n..k.K....................B.....p........R.................:g3a3:800","mate1:.Q................K...............kb...............Bp.r.........:b8b5:714","mate1:...............k.....K..............b.Q......N..................:g4g7:690","mate1:............................k.........K..B...Q..................:f3f4:791","mate1:......................Q......................K.........k........:g6g2:711","mate1:......K...............k.....................Q..N........r.......:e3g5:672","mate3:...............K...........................Q......N..p...k......:c2d4:1517","mate3:.....R.................k......................K...........R.....:f8g8:1501","mate3:..k........................B..........p.....Q................K..:e3e7:1659","mate3:...........B.................Q...b......................K.k.....:f5d3:1879","mate3:.........R...R.........k..........................K.............:f7g7:1724","mate3:B...K..........k...................................R............:e8f7:1661","mate3:...........k.K....................................Q....N........:c2c5:1505","mate3:...........K...P...N...........................k.............R..:f1g1:1704","mate3:.....R..R.............p.K................p.....................k:a7g7:1777","mate3:.....k..Q...N..........p..............K.........................:e7f5:1526","mate3:....................Q....p..................KB...........k......:e6b3:1611","mate3:...........p.K....................Q.......B.p..............k....:c3b4:1829","mate3:..k.....B......pK.......Q.......................................:a5d5:1891","mate3:....R.........................N..P.........K..............k.....:d3c3:1666","mate3:....kB....Kp.......R.............p..............................:d6f6:1658","mate3:............K.............R..R..k...............................:c5b5:1799","mate3:......B.Q.K....................................................k:g8d5:1865","mate3:...............p...................Q......n......k.K............:d4b4:1568","mate3:....B.....................K..kp....Q......p...........p.........:c5d5:1768","mate3:..R......................k....K............R....................:d3b3:1783","mate3:......Q.................N.....K........................k........:g5f4:1853","mate3:.R............K...............k............B....................:b8b4:1668","mate3:........P..p...................p..........N.....K.....R.....k...:a7a8q:1788","mate3:.K......n.....R...........R.....................k...............:g7b7:1571","mate3:.............p.............R....................R..K..k.........:d5d3:1725","mate3:...........................P..N............K..R.........k.......:d3c2:1510","mate3:........n.p..........K.......Q................k....N............:d2e4:1683","mate3:..............Q............................Kp............k......:g7b7:1890","mate3:...............n.........Q......B..................K...........k:b5f1:1624","mate3:..................p......Q.......N...K................k.........:b5e2:1652","fork:...............N...k..p..K.....P..........r.....p...Q..........N:e2d2:1434","fork:.....nb..b......pq..p.....k.P...........K........N....P.........:b2a4:1044","fork:.....B..Q.................P.knK.......P......p.B......p.....b...:a7a1:1426","fork:.Q....r......k.p....N.................p......P..K...Q.....r.....:b8f4:1034","fork:........B.....p....kb................K.........R.R.........n..B.:h3d3:1269","fork:......r.......P...k.K.....Pp.N.......pn.............R....r......:f5e7:1000","fork:......r........n..Q.........K....p.Pb..N.......B...n....k.......:c6c1:1012","fork:b............k....p....R........R......B.R.P.....Nq.........K...:a4a7:1136","fork:..n.......P............Q......K.k.....N....r......r..........r..:h6a6:1372","fork:.....nqr........NP..k.........B.........K.............R...B.n..n:g2e2:1062","fork:..........K.....BP..k....p...b.P..b.N....r....Q.................:e4c5:1460","fork:..r.................r.......P.BNK.......P..p..........k.........:h5f4:1095","fork:.n....R...b..P......q..k..P.N..............K.........r..........:e5g4:1036","fork:........p.....B....p..k..K...........R...p...pb......N..........:f4g4:1177","fork:k.....q.p.........p.....P...r..P.K.....Q........p..R.........R..:d2d8:1276","fork:b.......B.......Q.P....q................R..KN.......r.pk........:e3g4:1465","fork:............R.K..........Q...b.........p..P...........k...Br....:b5e2:1530","fork:.K..............b...........p.....n.k.N........r.......P......B.:g4f2:1217","fork:k..q..............R..........B..P..p.q..........K............b..:c6c8:1533","fork:..R.R.......r....K.P........Qp......p.....pk....np............B.:e5d5:1306","fork:.B..Rr..........p...K.Q.....P.p.k...................p...........:g6e4:1383","fork:...N.B.....K.N....p...k......................r..q...............:f7e5:1411","fork:...q........n...r..k......N..R....RK.p.BN.......................:c5b7:1497","fork:.................B...pk............K....Q...........p.P.....r.n.:a3g3:1027","fork:....k......p......R..b...Q....r.N....K.....b.P.P..P...p....n....:c6e6:1146","fork:..b............R....P.....k....K.....P............qrPr...n.n.QR.:h7c7:1343","fork:.......r.....K...pp....r....P....r...kP...............Q.........:g2d2:999","fork:..........pp......k..............P.......N.p......r........K..B.:b3d4:1570","fork:.BK.........N.......kp..........Q....n...P....P.....p..b........:a4e4:1001","fork:Q................r.........p...........k...pp.N..P...P......K...:a8d8:1489","fork:..........n..........P..p...n...K.........q..k......RP..........:e2e3:1443","fork:........kP..p.....n..........P..KB.......R..r...B..........n....:b4c5:1493","fork:.....K....p....N....................k..p.p..N......Pq....N......:b1c3:1084","fork:....k.b.r.........................pr.p..B....r.........Q.N....K.:h2h5:1579","fork:...K.......R.......p..N............N........P.b...B.......q...k.:d4e2:1653","fork:..........p.Q.....P..P.....r..........b..........P.....K.k......:e7e4:1040","fork:.r..N......k.....B..............N.....r......p..Q........K......:e8f6:1411","fork:...................Q......r..P....p.k.....K..p.....p......N.....:d6d4:1002","fork:......k..R..Pb...RK.n..n...R.p.....P...r...b....................:d5d8:1561","fork:.....Q..r..p.........rp..P...k.............P...K.....B...r.q....:f8c5:1334","pin:N...................R....b.......q.n...k...R......P....K........:e6e4:1624","pin:.....K............................p.rp.....k...B...P........Q...:h3f5:1760","pin:....................p....p....p.....k...P..r...RN........K.B....:d1c2:1209","pin:......K.......................nk.R..NP............n.......n.....:b4b5:1177","pin:......k.....R.b................P.....R..........K.N........r..nN:f4g4:1474","pin:.k.N...r....P......KR.P....P.p.................r.n....n....R....:d1b1:1283","pin:B.N...k...........NBp...p.K...bp...P..............R.............:c2g2:1277","pin:........b..K.....k....bq......R.p...R...B.P.....r.....p.........:e4e6:1222","pin:..N........................K..R..p.....P..p...............k..n..:g5g1:1393","pin:B........p.........R.....P..n..K.......B..N.....B..r..n...k.....:h4g5:1283","pin:B.......P..kn..n......N.P........p..p.......p........R........K.:f2f7:1579","pin:...K..k..........n............n.R.........B....p..P...n.........:a4g4:1440","pin:....B.BK.r..........B..........P...........q........k....r......:e6c4:1684"].map(s => s.split(':')).concat(PUZZLES_CHESS.map((s, i) => { const [, b, m] = s.split(':'); return ['mate2', b, m, String(1100 + (i * 37) % 350)]; }));
+  return raw.map(([theme, b, sol, rt], id) => ({ id, theme, b, sol, rating: +rt }));
+})();
+const pzBoard = p => [...p.b].map(c => PUZ_CMAP[c]).concat([0, 0, 0, 7, 0]);
+const pzRating = () => Math.round((me() && me().ratings['puz:chess']) ?? 1000);
+function pzStats(){ try{ return JSON.parse(localStorage.getItem('shashki_pz_' + db.current)) || { done:{}, n:0, ok:0 }; }catch(e){ return { done:{}, n:0, ok:0 }; } }
+function pzSaveStats(st){ try{ localStorage.setItem('shashki_pz_' + db.current, JSON.stringify(st)); }catch(e){} }
+let pzTheme = 'mix';
+function pickPz(theme){
+  const st = pzStats(), r = pzRating();
+  let list = PZ.filter(p => theme === 'mix' || p.theme === theme);
+  const fresh = list.filter(p => !st.done[p.id]); if(fresh.length) list = fresh;
+  list.sort((a, b) => Math.abs(a.rating - r) - Math.abs(b.rating - r));
+  return list[Math.floor(Math.random() * Math.min(6, list.length))];
+}
+function renderPuzzles(){
+  const box = $('#puzzlesBox');
+  if(!isChessMenu()){
+    box.innerHTML = `<div class="page-head"><div><div class="eyebrow">Тренировка</div><h1 class="display">Задачи</h1></div>${discSwitch()}</div>
+      <div class="card"><p>Задачи по темам и свой рейтинг в задачах сейчас есть в шахматах. Для шашек — задача дня на главной.</p>
+      <button class="btn primary" id="pzToChess">${PIX('cwN')} Перейти к шахматам</button></div>`;
+    $('#pzToChess').onclick = () => { setDiscipline('chess'); setTimeout(renderPuzzles, 300); };
+    $('#discSw').querySelectorAll('[data-d]').forEach(b => b.onclick = () => { setDiscipline(b.dataset.d); setTimeout(renderPuzzles, 300); });
+    return;
+  }
+  const st = pzStats(), cnt = t => PZ.filter(p => t === 'mix' || p.theme === t).length;
+  box.innerHTML = `<div class="page-head"><div><div class="eyebrow">Шахматы · тренировка</div><h1 class="display">Задачи</h1></div>${discSwitch()}</div>
+    <div class="pz-grid">
+      <div class="card pz-me">${PIX('target')}<div><small>Рейтинг в задачах</small><b>${pzRating()}</b></div>
+        <div><small>Решено</small><b>${st.ok} / ${st.n}</b></div></div>
+      <div class="card pz-themes"><h2>Выбери тему</h2>
+        <div class="pz-list">${PZ_THEMES.map(([id, l, ic]) => `<button class="pz-t ${pzTheme === id ? 'on' : ''}" data-t="${id}">${PIX(ic)}<span><b>${l}</b><small>${cnt(id)} ${tr('задач')}</small></span></button>`).join('')}</div>
+        <button class="btn primary big" id="pzGo">${ICON.play} Решать</button></div>
+    </div>`;
+  box.querySelectorAll('[data-t]').forEach(b => b.onclick = () => { pzTheme = b.dataset.t; renderPuzzles(); });
+  $('#pzGo').onclick = () => startThemePuzzle(pzTheme);
+  $('#discSw').querySelectorAll('[data-d]').forEach(b => b.onclick = () => { setDiscipline(b.dataset.d); setTimeout(renderPuzzles, 300); });
+}
+function startThemePuzzle(theme, again){
+  if(liveOnline()){ toast('Сначала закончи онлайн-партию'); go('game'); return; }
+  const p = again || pickPz(theme); if(!p) return;
+  const n = { mate1:1, mate2:2, mate3:3 }[p.theme] || 0;
+  launchGame({ variant: 'chess', tc: '0', inc: 0, color: 'white', friend: false, bot: PUZ_BOT, undo: false });
+  game.board = pzBoard(p); game.reps = new Map(); countRep();
+  game.puzzle = { p: { no: p.id + 1, n: n || 2, chess: true, v: 'chess', themed: p.theme, title: PZ_THEMES.find(t => t[0] === p.theme)[1] },
+    left: n || 2, theme: p.theme, pz: p, tactic: !n, step: 0, retry: !!again, base: (deadline = performance.now() + 3000, abort = false, cQuiesce(game.board, 1, -INF, INF, 0)), pickTheme: theme || p.theme };
+  $('#playActions').hidden = true;
+  renderAll();
+}
+// тактика (вилка/связка): 1) найти единственный выигрывающий ход, 2) после ответа забрать материал
+function tacticAfterMove(){
+  const z = game.puzzle, m = game.last;
+  if(z.step === 0){
+    if(notation(m) !== z.pz.sol){ renderAll(); setTimeout(() => puzzleEnd('loss', 'wrong'), 350); return true; }
+    z.step = 1; z.left = 1; renderPuzzle(); toast(tr('Верно! Теперь забери материал'));
+    z.waitBest = true;
+    return false;
+  }
+  deadline = performance.now() + 3000; abort = false;
+  const after = -cNegamax(game.board, -1, 2, -INF, INF, 0);        // перевес держится и после лучшего ответа соперника
+  renderAll();
+  const ok = after >= z.base + 120 || (z.best2 && notation(z.best2) === notation(m));     // лучший ход движка засчитывается всегда
+  setTimeout(() => puzzleEnd(ok ? 'win' : 'loss', 'wrong'), 350);
+  return true;
+}
+// рейтинг в задачах (как Эло: задача — «соперник» со своим рейтингом)
+function pzRate(win){
+  const z = game.puzzle; if(!z || !z.pz || z.retry || z.rated) return null;
+  z.rated = true;
+  const R = pzRating(), exp = 1 / (1 + Math.pow(10, (z.pz.rating - R) / 400));
+  const delta = Math.round(28 * ((win && !z.hinted ? 1 : 0) - exp));
+  me().ratings['puz:chess'] = R + delta; save();
+  const st = pzStats(); st.n++; if(win && !z.hinted) st.ok++; st.done[z.pz.id] = 1; pzSaveStats(st);
+  return { R: R + delta, delta };
+}
+
+/* ---------- PGN: сохранить партию и открыть чужую ---------- */
+const pgnDate = t => { const d = new Date(t || Date.now()); return d.getFullYear() + '.' + String(d.getMonth() + 1).padStart(2, '0') + '.' + String(d.getDate()).padStart(2, '0'); };
+function recToPGN(rec, ownerNick){
+  const w = rec.color === 'white', res = rec.result === 'draw' ? '1/2-1/2' : ((rec.result === 'win') === w ? '1-0' : '0-1');
+  const tags = { Event: 'Шашки и шахматы', Site: 'https://joskiph7.github.io/shashki/', Date: pgnDate(rec.date), Round: '-',
+    White: w ? ownerNick : rec.opp, Black: w ? rec.opp : ownerNick, Result: res };
+  if(rec.start){ tags.Variant = 'Chess960'; tags.SetUp = '1'; tags.FEN = cFen(rec.start, 1); }
+  return cMakePGN(tags, rec.start, rec.mv);
+}
+function exportPGN(){
+  if(!game || !game.review || !V.chess) return;
+  const txt = recToPGN(game.rec, (game.owner || me()).nick);
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([txt], { type: 'application/x-chess-pgn' }));
+  a.download = 'partiya_' + pgnDate(game.rec.date).replace(/\./g, '-') + '.pgn';
+  document.body.append(a); a.click(); a.remove();
+  if(navigator.clipboard) navigator.clipboard.writeText(txt).then(() => toast('PGN сохранён и скопирован'), () => toast('PGN сохранён'));
+  else toast('PGN сохранён');
+}
+function importPGN(){
+  const root = modal(`<h2>${PIX('book2')} Открыть PGN</h2><p class="muted small">Вставь запись партии (например, с lichess или chess.com) или выбери файл .pgn.</p>
+    <textarea id="pgnIn" rows="9" placeholder="[White &quot;…&quot;]&#10;1. e4 e5 2. Nf3 Nc6 …"></textarea>
+    <input type="file" id="pgnFile" accept=".pgn,.txt" hidden><div class="err" id="pgnErr"></div>`,
+    [{ label:'Отмена' }, { label:'Из файла', onClick: () => {} }, { label:'Открыть разбор', cls:'primary' }], 'wide');
+  const btns = root.querySelectorAll('.modal-btns .btn');
+  btns[1].onclick = e => { e.stopPropagation(); $('#pgnFile').click(); };
+  $('#pgnFile').onchange = e => { const f = e.target.files[0]; if(f) f.text().then(t => $('#pgnIn').value = t); };
+  btns[2].onclick = () => {
+    try{
+      const p = cParsePGN($('#pgnIn').value);
+      if(!p.moves.length) throw new Error(tr('В записи нет ходов'));
+      if(p.side !== 1) throw new Error(tr('Пока открываются только партии, где первыми ходят белые'));
+      const t = p.tags, is960 = /960|fischer/i.test(t.Variant || '') || !!t.FEN;
+      const meWhite = !(t.Black && t.Black.toLowerCase() === me().nick.toLowerCase());
+      const r = t.Result || '*';
+      const rec = { date: Date.now(), variant: is960 ? 'c960' : 'chess', friend: true, opp: (meWhite ? t.Black : t.White) || '?', color: meWhite ? 'white' : 'black',
+        tc: '0', inc: 0, result: r === '1/2-1/2' ? 'draw' : (r === '1-0') === meWhite ? 'win' : r === '*' ? 'draw' : 'loss', reason: 'agreement',
+        moves: p.moves.length, rating: 0, delta: 0, mv: p.moves, imported: true };
+      if(t.FEN) rec.start = p.start;
+      closeModal(); openReview(0, null, rec);
+      toast(tr('Партия открыта: ходов') + ' ' + p.moves.length);
+    } catch(e){ $('#pgnErr').textContent = e.message; }
+  };
+}
+
+// конец тематической задачи: рейтинг и кнопки «Следующая / Ещё раз / К задачам»
+function themedEnd(result, reason){
+  if(!game || game.over) return;
+  game.over = true; game.thinking = false; game.premoves = []; clearSel();
+  const z = game.puzzle, win = result === 'win', rr = pzRate(win);
+  game.resultText = tr(win ? 'Задача решена!' : 'Не получилось');
+  renderAll();
+  SND[win ? 'win' : 'loss']();
+  const rt = rr ? `<p class="pz-rt">${tr('Рейтинг в задачах')}: <b>${rr.R}</b> <span class="delta rt-pop ${rr.delta >= 0 ? 'up' : 'down'}">${rr.delta >= 0 ? '+' : ''}${rr.delta}</span></p>`
+               : `<p class="muted small">${tr('Повтор — рейтинг не меняется')}</p>`;
+  const why = { wrong:'Этот ход не решает задачу.', moves:'Ходы закончились, а мата нет.', resign:'Ты сдался.' }[reason] || '';
+  modal(`<div class="big-ico">${PIX(win ? 'cup2' : 'target')}</div><h2>${win ? 'Задача решена!' : 'Не получилось'}</h2>
+    <p class="muted">${win ? (z.hinted ? 'С подсказкой рейтинг не растёт.' : 'Отлично!') : why}</p>${rt}`,
+    [{ label:'К задачам', onClick: () => go('puzzles', true) },
+     ...(win ? [] : [{ label:'Ещё раз', onClick: () => startThemePuzzle(z.pickTheme, z.pz) }]),
+     { label:'Следующая', cls:'primary', onClick: () => startThemePuzzle(z.pickTheme) }]);
+}
+$('#rvPgn').onclick = exportPGN;
+$('#rvPgnIn').onclick = importPGN;
+const resCup = (g, res, reason) => g.chess || V.chess ? (res === 'loss' && reason === 'mate' ? 'mate' : 'cup2') : 'trophy';
 
 /* =========================================================
    14. СТАРТ
