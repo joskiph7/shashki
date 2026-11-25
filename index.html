@@ -1043,6 +1043,26 @@ h2 .pix{width:26px;height:26px}
 @media (max-width:900px){ .pz-grid{grid-template-columns:1fr} .pz-me{grid-template-columns:auto 1fr 1fr;align-items:center} .pz-me b{font-size:30px} }
 #rvPgnRow .btn{font-size:13px;padding:10px 6px;gap:6px}
 #rvPgnRow .btn span{white-space:normal;text-align:left;line-height:1.2}
+
+/* =====================================================================
+   v13: плавные ходы, перевес +N, раздельные темы, кнопки задач
+   ===================================================================== */
+.piece{transition:left .13s cubic-bezier(.25,.8,.35,1),top .13s cubic-bezier(.25,.8,.35,1),opacity .2s}
+.piece.chess{transition:left .12s cubic-bezier(.25,.8,.35,1),top .12s cubic-bezier(.25,.8,.35,1),opacity .2s}
+.piece.moving,.piece.dragging{will-change:left,top}
+.cp svg{filter:none}
+.pt-pixel .cp{filter:none}
+.taken{align-items:center}
+.taken .adv{font-style:normal;font-size:12px;font-weight:800;color:var(--muted);margin-left:5px;letter-spacing:0;line-height:12px}
+.set-head{border-bottom:0;padding:22px 0 0}
+.set-ttl{display:flex;align-items:center;gap:10px;font-family:var(--fd);font-size:20px;font-weight:600;text-transform:uppercase}
+.set-ttl .pix{width:28px;height:28px}
+.puz-panel .actions{grid-template-columns:1fr 1fr;gap:6px}
+.puz-panel .actions .btn{min-width:0;padding:9px 6px;font-size:13.5px;gap:5px;white-space:nowrap;overflow:hidden}
+.puz-panel .actions .btn .pix{width:18px;height:18px}
+#btnExit .pix,.rv-nav .pix{width:22px;height:22px}
+.rv-nav .btn{display:flex;align-items:center;justify-content:center}
+.bot .ava img,.pbar .ava img,.rp .ava img{object-position:center top}
 </style>
 </head>
 <body>
@@ -1170,7 +1190,7 @@ const CHECKER_IMG = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAACUCAYAA
    1. ХРАНИЛИЩЕ: аккаунты и настройки (в памяти браузера)
    ========================================================= */
 const KEY = 'shashki4_v2', OLD_KEY = 'shashki4_v1';
-const DEF_SETTINGS = { theme:'light', premove:true, hints:true, moveVol:70, uiVol:40, boardTheme:'classic', pieceTheme:'classic', soundPack:'auto', lang:'ru', topbar:false };
+const DEF_SETTINGS = { theme:'light', premove:true, hints:true, moveVol:70, uiVol:40, boardTheme:'classic', pieceTheme:'classic', soundPack:'auto', lang:'ru', topbar:false, cBoardTheme:'classic', cPieceTheme:'pixel' };
 const DEF_MENU = { variant:'32', opp:'bot', bot:2, tc:'300', inc:0, color:'white', friendName:'Друг', friendFlip:false, undo:false };
 function clone(o){ return JSON.parse(JSON.stringify(o)); }
 function loadOld(){ try{ const s = JSON.parse(localStorage.getItem(OLD_KEY)); if(s && s.nick) return s; }catch(e){} return null; }
@@ -1366,6 +1386,7 @@ const PIECE_THEMES = [['classic','Классика'],['wood','Дерево'],['g
    3. РИСУНКИ (SVG)
    ========================================================= */
 function botFace(f){
+  if(f.img) return `<img src="icons/${f.img}.png" alt="" style="background:${f.bg}">`;
   const S = '#2b1d16';
   let back = '', hair = '', extra = '';
   if(f.style === 'long') back = `<path d="M22 50 C20 22 36 15 50 15 C66 15 80 24 78 50 L81 88 L64 88 L64 62 L36 62 L36 88 L19 88Z" fill="${f.hair}"/>`;
@@ -2132,7 +2153,7 @@ const SOUND_PACKS = {
 };
 // какой набор подходит к теме шашек (для режима «Под тему»)
 const PIECE_SOUND = { classic:'classic', wood:'wood', glossy:'glass', marble:'stone', neon:'arcade', metal:'metal' };
-const packId = s => (s || db.settings).soundPack === 'auto' ? (PIECE_SOUND[(s || db.settings).pieceTheme] || 'classic') : ((s || db.settings).soundPack || 'classic');
+const packId = s => (s || db.settings).soundPack === 'auto' ? (PIECE_SOUND[s ? s.pieceTheme : pth()] || 'classic') : ((s || db.settings).soundPack || 'classic');
 const pack = () => SOUND_PACKS[packId()] || SOUND_PACKS.classic;
 const SND = {
   move(){ pack().move(volMove()); },
@@ -2445,7 +2466,7 @@ function miniBoard(variant){
     const v = b[idx(r,c)];
     cells.push(`<div class="sq ${isDark(r,c) ? 'dark' : 'light'}">${v ? pieceMini(v) : ''}</div>`);
   }
-  return `<div class="mini-board bt-${db.settings.boardTheme} pt-${db.settings.pieceTheme}" style="--mc:${COLS}">${cells.join('')}</div>`;
+  return `<div class="mini-board bt-${bth()} pt-${pth()}" style="--mc:${COLS}">${cells.join('')}</div>`;
 }
 function modeCard(to, icon, title, text, btn){
   return `<div class="card mode-card"><div class="mc-top"><span class="mc-ico">${icon}</span><div><h3>${title}</h3><p>${text}</p></div></div>
@@ -3061,7 +3082,7 @@ const nameOf = side => side === game.me ? (game.owner || me()).nick : oppName();
 
 function buildBoard(){
   setVariant(game.variant);
-  $('#frame').className = `board-frame bt-${db.settings.boardTheme} pt-${db.settings.pieceTheme}`;
+  $('#frame').className = `board-frame bt-${bth()} pt-${pth()}`;
   $('#annot').setAttribute('viewBox', `0 0 ${COLS*100} 800`);
   const sqBox = $('#squares'); sqBox.innerHTML = '';
   game.sqEls = [];
@@ -3102,13 +3123,17 @@ function takenDots(side){
   if(V.chess){
     const init = { 1:8, 2:2, 3:2, 4:2, 5:1 }, cnt = {}, G = side === 1 ? { 5:'♛', 4:'♜', 3:'♝', 2:'♞', 1:'♟' } : { 5:'♕', 4:'♖', 3:'♗', 2:'♘', 1:'♙' };
     for(let i = 0; i < 64; i++){ const v = game.board[i]; if(v * side < 0) cnt[Math.abs(v)] = (cnt[Math.abs(v)] || 0) + 1; }
-    let h = ''; for(const t of [5, 4, 3, 2, 1]) h += G[t].repeat(Math.max(0, init[t] - (cnt[t] || 0)));
-    return `<div class="taken chess-taken">${h}</div>`;
+    let h = '', mine = 0, theirs = 0; const VAL = { 1:1, 2:3, 3:3, 4:5, 5:9 }, own = {};
+    for(let i = 0; i < 64; i++){ const v = game.board[i]; if(v * side > 0) own[Math.abs(v)] = (own[Math.abs(v)] || 0) + 1; }
+    for(const t of [5, 4, 3, 2, 1]){ h += G[t].repeat(Math.max(0, init[t] - (cnt[t] || 0))); mine += Math.max(0, init[t] - (cnt[t] || 0)) * VAL[t]; theirs += Math.max(0, init[t] - (own[t] || 0)) * VAL[t]; }
+    const adv = mine - theirs;              // перевес по материалу: пешка 1, конь и слон 3, ладья 5, ферзь 9
+    return `<div class="taken chess-taken">${h}${adv > 0 ? `<em class="adv">+${adv}</em>` : ''}</div>`;
   }
   if(game.puzzle) return '<div class="taken"></div>';      // в задаче шашек изначально меньше — счёт не нужен
   const left = game.board.filter(v => v*side < 0).length;
   const col = side === 1 ? '#111' : '#eee';
-  return `<div class="taken">${`<i style="background:${col}"></i>`.repeat(Math.max(0, V.per - left))}</div>`;
+  const myLeft = game.board.filter(v => v*side > 0).length, adv = myLeft - left;     // на сколько шашек больше
+  return `<div class="taken">${`<i style="background:${col}"></i>`.repeat(Math.max(0, V.per - left))}${adv > 0 ? `<em class="adv">+${adv}</em>` : ''}</div>`;
 }
 function sideInfo(side){
   const colorName = side === 1 ? 'белые' : 'чёрные';
@@ -3387,12 +3412,12 @@ function animate(m, done){
   el.classList.remove('dragging'); el.classList.add('moving');
   let i = 0;
   (function step(){
-    if(i >= m.path.length){ setTimeout(done, 60); return; }
+    if(i >= m.path.length){ setTimeout(done, V.chess ? 15 : 40); return; }
     placeEl(el, m.path[i]);
     const capEl = m.caps[i] != null && $(`#pieces .piece[data-sq="${m.caps[i]}"]`);
     if(capEl) capEl.classList.add('captured');
     i++;
-    setTimeout(step, 170);
+    setTimeout(step, V.chess ? 125 : 150);
   })();
 }
 
@@ -3475,10 +3500,19 @@ function scheduleBot(){
   setTimeout(() => {
     if(!game || game.id !== gid || game.over || game.botToken !== token) return;
     const timeMs = game.tc.sec ? Math.min(game.bot.time, game.clocks[side]/20 + game.inc*500) : game.bot.time;
-    const m = chooseBotMove(game.board, side, game.bot, timeMs);
-    game.thinking = false;
-    if(game.over || game.id !== gid) return;
-    makeMove(m);
+    const finish = m => {
+      if(!game || game.id !== gid || game.over || game.botToken !== token || !m) return;
+      game.thinking = false;
+      makeMove(m);
+    };
+    const pr = ENGINE.ask({ variant: game.variant, board: game.board, side, bot: game.bot, time: timeMs });
+    if(pr) pr.then(n => {
+      if(!game || game.id !== gid || game.botToken !== token) return;
+      setVariant(game.variant);
+      const ms = genMoves(game.board, side);
+      finish(ms.find(x => notation(x) === n) || ms[0]);
+    });
+    else finish(chooseBotMove(game.board, side, game.bot, timeMs));
   }, delay);
 }
 
@@ -3725,7 +3759,7 @@ function setPanelMode(review){
   if(review) $('#undoRow').hidden = true;
   $('#reviewTop').hidden = !review;
   $('#evalBar').hidden = !review;
-  $('#btnExit').textContent = review ? '← К профилю' : '← Выйти из партии';
+  $('#btnExit').innerHTML = PIX('back') + '<span>' + (review ? 'К профилю' : 'Выйти из партии') + '</span>';
 }
 function openReview(i, ownerKey, recIn){
   const owner = ownerKey && ownerKey !== db.current ? db.accounts[ownerKey] : me();
@@ -4379,10 +4413,17 @@ function renderSettings(){
       <div class="chips" style="margin:0"><button class="chip ${LANG()==='ru'?'on':''}" data-lang="ru" translate="no">Русский</button><button class="chip ${LANG()==='en'?'on':''}" data-lang="en" translate="no">English</button></div></div>
     <div class="set"><div><b>Вид меню</b><p>Боковая панель — профиль и уведомления слева внизу. Верхняя панель — как было раньше.</p></div>
       <div class="chips" style="margin:0"><button class="chip ${!s.topbar?'on':''}" data-top="0">Боковая панель</button><button class="chip ${s.topbar?'on':''}" data-top="1">Верхняя панель</button></div></div>
-    <div class="set"><div><b>Доска</b><p>Цвет и текстура клеток.</p></div>
+    <div class="set set-head"><div><b class="set-ttl">${PIX('chkb')} Шашки</b></div></div>
+    <div class="set"><div><b>Доска для шашек</b><p>Цвет и текстура клеток.</p></div>
       <div class="theme-grid">${BOARD_THEMES.map(([id,l]) => `<button class="tcard ${s.boardTheme===id?'on':''}" data-bt="${id}">${themePreview(id, s.pieceTheme)}${l}</button>`).join('')}</div></div>
-    <div class="set"><div><b>Вид шашек</b><p>Внешний вид фигур.</p></div>
+    <div class="set"><div><b>Вид шашек</b><p>Внешний вид шашек.</p></div>
       <div class="theme-grid">${PIECE_THEMES.map(([id,l]) => `<button class="tcard ${s.pieceTheme===id?'on':''}" data-pt="${id}">${themePreview(s.boardTheme, id)}${l}</button>`).join('')}</div></div>
+    <div class="set set-head"><div><b class="set-ttl">${PIX('cwN')} Шахматы</b></div></div>
+    <div class="set"><div><b>Доска для шахмат</b><p>Цвет и текстура клеток.</p></div>
+      <div class="theme-grid">${BOARD_THEMES.map(([id,l]) => `<button class="tcard ${s.cBoardTheme===id?'on':''}" data-cbt="${id}">${themePreviewChess(id, s.cPieceTheme)}${l}</button>`).join('')}</div></div>
+    <div class="set"><div><b>Шахматные фигуры</b><p>Внешний вид фигур.</p></div>
+      <div class="theme-grid">${PIECE_THEMES.map(([id,l]) => `<button class="tcard ${s.cPieceTheme===id?'on':''}" data-cpt="${id}">${themePreviewChess(s.cBoardTheme, id)}${l}</button>`).join('')}</div></div>
+    <div class="set set-head"><div><b class="set-ttl">${PIX('settings')} Общее</b></div></div>
     <div class="set"><div><b>Премувы</b><p>Ходы заранее, пока думает бот. Можно несколько подряд.</p></div><button class="switch ${s.premove?'on':''}" data-k="premove"></button></div>
     <div class="set"><div><b>Подсказки ходов</b><p>Точки на клетках, куда можно пойти.</p></div><button class="switch ${s.hints?'on':''}" data-k="hints"></button></div>
     <div class="set"><div><b>Звуки шашек</b><p>«Под тему» — звук сам подбирается к теме шашек. Нажми на набор, чтобы послушать.</p></div>
@@ -4405,6 +4446,8 @@ function renderSettings(){
   $('#setList').querySelectorAll('[data-top]').forEach(b => b.onclick = () => setDraft('topbar', b.dataset.top === '1'));
   $('#setList').querySelectorAll('[data-bt]').forEach(b => b.onclick = () => setDraft('boardTheme', b.dataset.bt));
   $('#setList').querySelectorAll('[data-pt]').forEach(b => b.onclick = () => setDraft('pieceTheme', b.dataset.pt));
+  $('#setList').querySelectorAll('[data-cbt]').forEach(b => b.onclick = () => setDraft('cBoardTheme', b.dataset.cbt));
+  $('#setList').querySelectorAll('[data-cpt]').forEach(b => b.onclick = () => setDraft('cPieceTheme', b.dataset.cpt));
   $('#setList').querySelectorAll('[data-sp]').forEach(b => b.onclick = () => {
     setDraft('soundPack', b.dataset.sp);
     const p = SOUND_PACKS[packId()]; p.move(volMove()); setTimeout(() => p.capture(volMove()), 380);   // послушать
@@ -4430,6 +4473,8 @@ function renderSettings(){
 const LANG = () => db.settings.lang === 'en' ? 'en' : 'ru';
 const LOC = () => LANG() === 'en' ? 'en-GB' : 'ru-RU';        // формат дат
 const EN = {
+  'Доска для шашек':'Checkers board','Внешний вид шашек.':'How the checkers look.','Доска для шахмат':'Chess board','Шахматные фигуры':'Chess pieces','Общее':'General',
+  'К профилю':'To profile','Выйти из партии':'Leave the game',
   'Шахматы 960':'Chess960','случайная расстановка фигур':'random piece setup','Пиксели':'Pixel','Превращение':'Promotion','Во что превратить пешку?':'Promote the pawn to?',
   'Ферзь':'Queen','Ладья':'Rook','Слон':'Bishop','Конь':'Knight','Задачи':'Puzzles','Мат в 1 ход':'Mate in 1','Мат в 2 хода':'Mate in 2','Мат в 3 хода':'Mate in 3',
   'Вилка':'Fork','Связка':'Pin','Микс':'Mix','Поставь мат одним ходом.':'Checkmate in one move.','Белые ставят мат в 2 хода.':'White mates in 2.','Белые ставят мат в 3 хода.':'White mates in 3.',
@@ -5241,7 +5286,7 @@ function puzMini(p){
     cells.push(`<div class="sq ${isDark(r, c) ? 'dark' : 'light'}">${v ? pieceMini(v) : ''}</div>`);
   }
   setVariant(db.menu.variant);
-  return `<div class="mini-board puz-board bt-${db.settings.boardTheme} pt-${db.settings.pieceTheme}" style="--mc:${COLS}">${cells.join('')}</div>`;
+  return `<div class="mini-board puz-board bt-${bth()} pt-${pth()}" style="--mc:${COLS}">${cells.join('')}</div>`;
 }
 function renderPuzzleCard(){
   const box = $('#puzCard'); if(!box) return;
@@ -5542,7 +5587,7 @@ function pickPromo(ms, done){
   if(!(V.chess && ms.length > 1 && ms[0].promote)){ done(ms[0]); return; }
   const side = Math.sign(game.board[ms[0].from]);
   const root = modal(`<h2>${tr('Превращение')}</h2><p class="muted">${tr('Во что превратить пешку?')}</p>
-    <div class="promo bt-${db.settings.boardTheme} pt-${db.settings.pieceTheme}">${[5, 4, 3, 2].map(t =>
+    <div class="promo bt-${bth()} pt-${pth()}">${[5, 4, 3, 2].map(t =>
       `<button data-p="${t}" title="${tr({ 5:'Ферзь', 4:'Ладья', 3:'Слон', 2:'Конь' }[t])}">${pieceMini(t * side)}</button>`).join('')}</div>`,
     [{ label:'Отмена', onClick: () => { clearSel(); renderSquares(); renderPieces(); } }]);
   root.querySelectorAll('[data-p]').forEach(b => b.onclick = () => { closeModal(); done(ms.find(m => m.promote === +b.dataset.p) || ms[0]); });
@@ -5697,6 +5742,47 @@ function themedEnd(result, reason){
 $('#rvPgn').onclick = exportPGN;
 $('#rvPgnIn').onclick = importPGN;
 const resCup = (g, res, reason) => g.chess || V.chess ? (res === 'loss' && reason === 'mate' ? 'mate' : 'cup2') : 'trophy';
+
+
+/* =========================================================
+   13f. v13: бот считает в фоне, раздельные темы шашек и шахмат, аватарки ботов, перевес +N
+   ========================================================= */
+/* ---------- фоновый расчёт ходов бота (Web Worker) ----------
+   Раньше бот думал прямо на странице, и на это время всё замирало: часы, анимации, премувы.
+   Теперь движок копируется в отдельный «поток» и считает там, а страница остаётся живой. */
+const ENGINE = (() => {
+  let w = null, seq = 0; const wait = new Map();
+  try{
+    const src = [...document.scripts].find(x => !x.src && x.textContent.includes('4. ПРАВИЛА (движок)')).textContent;
+    const cut = (from, to) => { const a = src.indexOf(from), b = src.indexOf(to, a); if(a < 0 || b < 0) throw new Error('engine'); return src.slice(a, b); };
+    const code = "'use strict';\nconst document = { documentElement: { style: { setProperty(){} } } };\nconst db = { menu:{}, accounts:{}, settings:{} }; const me = () => null;\n"
+      + cut('const VARIANTS = {', '/* =========================================================\n   3. РИСУНКИ') + '\n'
+      + cut('const rowOf = s =>', '/* =========================================================\n   6. ЗВУКИ')
+      + "\nonmessage = e => { const d = e.data; setVariant(d.variant); const m = chooseBotMove(d.board, d.side, d.bot, d.time); postMessage({ id: d.id, n: m ? notation(m) : null }); };";
+    w = new Worker(URL.createObjectURL(new Blob([code], { type: 'text/javascript' })));
+    w.onmessage = e => { const f = wait.get(e.data.id); if(f){ wait.delete(e.data.id); f(e.data.n); } };
+    w.onerror = () => { w = null; wait.forEach(f => f(null)); wait.clear(); };
+  }catch(e){ w = null; }
+  return {
+    ask(d){ if(!w) return null; return new Promise(res => { const id = ++seq; wait.set(id, res); w.postMessage(Object.assign({ id }, d)); }); }
+  };
+})();
+
+/* ---------- темы: у шашек и шахмат свои ---------- */
+const bth = () => V.chess ? (db.settings.cBoardTheme || 'classic') : db.settings.boardTheme;
+const pth = () => V.chess ? (db.settings.cPieceTheme || 'pixel') : db.settings.pieceTheme;
+function themePreviewChess(bt, pt){
+  return `<div class="tprev bt-${bt} pt-${pt}">
+    <div class="sq light"><span class="pcw chess b"><span class="cp t2">${cpSVG(2)}</span></span></div><div class="sq dark"></div>
+    <div class="sq dark"></div><div class="sq light"><span class="pcw chess w"><span class="cp t6">${cpSVG(6)}</span></span></div></div>`;
+}
+
+/* ---------- аватарки ботов (картинки из набора) ---------- */
+['av1','av4','av5','av2','av3','av4','av5','av6'].forEach((a, i) => { if(BOTS[i]) BOTS[i].face.img = a; });
+CHESS_BOTS.forEach((b, i) => b.face.img = 'av' + (i + 1));
+
+/* ---------- стрелки на кнопках ---------- */
+$('#rvPrev').innerHTML = PIX('back'); $('#rvNext').innerHTML = PIX('fwd');
 
 /* =========================================================
    14. СТАРТ
