@@ -664,7 +664,9 @@ span.to-prof:hover{text-decoration:underline;text-underline-offset:3px}
   .game-wrap{grid-template-columns:1fr;justify-items:center}
   .side-col{width:min(100%,440px)}
   .moves{height:140px}
-  :root{--cell:clamp(28px,min(calc((100vh - 240px) / 8),calc((100vw - 90px) / var(--cols))),72px)}
+  /* телефон: доска + обе плашки игроков должны влезть в экран (dvh учитывает адресную строку браузера) */
+  :root{--cell:clamp(28px,min(calc((100vh - 350px) / 8),calc((100vw - 90px) / var(--cols))),72px)}
+  @supports (height:100dvh){ :root{--cell:clamp(28px,min(calc((100dvh - 350px) / 8),calc((100vw - 90px) / var(--cols))),72px)} }
 }
 @media (max-width:560px){
   .sidebar nav button span{display:none}
