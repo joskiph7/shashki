@@ -735,7 +735,7 @@ span.to-prof:hover{text-decoration:underline;text-underline-offset:3px}
 .nick-line .adm{width:30px;height:30px}
 
 /* пиксельные иконки */
-.pix{display:block;width:24px;height:24px;object-fit:contain;flex:none}
+.pix{display:block;object-fit:contain;flex:none}
 .mc-ico .pix{width:64px;height:64px}
 .btn .pix{width:20px;height:20px;margin:-2px 0}
 .qs-line .pix{width:24px;height:24px}
@@ -883,6 +883,68 @@ h2 .pix{width:26px;height:26px}
   .res-btns .btn{padding:11px}
   .modal.adm-m{padding:18px 14px}
 }
+
+/* =====================================================================
+   v10: золотые главные кнопки, плавные экраны, иконки, задача дня
+   ===================================================================== */
+:root{--gold:#d39b22;--gold-ink:#1d1405}
+:root[data-theme="dark"]{--gold:#e3b04b;--gold-ink:#171004}
+.btn.primary{background:var(--gold);border-color:var(--gold);color:var(--gold-ink)}
+.btn.primary:hover:not(:disabled){background:transparent;color:var(--gold);border-color:var(--gold)}
+.btn.primary .pix{filter:drop-shadow(0 1px 0 rgba(0,0,0,.25))}
+
+/* плавное появление экрана */
+.screen.scr-in{animation:scrIn .38s cubic-bezier(.2,.8,.2,1)}
+@keyframes scrIn{from{opacity:0;transform:translateY(12px)}}
+@media (prefers-reduced-motion:reduce){ .screen.scr-in,.modal.resm{animation:none} }
+
+/* размеры пиксельных иконок в разных местах */
+.pix{width:1.45em;height:1.45em}
+.btn .pix{width:20px;height:20px}
+.btn.sm .pix{width:17px;height:17px}
+.icon-btn .pix{width:22px;height:22px}
+.bell .pix{width:28px;height:28px}
+.side-row .bell .pix{width:26px;height:26px}
+.logout-btn .pix{width:24px;height:24px}
+.search-in .pix{width:24px;height:24px}
+.link .pix,.tag-fr .pix,.pop-kind .pix{width:16px;height:16px}
+.chat-head .pix{width:20px;height:20px}
+.ach-hex .pix{position:relative;width:32px;height:32px}
+.ach:not(.on) .ach-hex .pix{filter:grayscale(1);opacity:.6}
+.about-meta .pix,.sc-head .pix{width:22px;height:22px}
+.rr-head .pix{width:24px;height:24px}
+.qs-line .pix{width:26px;height:26px}
+.actions .btn span,.undo-row .btn span,.rv-tools .btn span{white-space:nowrap}
+
+/* рост рейтинга */
+.rp .rt-num{display:inline;font-size:15px;font-weight:800;color:var(--text);white-space:nowrap}
+.rp small{white-space:nowrap}
+.rp .rt-pop{font-size:13px;font-weight:900;padding:1px 7px;border-radius:7px;margin-left:4px;vertical-align:1px}
+.rp .rt-pop.up{background:rgba(62,138,87,.16)}
+.rp .rt-pop.down{background:rgba(192,72,47,.16)}
+.rt-pop{display:inline-block;animation:rtPop .7s cubic-bezier(.3,1.6,.5,1) .35s both}
+@keyframes rtPop{0%{transform:scale(0);opacity:0}100%{transform:scale(1);opacity:1}}
+.res-rt.up{text-shadow:0 0 12px rgba(62,138,87,.45)}
+
+/* задача дня */
+.puz-card{border-color:var(--gold)}
+.puz-no{font-family:var(--fd);color:var(--muted);font-size:15px}
+.puz-wrap{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center;margin-bottom:12px}
+.mini-board.puz-board{border-width:4px;width:auto}
+.mini-board.puz-board[style*="--mc:8"]{width:128px}
+.mini-board.puz-board[style*="--mc:4"]{width:72px}
+.puz-txt{margin:0 0 4px;font-weight:700;line-height:1.35}
+.puz-streak{margin:6px 0 0;font-weight:800;color:var(--gold)}
+.puz-streak.big{font-size:18px}
+.puz-panel{border:1px solid var(--gold);border-radius:12px;padding:12px;display:grid;gap:8px}
+.puz-panel b{display:flex;align-items:center;gap:8px;font-family:var(--fd);font-size:18px;font-weight:600;text-transform:uppercase}
+.puz-panel p{margin:0;color:var(--muted);font-size:14px}
+.puz-left{display:flex;align-items:center;gap:6px;font-weight:700;font-size:14px}
+.puz-left i{width:14px;height:14px;border-radius:50%;background:var(--gold)}
+.puz-left i.used{background:var(--line2)}
+.puz-left span{margin-left:6px}
+.big-ico .pix{width:64px;height:64px;margin:0 auto}
+.modal .res-cup{margin-top:0}
 </style>
 </head>
 <body>
@@ -945,6 +1007,7 @@ h2 .pix{width:26px;height:26px}
       <div class="side-col card">
         <div id="status" class="status"></div>
         <div id="offerBox"></div>
+        <div id="puzBox" hidden></div>
         <div id="reviewTop" hidden>
           <div class="eval-text" id="evalText"></div>
           <div class="move-note" id="moveNote"></div>
@@ -1744,7 +1807,7 @@ function renderMeMini(){
 function go(name, force){
   if(!me()){ showAuth(); return; }
   if(pending && name !== current){ askPending(() => go(name, force)); return; }
-  if(!force && game && !game.over && !game.review && current === 'game' && name !== 'game'){
+  if(!force && game && !game.over && !game.review && !game.puzzle && current === 'game' && name !== 'game'){
     modal(`<h2>Выйти из партии?</h2><p class="muted">Партия ещё идёт. Если выйдешь — это засчитается как поражение.</p>`, [
       { label:'Остаться' },
       { label:'Сдаться и выйти', cls:'danger', onClick: () => { resignOnline(); endGame('loss','resign', true); go(name, true); } }
@@ -1753,8 +1816,10 @@ function go(name, force){
   }
   if(name === 'profile' && !go.keepView) profView = null;      // «Профиль» в меню — всегда свой
   go.keepView = false;
+  const prevName = current;
   current = name;
   document.querySelectorAll('.screen').forEach(s => s.hidden = s.id !== 'scr-' + name);
+  if(prevName !== name) animScreen(name);
   const navOf = { game:'home', bots:'home', friend:'home', online:'home', player:'players' };
   const navName = name === 'profile' && profView ? 'players' : (navOf[name] || name);
   document.querySelectorAll('.sidebar nav button').forEach(b => b.classList.toggle('active', b.dataset.go === navName));
@@ -2026,6 +2091,7 @@ function renderHome(){
         </div>
       </div>
       <div class="home-side">
+        <div class="card side-card puz-card" id="puzCard"></div>
         <div class="card side-card" id="friendsCard"></div>
         <div class="card side-card" id="topCard"></div>
       </div>
@@ -2037,7 +2103,7 @@ function renderHome(){
   $('#qSearch').onclick = startSearch;
   $('#qBot').onclick = () => go('bots');
   if($('#qLastRv')) $('#qLastRv').onclick = () => openReview(0);
-  renderFriendsCard(); renderTopCard();
+  renderFriendsCard(); renderTopCard(); renderPuzzleCard();
 }
 function renderFriendsCard(){
   const box = $('#friendsCard'); if(!box) return;
@@ -2599,7 +2665,7 @@ function buildBoard(){
   $('#ranksL').innerHTML = rHTML; $('#ranksR').innerHTML = rHTML;
 }
 
-function renderAll(){ renderBars(); renderSquares(); renderPieces(); renderAnnot(); renderStatus(); renderMoves(); renderOffer(); renderChat(); if(game.review) renderReviewExtras(); }
+function renderAll(){ renderBars(); renderSquares(); renderPieces(); renderAnnot(); renderStatus(); renderMoves(); renderOffer(); renderChat(); renderPuzzle(); if(game.review) renderReviewExtras(); }
 
 function fmtClock(ms){
   if(!game.tc.sec) return '∞';
@@ -2618,6 +2684,7 @@ function renderClocks(){
   }
 }
 function takenDots(side){
+  if(game.puzzle) return '<div class="taken"></div>';      // в задаче шашек изначально меньше — счёт не нужен
   const left = game.board.filter(v => v*side < 0).length;
   const col = side === 1 ? '#111' : '#eee';
   return `<div class="taken">${`<i style="background:${col}"></i>`.repeat(Math.max(0, V.per - left))}</div>`;
@@ -2626,12 +2693,13 @@ function sideInfo(side){
   const colorName = side === 1 ? 'белые' : 'чёрные';
   if(side === game.me){
     const u = game.owner || me();
-    const rt = game.review ? (game.rec.friend ? '' : game.rec.rating + ' · ') : (game.friend ? '' : rating(game.variant, game.tc.id) + ' · ');
+    const rt = game.review ? (game.rec.friend ? '' : game.rec.rating + ' · ') : (game.friend || game.puzzle ? '' : rating(game.variant, game.tc.id) + ' · ');
     return { ava: avatarHTML(u.avatar), name: esc(u.nick), sub: rt + colorName };
   }
   if(game.friend) return { ava: FRIEND_SVG, name: esc(game.friendName), sub: colorName };
   if(game.online) return { ava: avatarHTML(game.online.avatar || { type:'preset', id:'cat' }), name: esc(game.online.nick),
     sub: (game.online.rating ? game.online.rating + ' · ' : '') + colorName + ' · онлайн' };
+  if(game.puzzle) return { ava: PIX('hint'), name: tr('Задача дня'), sub: tr(colorName) + (game.thinking ? ' · <span class="thinking">думает…</span>' : '') };
   return { ava: botFace(game.bot.face), name: game.bot.name, sub: `${game.bot.elo} Эло · ${colorName}` + (game.thinking ? ' · <span class="thinking">думает…</span>' : '') };
 }
 function renderBars(){
@@ -2930,8 +2998,9 @@ function makeMove(m){
       return;
     }
     if(countRep() >= 5){ endGame('draw', 'repetition'); return; }
+    if(game.puzzle && side === game.me && puzzleAfterMove()) return;
     if(game.friend && game.friendFlip){ game.flipped = game.turn === -1; buildBoard(); }
-    if(game.bot && side !== game.me) maybeBotOffersDraw();
+    if(game.bot && side !== game.me && !game.puzzle) maybeBotOffersDraw();
     // выбор шашки, начатый как премув, становится обычным выбором
     if(game.sel != null && !game.cands){
       const s = game.sel; clearSel();
@@ -3053,6 +3122,7 @@ const REASONS = {
 };
 function endGame(result, reason, silent){
   if(!game || game.over || game.review) return;
+  if(game.puzzle){ puzzleEnd(result, reason); return; }
   game.over = true; game.thinking = false; game.premoves = []; clearSel();
   const u = me(), key = rKey(game.variant, game.tc.id);
   const R = u.ratings[key] ?? 1000;
@@ -3204,6 +3274,7 @@ boardEl.addEventListener('pointerup', e => {
   }
 });
 $('#btnExit').onclick = () => {
+  if(game && game.puzzle){ go('home', true); return; }
   if(game && game.review){ profView = game.ownerKey || null; go.keepView = true; go('profile', true); return; }
   go(game && game.online && !game.over ? 'home' : (game && game.bot ? 'bots' : game && game.friend ? 'friend' : 'home'));
 };
@@ -3826,6 +3897,7 @@ function renderRules(){
     <li>Ход: кликни шашку, потом клетку, или перетащи шашку.</li>
     <li>Стрелки: зажми правую кнопку мыши на клетке и тяни. Правый клик по клетке — кружок. Левый клик — стереть.</li>
     <li>Премувы: пока думает бот, можно заранее задать несколько ходов подряд (красные, с номерами). Правый клик — отменить все; на телефоне — тап по пустой клетке или кнопка ✕ возле своих часов.</li>
+    <li>Задача дня: на главной каждый день новая позиция — белые начинают и выигрывают за 3 хода.</li>
     <li>Чат: в онлайн-партии можно писать сопернику. Кнопка 🔊 скрывает его сообщения.</li>
   </ul>`;
 }
@@ -3919,6 +3991,12 @@ function renderSettings(){
 const LANG = () => db.settings.lang === 'en' ? 'en' : 'ru';
 const LOC = () => LANG() === 'en' ? 'en-GB' : 'ru-RU';        // формат дат
 const EN = {
+  'Задача дня':'Daily puzzle','Белые начинают и выигрывают за 3 хода.':'White to move and win in 3 moves.','Решить':'Solve','Решено · ещё раз':'Solved · again',
+  'Серия':'Streak','день':'day','дня':'days','дней':'days','Осталось ходов':'Moves left','Подсказка':'Hint','Заново':'Restart','Задача решена!':'Puzzle solved!',
+  'Этот ход упускает победу.':'This move misses the win.','Ходы закончились, а соперник ещё может ходить.':'You are out of moves, and the opponent can still move.','Ты сдался.':'You resigned.',
+  'С подсказкой — завтра попробуй без неё.':'With a hint — try without it tomorrow.','Отличный расчёт!':'Great calculation!','Новая задача — завтра.':'A new puzzle tomorrow.',
+  'На главную':'Home','Показать решение':'Show solution','Попробовать ещё':'Try again','Отсюда уже не выиграть — начни заново':'You can’t win from here — restart',
+  'Вернуть ход':'Take back','Лучший ход':'Best move',
   '8 ботов от 100 до 2000 Эло. Тренируйся и расти.':'8 bots from 100 to 2000 Elo. Train and grow.','Выбрать бота':'Choose a bot','Одно устройство — ходите по очереди.':'One device — take turns.',
   'Позови друга по сети или найди соперника.':'Invite a friend online or find an opponent.','Играть онлайн':'Play online','Статистика':'Stats','Вид шашек':'Pieces',
   'Пока пусто. Нажми на карандаш и напиши пару слов о себе.':'Empty for now. Press the pencil and write a few words about yourself.','Открыть разбор партии':'Open game review',
@@ -4164,6 +4242,7 @@ function rulesEN(){
     <li>Move: click a piece, then a square, or drag the piece.</li>
     <li>Arrows: hold the right mouse button on a square and drag. Right-click a square — a circle. Left-click — erase.</li>
     <li>Premoves: while the bot thinks, you can queue several moves in advance (red, numbered). Right-click cancels them all; on a phone — tap an empty square or the ✕ button next to your clock.</li>
+    <li>Daily puzzle: a new position on the home page every day — White to move and win in 3 moves.</li>
     <li>Chat: in online games you can write to your opponent. The 🔊 button hides their messages.</li>
   </ul>`;
 }
@@ -4352,7 +4431,7 @@ function showResult(o){
   const score = { win:'1 – 0', loss:'0 – 1', draw:'½ – ½' }[res];
   const myRt = g.friend ? `<small>${tr(g.me === 1 ? 'белые' : 'чёрные')}</small>` : g.undo
     ? `<small>${tr('Без рейтинга (был возврат ходов)')}</small>`
-    : `<small>${tr('Рейтинг')}: ${o.newR} <span class="delta res-rt ${o.delta >= 0 ? 'up' : 'down'}">${o.delta >= 0 ? '+' : ''}${o.delta}</span></small>`;
+    : `<small>${tr('Рейтинг')}: <b class="rt-num" data-from="${o.newR - o.delta}" data-to="${o.newR}">${o.newR - o.delta}</b> <span class="delta res-rt rt-pop ${o.delta >= 0 ? 'up' : 'down'}">${o.delta >= 0 ? '+' : ''}${o.delta}</span></small>`;
   const opRt = g.friend ? `<small>${tr(g.me === 1 ? 'чёрные' : 'белые')}</small>` : g.online ? `<small>${tr('Рейтинг')}: ${g.online.rating || 1000}</small>` : `<small>${tr('Рейтинг')}: ${g.bot.elo}</small>`;
   const title = g.friend && res !== 'draw' ? tr('Победа!') : tr({ win:'Победа!', loss:'Поражение', draw:'Ничья' }[res]);
   const canNext = !g.friend;
@@ -4378,6 +4457,7 @@ function showResult(o){
     </div>
   </div></div>`;
   const body = $('#rrBody');
+  animRating(root);
   const close = () => { root.innerHTML = ''; };
   function drawReport(k, n){
     if(!document.body.contains(body)) return;
@@ -4557,6 +4637,219 @@ function openAdminUser(k){
       async () => reopen(await admUpdate(k, { is_admin: !a.isAdmin }, a.isAdmin ? 'Забрал права администратора' : 'Выдал права администратора')))
   };
   root.querySelectorAll('[data-a]').forEach(b => b.onclick = () => { const f = acts[b.dataset.a]; if(f) f(); });
+}
+
+
+/* =========================================================
+   13c. v10: ВСЕ ИКОНКИ, ПИКСЕЛЬНЫЕ АВАТАРКИ, ЗАДАЧА ДНЯ
+   ========================================================= */
+/* ---------- пиксельные иконки везде ---------- */
+Object.assign(ICON, {
+  play: PIX('play'), search: PIX('search'), shuffle: PIX('dice'), chart: PIX('chart'), check: PIX('check'), pad: PIX('pad'),
+  cal: PIX('cal'), addUser: PIX('adduser'), swords: PIX('swords'), medal: PIX('medal'), star: PIX('star'), lock: PIX('lock'),
+  logout: PIX('door'), bell: PIX('bell'), gear: PIX('settings')
+});
+[['home','play'], ['rules','rules'], ['settings','settings'], ['admin','admin']].forEach(([g, n]) => { const sv = document.querySelector(`.sidebar nav [data-go="${g}"] svg`); if(sv) sv.outerHTML = PIX(n); });
+(() => {
+  const sw = (sel, html) => { const el = $(sel); if(el) el.innerHTML = html; };
+  const lo = $('#logoutSide svg'); if(lo) lo.outerHTML = PIX('door');
+  const bl = $('#bellBtn svg'); if(bl) bl.outerHTML = PIX('bell');
+  sw('#btnDraw', `${PIX('draw')}<span>Ничья</span>`);
+  sw('#btnResign', `${PIX('flag')}<span>Сдаться</span>`);
+  sw('#btnUndo', `${PIX('undo')}<span>Вернуть ход</span>`);
+  sw('#rvHint', `${PIX('hint')}<span>Лучший ход</span>`);
+  const ch = $('.chat-head b'); if(ch) ch.insertAdjacentHTML('beforebegin', PIX('chat'));
+})();
+
+/* ---------- пиксельные аватарки (рисуются кодом по клеткам 16×16) ---------- */
+function pixAvatar(o){
+  const G = Array.from({ length: 16 }, () => Array(16).fill(null));
+  const set = (x, y, c) => { if(x >= 0 && x < 16 && y >= 0 && y < 16) G[y][x] = c; };
+  const rect = (x0, y0, x1, y1, c) => { for(let y = y0; y <= y1; y++) for(let x = x0; x <= x1; x++) set(x, y, c); };
+  const sh = (hex, k) => { const n = parseInt(hex.slice(1), 16); const f = v => Math.max(0, Math.min(255, Math.round(v * k))); return '#' + [n >> 16, (n >> 8) & 255, n & 255].map(v => f(v).toString(16).padStart(2, '0')).join(''); };
+  if(o.hood) rect(3, 2, 12, 12, sh(o.shirt, .8));                       // капюшон за головой
+  if(o.hair && o.style === 'long'){ rect(3, 3, 12, 12, o.hair); }
+  // тело и шея
+  rect(4, 12, 11, 12, o.shirt); rect(3, 13, 12, 13, o.shirt); rect(2, 14, 13, 15, o.shirt);
+  rect(2, 15, 13, 15, sh(o.shirt, .85));
+  rect(7, 11, 8, 11, sh(o.skin, .85));
+  // голова
+  rect(4, 3, 11, 10, o.skin); set(4, 3, null); set(11, 3, null); set(4, 10, null); set(11, 10, null);
+  if(o.hair && o.style === 'long'){ set(4, 3, o.hair); set(11, 3, o.hair); set(4, 10, o.hair); set(11, 10, o.hair); }
+  set(3, 7, o.skin); set(12, 7, o.skin); set(3, 8, sh(o.skin, .9)); set(12, 8, sh(o.skin, .9));
+  rect(5, 10, 10, 10, sh(o.skin, .88));
+  // глаза, рот, румянец
+  const eye = o.eye || '#1b1b1b';
+  rect(6, 7, 6, 8, eye); rect(9, 7, 9, 8, eye);
+  if(o.smile) { set(7, 9, '#9b4636'); set(8, 9, '#9b4636'); }
+  if(o.blush) { set(5, 9, '#f08a8a'); set(10, 9, '#f08a8a'); }
+  // волосы
+  const H = o.hair;
+  if(H && o.style !== 'none'){
+    rect(4, 2, 11, 4, H); rect(5, 1, 10, 1, H); set(4, 5, H); set(11, 5, H);
+    if(o.style === 'spiky'){ set(4, 1, H); set(6, 0, H); set(9, 0, H); set(11, 1, H); rect(5, 5, 6, 5, H); }
+    if(o.style === 'side'){ rect(4, 5, 7, 5, H); set(4, 6, H); }
+    if(o.style === 'bun'){ rect(6, 0, 9, 0, H); rect(7, -1, 8, 0, H); }
+    if(o.style === 'curly'){ set(3, 3, H); set(12, 3, H); set(3, 5, H); set(12, 5, H); set(5, 0, H); set(8, 0, H); set(10, 0, H); }
+    if(o.style === 'long'){ rect(3, 4, 4, 12, H); rect(11, 4, 12, 12, H); rect(4, 5, 5, 5, H); rect(10, 5, 11, 5, H); }
+  }
+  if(o.cap){ rect(4, 1, 11, 4, o.cap); rect(5, 0, 10, 0, o.cap); rect(3, 5, 12, 5, sh(o.cap, .7)); set(7, 2, '#ffffff'); set(8, 2, '#ffffff'); }
+  if(o.crown){ rect(4, 1, 11, 2, '#f4c430'); set(4, 0, '#f4c430'); set(7, 0, '#f4c430'); set(8, 0, '#f4c430'); set(11, 0, '#f4c430'); set(7, 1, '#e23b3b'); set(8, 1, '#e23b3b'); }
+  if(o.mask){ rect(4, 2, 11, 6, o.mask); rect(4, 9, 11, 10, o.mask); rect(3, 6, 3, 9, o.mask); rect(12, 6, 12, 9, o.mask); rect(12, 4, 14, 4, o.mask); set(14, 5, o.mask); }
+  if(o.shades){ rect(5, 7, 7, 8, '#121212'); rect(8, 7, 10, 8, '#121212'); set(5, 7, '#4a4a4a'); set(8, 7, '#4a4a4a'); set(4, 7, '#121212'); set(11, 7, '#121212'); }
+  if(o.phones){ rect(3, 1, 12, 1, o.phones); set(3, 2, o.phones); set(12, 2, o.phones); rect(2, 6, 3, 9, o.phones); rect(12, 6, 13, 9, o.phones); }
+  if(o.antenna){ set(7, 0, o.antenna); set(7, 1, '#555'); set(7, 2, '#555'); set(8, 0, o.antenna); }
+  if(o.strings){ rect(6, 13, 6, 14, '#ffffff'); rect(9, 13, 9, 14, '#ffffff'); }
+  // контур: пустые клетки рядом с рисунком
+  const OUT = '#1a1410', out = [];
+  for(let y = 0; y < 16; y++) for(let x = 0; x < 16; x++) if(!G[y][x] && [[1,0],[-1,0],[0,1],[0,-1]].some(([dx, dy]) => G[y+dy] && G[y+dy][x+dx] && G[y+dy][x+dx] !== OUT)) out.push([x, y]);
+  out.forEach(([x, y]) => G[y][x] = OUT);
+  let r = '';
+  for(let y = 0; y < 16; y++){ let x = 0; while(x < 16){ const c = G[y][x]; let e = x; while(e + 1 < 16 && G[y][e+1] === c) e++; if(c) r += `<rect x="${x}" y="${y}" width="${e - x + 1}" height="1" fill="${c}"/>`; x = e + 1; } }
+  return `<svg viewBox="0 0 16 16" shape-rendering="crispEdges" xmlns="http://www.w3.org/2000/svg"><rect width="16" height="16" fill="${o.bg}"/>${r}</svg>`;
+}
+const PIX_AVATARS = {
+  cat:     { bg:'#bfe3ff', skin:'#f6c8a0', hair:'#7a4a24', style:'short', shirt:'#2f6fe0', strings:1 },
+  dog:     { bg:'#ffd3e3', skin:'#f6cfb0', hair:'#6b3a1f', style:'long', shirt:'#e8559a', blush:1, smile:1 },
+  panda:   { bg:'#c9f0c4', skin:'#eeb996', hair:'#222222', style:'spiky', shirt:'#2e9e4f', phones:'#e23b3b' },
+  fox:     { bg:'#ffe79a', skin:'#f3c7a5', hair:'#3b2a1d', style:'short', shirt:'#f07a24', cap:'#d1462f', smile:1 },
+  frog:    { bg:'#d7d7e0', skin:'#e7b08a', style:'none', shirt:'#2b2b33', mask:'#24242c', eye:'#ffffff' },
+  penguin: { bg:'#e3d6ff', skin:'#f4cdb0', hair:'#f1c84b', style:'bun', shirt:'#7a52c7', blush:1 },
+  cool:    { bg:'#ffc9a3', skin:'#c98b62', hair:'#f2f2f2', style:'spiky', shirt:'#1d1d1d', shades:1, strings:1 },
+  alien:   { bg:'#1f2a5c', skin:'#7bd96a', style:'none', shirt:'#9aa3ad', antenna:'#7bd96a', eye:'#0b0b0b' },
+  king:    { bg:'#fff1c9', skin:'#f0c4a4', hair:'#5b3a22', style:'short', shirt:'#c0392b', crown:1, smile:1 },
+  hood:    { bg:'#b5e6e0', skin:'#8d5a3b', hair:'#1f1a17', style:'short', shirt:'#3a3f8f', hood:1, strings:1 },
+  ginger:  { bg:'#ffe0d6', skin:'#f8d5bd', hair:'#d9622b', style:'curly', shirt:'#2aa198', blush:1, smile:1 },
+  robot:   { bg:'#cfe8ff', skin:'#c9d1d9', style:'none', shirt:'#4a76b8', antenna:'#3fd0ff', eye:'#1aa3ff' }
+};
+for(const k of Object.keys(PRESETS)) delete PRESETS[k];
+for(const [k, o] of Object.entries(PIX_AVATARS)) PRESETS[k] = pixAvatar(o);
+
+/* ---------- плавный переход между экранами ---------- */
+function animScreen(name){
+  const el = document.getElementById('scr-' + name); if(!el) return;
+  el.classList.remove('scr-in'); void el.offsetWidth; el.classList.add('scr-in');
+}
+
+/* ---------- рост рейтинга в окне победы ---------- */
+function animRating(root){
+  const el = root.querySelector('.rt-num'); if(!el) return;
+  const from = +el.dataset.from, to = +el.dataset.to, t0 = performance.now(), dur = 1100;
+  if(from === to) return;
+  setTimeout(function step(){
+    const k = Math.min(1, (performance.now() - t0 - 450) / dur);
+    if(k > 0) el.textContent = Math.round(from + (to - from) * (1 - Math.pow(1 - k, 3)));
+    if(k < 1 && document.body.contains(el)) setTimeout(step, 30);
+  }, 30);
+}
+
+/* ---------- задача дня: «белые начинают и выигрывают за 3 хода» ----------
+   120 позиций заранее найдены программой (у каждой ровно одно правильное начало), каждый день — следующая. */
+const PUZZLES = ["64:............w..........b.........w.w...b...............w........:e7-d8","32:...b.....w.........bw...........:a3-b4","64:.....b....W......w...w.............b...w....................w...:e1-d2","32:.b.........w.......w.......b..w.:d4-c5","64:.......b..................................b............W..w.....:h2-e5","32:.W.b.....W..........b....w......:b2-c3","32:....b.w....b........W.w.........:c7-d8","64:..........w.w..........b...............wb........w..............:b2-c3","32:....b.........w..w.b..........w.:b4-a5","64:.....b.b...........w.w..w............b.W.........b.....w........:d6-e7","32:...........b..w..w.b.....w......:c5-b6","64:.....b....b.w......................w.w........w...............w.:f4-e5","64:..........w........................w.b..b.w.....................:c7-b8","32:....W......ww....b....b.........:a7-c5","32:....b.......b.w..........w......:b2-c3","32:...b...............b.....w.W....:d2-a5","32:...b..w....b.......W............:c7-b8","64:...................b....b........w..........w......w....w.......:d2-c3","32:.B....w.....b.W..........w......:b2-a3","32:....b......b.....w.w............:d4-c5","64:.......bb............w.w....w....................W...w..........:b2-d4","64:.......b......b...........w...w........W........................:g5-h6","32:....b.......b.w..w....w.........:c3-d4","64:.......b...........w...w......w........b.............w......w...:g5-f6","64:.b.W....w...w........w........................b....W............:d2-e3","32:....b......ww.......b....w......:b2-c3","32:......w.............w.b..b....w.:a3-b4","64:.......b.............b.w...........w........W...........w.....w.:d4-e5","32:....b......w.......bw.W.........:d6-c7","32:....w.w..W..b.b....b............:c7-b8","32:...B..w.....W......b..w.........:c3-b4","64:..........b.................w.W...............b...............w.:g5-d8","32:...W........b......bW.........w.:c1-b2","64:............w...........b..........b.............w......w...w...:b2-c3","32:.b..b.......w.w..w..............:a5-b6","64:..........w......w......b...............b.....w..B..........w...:c7-b8","32:....W......b.....w....w....b....:b4-a5","64:..........B...w......w..w.b..........w......w...................:g7-h8","64:............w......b.w....w............w..W.b...................:c3-a5","64:........w.................W...b........................b..w.w...:c5-g1","32:...........bw.b.....w.......W...:a1-d4","32:.b..b....w.......w..............:b4-c5","64:.....b........................w....w...b.............w.w..w.....:g5-f6","32:....b......B..w..........w..w...:b2-a3","32:...........wb.w.....b.W.........:c5-b6","32:...b.....w.w........b....w......:b2-c3","32:...b.....w..........b......w....:d2-c3","32:...bw......w........b.......w...:d6-c7","32:....w.b..........w.bb.........w.:a7-b8","64:..........................w......b...W.wb..............w....w...:f4-b8","32:.b..w.......b.w.......W.........:c5-d6","32:...b........w.......b.........w.:a5-b6","64:..........w........w.............w.b.b.w..................w.....:c7-b8","64:............................b...........b..........w......w.....:d2-e3","64:..............b...........W.w...........b..............W......w.:c5-b4","64:........................b..........w......b......w......w...w...:d4-c5","64:...B....................W.....w.............b..........w....w...:h2-g3","32:....w.b..........w.........b..w.:b4-a5","32:...bb....w.wW...................:b6-c7","32:....w.........b..........w.b..W.:a7-b8","64:............b...........b...w.................W.................:g3-e1","64:...................................w...b..b......W.....w........:b2-a1","64:.W.....b..w.................b.b..w......b.....b...............w.:b8-a7","32:.........w.Bw.W.....b....b......:b6-a7","64:..............w....w......w..........b..b...............w.....w.:g1-f2","64:...W........w........b..w.....b...........w.............w.......:c3-d4","64:..........w............b...........b.............w...w.w........:c7-d8","32:....b............w.b.......ww...:b4-a5","32:.b....b....w........W...........:a3-c5","32:...bw....w.b........w...........:a3-b4","32:.W.bb.......w.......w...........:b8-c7","64:.......bw.................w...b..b......W..............w........:a7-b8","32:....w......bb....w............w.:c1-d2","32:...Wb......b........w......b..w.:a3-b4","32:...........b.....w.wb...........:d4-c5","32:.........b.......w.......W.b....:b2-c1","32:...........wb.......b.W....w....:c3-b4","32:...b.....w.........b........w...:a1-b2","32:....b......b.....w.w.......w....:d4-c5","64:........w.....b........b......w...............w..w.....w........:g3-f4","32:...b..w............b.......ww...:c7-b8","64:.....b........................w...........b............w..w.....:g5-f6","64:...b....w.....w.............w.............b............w..w.....:e5-d6","32:....b....w..w......bW.b.........:a3-d6","64:............w.w..w.....W..................b...b...............w.:g7-h8","64:........................b.....w........bw...W...............w...:e3-d4","32:...b.......b..w..w............w.:c5-b6","32:...b.......ww.......b....w......:b2-c3","32:....b..............wb.W....w....:d4-c5","64:.......b...........w.w..b..........................w........w...:d2-c3","32:...b........w......wb.......w...:a5-b6","32:.b....w.............w......b..w.:c7-d8","64:..........................................b.w........w.b......w.:e3-d4","32:....b.......w.b....bw......w....:a5-b6","32:...bb......W.......w.......w....:d4-c5","32:...b.....W..........b.........w.:b6-a5","32:.b..b.w.....w.w.................:c7-d8","64:.....b...........W.w........w..........b.............w..w.......:e5-f6","64:.....b......w....w.....bw.....w.........................w.......:b6-a7","32:...b.......ww....W.........b....:b4-c3","32:...bw.......b.W.................:a7-b8","64:........w.................w......b.W...bw.......................:a7-b8","32:.b....w..w..b......w............:c7-d8","64:........................b..........w.b....w.................w.w.:g1-h2","32:...........b.....w.bw....w......:b2-c3","64:........b.....w...............W........b.........w..............:g7-h8","32:.b....w..w............b.......W.:c1-d2","32:...B.....W.......w.b............:b6-a5","64:..............w....b.w.W......................b..w..............:h6-f4","64:.b........w............b...........w...ww.......................:d4-c5","64:............w....w......b............b.w........................:e7-d8","32:.........w.b........w.b.......w.:c1-d2","64:........w...b..........b....w.w....................w..........w.:a7-b8","32:...........b..b.....w.w.......W.:c1-b2","32:......b.......w..B..w.......w...:c5-b6","32:...bw.w....W..........b.........:d6-a3","32:...b..w..........w..b.w.........:b4-a5","64:.b......................W..........w........b....w...W..w.......:f2-g1","32:....b....W.b................W...:a1-d4","64:.B...................b..w............w.................w........:a5-b6"];
+const PUZ_MAP = { '.':0, 'w':1, 'W':2, 'b':-1, 'B':-2 };
+function dayNum(){ const d = new Date(); return Math.floor(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) / 864e5); }
+function todayPuzzle(){
+  const day = dayNum(), [v, b, s] = PUZZLES[day % PUZZLES.length].split(':');
+  return { day, v, board: [...b].map(c => PUZ_MAP[c]), sol: s, no: day % PUZZLES.length + 1 };
+}
+const puzKey = () => 'shashki_puz_' + (db.current || 'guest');
+function puzStore(){ try{ return JSON.parse(localStorage.getItem(puzKey())) || { done:{}, streak:0, last:0 }; }catch(e){ return { done:{}, streak:0, last:0 }; } }
+function puzSave(st){ try{ localStorage.setItem(puzKey(), JSON.stringify(st)); }catch(e){} }
+const puzStreak = st => (st.last >= dayNum() - 1 ? st.streak : 0);
+// решатель: ход, который выигрывает не больше чем за n своих ходов (или null)
+function puzWinMove(b, side, n){
+  for(const m of genMoves(b, side)){
+    const b2 = applyMove(b, m), rs = genMoves(b2, -side);
+    if(!rs.length) return m;
+    if(n > 1 && rs.every(r => puzWinMove(applyMove(b2, r), side, n - 1))) return m;
+  }
+  return null;
+}
+function puzMini(p){
+  setVariant(p.v);
+  const cells = [];
+  for(let r = 0; r < ROWS; r++) for(let c = 0; c < COLS; c++){
+    const v = p.board[idx(r, c)];
+    cells.push(`<div class="sq ${isDark(r, c) ? 'dark' : 'light'}">${v ? `<span class="pcw ${v > 0 ? 'w' : 'b'}${Math.abs(v) === 2 ? ' k' : ''}"><span class="disc">${Math.abs(v) === 2 ? CROWN : ''}</span></span>` : ''}</div>`);
+  }
+  setVariant(db.menu.variant);
+  return `<div class="mini-board puz-board bt-${db.settings.boardTheme} pt-${db.settings.pieceTheme}" style="--mc:${COLS}">${cells.join('')}</div>`;
+}
+function renderPuzzleCard(){
+  const box = $('#puzCard'); if(!box) return;
+  const p = todayPuzzle(), st = puzStore(), done = !!st.done[p.day], streak = puzStreak(st);
+  box.innerHTML = `<div class="sc-head"><h2>${PIX('hint')} Задача дня</h2><span class="puz-no">№ ${p.no}</span></div>
+    <div class="puz-wrap">${puzMini(p)}<div>
+      <p class="puz-txt">Белые начинают и выигрывают за 3 хода.</p>
+      <p class="muted small">${p.v === '64' ? VAR_NAMES['64'] : VAR_NAMES['32']}</p>
+      ${streak ? `<p class="puz-streak">🔥 ${tr('Серия')}: ${streak} ${tr(streak === 1 ? 'день' : streak < 5 ? 'дня' : 'дней')}</p>` : ''}
+    </div></div>
+    <button class="btn ${done ? '' : 'primary'} wide" id="puzGo">${done ? `${ICON.check} Решено · ещё раз` : `${ICON.play} Решить`}</button>`;
+  $('#puzGo').onclick = startPuzzle;
+}
+const PUZ_BOT = { elo: 0, name:'Задача дня', about:'', depth: 12, random: 0, noise: 0, time: 700,
+  face:{ bg:'#fff1c9', skin:'#f0c4a4', hair:'#cfcfcf', style:'side', shirt:'#5a2a2a', glasses:'round', beard:'#e2e2e2' } };
+function startPuzzle(){
+  if(liveOnline()){ toast('Сначала закончи онлайн-партию'); go('game'); return; }
+  const p = todayPuzzle();
+  launchGame({ variant: p.v, tc: '0', inc: 0, color: 'white', friend: false, bot: PUZ_BOT, undo: false });
+  game.board = p.board.slice();
+  game.reps = new Map(); countRep();
+  game.puzzle = { p, left: 3 };
+  $('#playActions').hidden = true;
+  renderAll();
+}
+function renderPuzzle(){
+  const box = $('#puzBox'); if(!box) return;
+  box.hidden = !(game && game.puzzle);
+  if(box.hidden) return;
+  const z = game.puzzle;
+  box.innerHTML = `<div class="puz-panel"><b>${PIX('hint')} ${tr('Задача дня')} № ${z.p.no}</b>
+      <p>${tr('Белые начинают и выигрывают за 3 хода.')}</p>
+      <div class="puz-left">${[0, 1, 2].map(i => `<i class="${i < 3 - z.left ? 'used' : ''}"></i>`).join('')}<span>${tr('Осталось ходов')}: ${z.left}</span></div>
+      <div class="actions"><button class="btn" id="puzHint">${PIX('hint')} ${tr('Подсказка')}</button><button class="btn" id="puzAgain">${PIX('undo')} ${tr('Заново')}</button></div></div>`;
+  $('#puzHint').onclick = () => {
+    if(!game || game.over || game.turn !== game.me){ toast('Подожди, пока закончится ход'); return; }
+    const m = puzWinMove(game.board, game.me, game.puzzle.left);
+    if(!m){ toast('Отсюда уже не выиграть — начни заново'); return; }
+    game.hint = m; game.puzzle.hinted = true; renderAnnot();
+  };
+  $('#puzAgain').onclick = startPuzzle;
+}
+// после своего хода: проверяем, что выигрыш ещё возможен
+function puzzleAfterMove(){
+  const z = game.puzzle;
+  z.left--;
+  const replies = genMoves(game.board, -game.me);
+  const ok = z.left > 0 && replies.every(r => puzWinMove(applyMove(game.board, r), game.me, z.left));
+  if(ok){ renderPuzzle(); return false; }
+  renderAll();
+  setTimeout(() => puzzleEnd('loss', z.left > 0 ? 'wrong' : 'moves'), 350);
+  return true;
+}
+function puzzleEnd(result, reason){
+  if(!game || !game.puzzle || game.over) return;
+  game.over = true; game.thinking = false; game.premoves = []; clearSel();
+  const z = game.puzzle, st = puzStore();
+  if(result === 'win'){
+    const first = !st.done[z.p.day];
+    st.done[z.p.day] = 1;
+    if(first){ st.streak = st.last === z.p.day - 1 ? st.streak + 1 : (st.last === z.p.day ? st.streak : 1); st.last = z.p.day; }
+    puzSave(st);
+  }
+  game.resultText = result === 'win' ? tr('Задача решена!') : tr('Не получилось');
+  renderAll();
+  SND[result === 'win' ? 'win' : 'loss']();
+  const streak = puzStreak(puzStore());
+  const why = { wrong: 'Этот ход упускает победу.', moves: 'Ходы закончились, а соперник ещё может ходить.', resign: 'Ты сдался.' }[reason] || '';
+  modal(result === 'win'
+    ? `<div class="res-cup" style="margin:0 0 6px">${LAUREL('l')}<img class="cup" src="icons/trophy.png" alt="">${LAUREL('r')}</div><h2>Задача решена!</h2>
+       <p class="muted">${z.hinted ? 'С подсказкой — завтра попробуй без неё.' : 'Отличный расчёт!'}</p>${streak ? `<p class="puz-streak big">🔥 ${tr('Серия')}: ${streak} ${tr(streak === 1 ? 'день' : streak < 5 ? 'дня' : 'дней')}</p>` : ''}<p class="muted small">Новая задача — завтра.</p>`
+    : `<div class="big-ico">${PIX('hint')}</div><h2>Не получилось</h2><p class="muted">${why}</p>`,
+    result === 'win'
+      ? [{ label:'Посмотреть доску' }, { label:'На главную', cls:'primary', onClick: () => go('home', true) }]
+      : [{ label:'Посмотреть доску' }, { label:'Показать решение', onClick: () => { startPuzzle(); game.hint = puzWinMove(game.board, 1, 3); game.puzzle.hinted = true; renderAnnot(); } },
+         { label:'Попробовать ещё', cls:'primary', onClick: startPuzzle }]);
 }
 
 /* =========================================================
