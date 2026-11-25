@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Шашки</title>
+<link rel="icon" type="image/png" href="icons/sA_wN.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Oswald:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -21,7 +22,7 @@
   --fd:'BuyanLocal','Buyan','Oswald','Arial Narrow',sans-serif;
   --fb:'Manrope',system-ui,-apple-system,"Segoe UI",sans-serif;
   --fr:22px;--cols:4;
-  --cell:clamp(30px,min(calc((100vh - 290px) / 8),calc((100vw - 680px) / var(--cols))),72px);
+  --cell:clamp(30px,min(calc((100vh - 235px) / 8),calc((100vw - 640px) / var(--cols))),96px);
 }
 :root[data-theme="dark"]{
   --bg:#0c0c0b;--panel:#121211;--panel2:#1b1a18;--text:#ece6da;--muted:#8f897e;--line:#2b2a27;--line2:#55524c;
@@ -1063,6 +1064,38 @@ h2 .pix{width:26px;height:26px}
 #btnExit .pix,.rv-nav .pix{width:22px;height:22px}
 .rv-nav .btn{display:flex;align-items:center;justify-content:center}
 .bot .ava img,.pbar .ava img,.rp .ava img{object-position:center top}
+
+/* =====================================================================
+   v15: перетаскивание без задержки, новые фигуры
+   ===================================================================== */
+.piece.dragging,.piece.chess.dragging{transition:none !important}
+.layout-side .topbar + main,.app main{max-width:1400px}
+.pt-cartoon .cp svg,.pt-contour .cp svg{display:none}
+.pt-cartoon .cp,.pt-contour .cp{background:center bottom/contain no-repeat}
+.pt-cartoon .w .cp.t4{background-image:url(icons/sA_wR.png)}
+.pt-contour .w .cp.t4{background-image:url(icons/sB_wR.png)}
+.pt-cartoon .b .cp.t4{background-image:url(icons/sA_bR.png)}
+.pt-contour .b .cp.t4{background-image:url(icons/sB_bR.png)}
+.pt-cartoon .w .cp.t2{background-image:url(icons/sA_wN.png)}
+.pt-contour .w .cp.t2{background-image:url(icons/sB_wN.png)}
+.pt-cartoon .b .cp.t2{background-image:url(icons/sA_bN.png)}
+.pt-contour .b .cp.t2{background-image:url(icons/sB_bN.png)}
+.pt-cartoon .w .cp.t3{background-image:url(icons/sA_wB.png)}
+.pt-contour .w .cp.t3{background-image:url(icons/sB_wB.png)}
+.pt-cartoon .b .cp.t3{background-image:url(icons/sA_bB.png)}
+.pt-contour .b .cp.t3{background-image:url(icons/sB_bB.png)}
+.pt-cartoon .w .cp.t5{background-image:url(icons/sA_wQ.png)}
+.pt-contour .w .cp.t5{background-image:url(icons/sB_wQ.png)}
+.pt-cartoon .b .cp.t5{background-image:url(icons/sA_bQ.png)}
+.pt-contour .b .cp.t5{background-image:url(icons/sB_bQ.png)}
+.pt-cartoon .w .cp.t6{background-image:url(icons/sA_wK.png)}
+.pt-contour .w .cp.t6{background-image:url(icons/sB_wK.png)}
+.pt-cartoon .b .cp.t6{background-image:url(icons/sA_bK.png)}
+.pt-contour .b .cp.t6{background-image:url(icons/sB_bK.png)}
+.pt-cartoon .w .cp.t1{background-image:url(icons/sA_wP.png)}
+.pt-contour .w .cp.t1{background-image:url(icons/sA_wP.png)}
+.pt-cartoon .b .cp.t1{background-image:url(icons/sA_bP.png)}
+.pt-contour .b .cp.t1{background-image:url(icons/sA_bP.png)}
 </style>
 </head>
 <body>
@@ -1190,7 +1223,7 @@ const CHECKER_IMG = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAACUCAYAA
    1. ХРАНИЛИЩЕ: аккаунты и настройки (в памяти браузера)
    ========================================================= */
 const KEY = 'shashki4_v2', OLD_KEY = 'shashki4_v1';
-const DEF_SETTINGS = { theme:'light', premove:true, hints:true, moveVol:70, uiVol:40, boardTheme:'classic', pieceTheme:'classic', soundPack:'auto', lang:'ru', topbar:false, sf:true, cBoardTheme:'classic', cPieceTheme:'pixel' };
+const DEF_SETTINGS = { theme:'light', premove:true, hints:true, moveVol:70, uiVol:40, boardTheme:'classic', pieceTheme:'classic', soundPack:'auto', lang:'ru', topbar:false, sf:true, cBoardTheme:'classic', cPieceTheme:'cartoon' };
 const DEF_MENU = { variant:'32', opp:'bot', bot:2, tc:'300', inc:0, color:'white', friendName:'Друг', friendFlip:false, undo:false };
 function clone(o){ return JSON.parse(JSON.stringify(o)); }
 function loadOld(){ try{ const s = JSON.parse(localStorage.getItem(OLD_KEY)); if(s && s.nick) return s; }catch(e){} return null; }
@@ -1740,7 +1773,12 @@ function gauss(){ return Math.sqrt(-2*Math.log(Math.random()||1e-9)) * Math.cos(
 function chooseBotMove(b, side, bot, timeMs){
   const moves = genMoves(b, side);
   if(moves.length === 1) return moves[0];
-  if(Math.random() < bot.random) return moves[Math.floor(Math.random()*moves.length)];
+  if(Math.random() < bot.random){
+    // «случайный» ход: в шахматах — только из 5 самых разумных (по быстрой оценке), чтобы не было ходов вроде a4/h5 без смысла
+    if(!V.chess) return moves[Math.floor(Math.random()*moves.length)];
+    const r = moves.map(m => ({ m, sc: side * evaluate(applyMove(b, m)) })).sort((x, y) => y.sc - x.sc);
+    return r[Math.floor(Math.random() * Math.min(5, r.length))].m;
+  }
   if(bot.noise > 0){
     deadline = performance.now() + Math.max(timeMs, 300); abort = false; nodes = 0;
     let best = moves[0], bs = -INF;
@@ -1861,6 +1899,7 @@ function cGen(b, side){
   return res;
 }
 function cApply(b, m){
+  if(m.castle && m.kt == null){ const K = m.castle === 'K'; m = Object.assign({}, m, { kt: m.from + (K ? 2 : -2), rf: m.from + (K ? 3 : -4), rt: m.from + (K ? 1 : -1) }); }   // старые записи
   const nb = b.slice(), v = nb[m.from], side = Math.sign(v), t = Math.abs(v);
   if(m.ep) nb[m.caps[0]] = 0;
   if(m.castle){ nb[m.from] = 0; nb[m.rf] = 0; nb[m.kt] = 6 * side; nb[m.rt] = 4 * side; }
@@ -3435,7 +3474,7 @@ function makeMove(m){
     game.board = applyMove(game.board, m);
     if(V.chess && cInCheck(game.board, -side)) setTimeout(SND.check, 70);
     game.moves.push(san);
-    game.mvs.push(V.chess ? { from:m.from, path:m.path, caps:m.caps, to:m.to, promote:m.promote, castle:m.castle, ep:m.ep, dbl:m.dbl, san }
+    game.mvs.push(V.chess ? { from:m.from, path:m.path, caps:m.caps, to:m.to, promote:m.promote, castle:m.castle, rf:m.rf, kt:m.kt, rt:m.rt, ep:m.ep, dbl:m.dbl, san }
                           : { from:m.from, path:m.path, caps:m.caps, to:m.to, promote:m.promote });
     game.last = m; game.ply++;
     if(m.caps.length) game.lastCapPly = game.ply;
@@ -3506,6 +3545,8 @@ function scheduleBot(){
       game.thinking = false;
       makeMove(m);
     };
+    const bookMv = !game.bot.sf ? botBookMove() : null;     // первые ходы — из дебютной теории
+    if(bookMv){ finish(bookMv); return; }
     const own = () => ENGINE.ask({ variant: game.variant, board: game.board, side, bot: game.bot, time: timeMs }) || Promise.resolve(null);
     const pr = V.chess && game.bot.sf && SF.ok
       ? SF.best(game.board, side, Object.assign({}, game.bot, { sfTime: Math.max(150, Math.min(game.bot.sfTime || 800, timeMs)) })).then(n => n || own())
@@ -4438,7 +4479,7 @@ function renderSettings(){
     <div class="set"><div><b>Доска для шахмат</b><p>Цвет и текстура клеток.</p></div>
       <div class="theme-grid">${BOARD_THEMES.map(([id,l]) => `<button class="tcard ${s.cBoardTheme===id?'on':''}" data-cbt="${id}">${themePreviewChess(id, s.cPieceTheme)}${l}</button>`).join('')}</div></div>
     <div class="set"><div><b>Шахматные фигуры</b><p>Внешний вид фигур.</p></div>
-      <div class="theme-grid">${PIECE_THEMES.map(([id,l]) => `<button class="tcard ${s.cPieceTheme===id?'on':''}" data-cpt="${id}">${themePreviewChess(s.cBoardTheme, id)}${l}</button>`).join('')}</div></div>
+      <div class="theme-grid">${CHESS_PIECE_THEMES.map(([id,l]) => `<button class="tcard ${s.cPieceTheme===id?'on':''}" data-cpt="${id}">${themePreviewChess(s.cBoardTheme, id)}${l}</button>`).join('')}</div></div>
     <div class="set"><div><b>Движок Stockfish</b><p>Сильные боты (1500+), шкала оценки, «Лучший ход» и разбор партий. Загружается из интернета (около 1,7 МБ, с сайта unpkg.com). Если выключить — работает встроенный движок.</p></div><button class="switch ${s.sf !== false ? 'on' : ''}" data-k="sf"></button></div>
     <div class="set set-head"><div><b class="set-ttl">${PIX('settings')} Общее</b></div></div>
     <div class="set"><div><b>Премувы</b><p>Ходы заранее, пока думает бот. Можно несколько подряд.</p></div><button class="switch ${s.premove?'on':''}" data-k="premove"></button></div>
@@ -4490,6 +4531,11 @@ function renderSettings(){
 const LANG = () => db.settings.lang === 'en' ? 'en' : 'ru';
 const LOC = () => LANG() === 'en' ? 'en-GB' : 'ru-RU';        // формат дат
 const EN = {
+  'Блестящий':'Brilliant','Замечательный':'Great','Прекрасный':'Excellent','Ошибка':'Mistake','Упущенный шанс':'Miss','Уровень игры':'Played like',
+  'Сильная жертва, которая заметно улучшает позицию':'A strong sacrifice that clearly improves the position','Единственный хороший ход в этой позиции':'The only good move in this position',
+  'Почти так же силён, как ход движка':'Almost as strong as the engine’s move','Крепкий ход, позиция почти не ухудшилась':'A solid move, the position barely changed',
+  'Небольшое ухудшение позиции':'A small worsening of the position','Заметная потеря преимущества':'A noticeable loss of advantage','Соперник ошибся, но сильный ответ не найден':'The opponent erred, but the strong reply was missed',
+  'Грубый промах: потеря материала или игры':'A gross error: losing material or the game','Другого хода не было':'There was no other move','Мультяшные':'Cartoon','Контурные':'Outline',
   'Движок Stockfish':'Stockfish engine','Робот Стокфиш':'Robot Stockfish','Настоящий Stockfish на полной силе':'Real Stockfish at full strength',
   'Сильные боты (1500+), шкала оценки, «Лучший ход» и разбор партий. Загружается из интернета (около 1,7 МБ, с сайта unpkg.com). Если выключить — работает встроенный движок.':'Strong bots (1500+), evaluation bar, “Best move” and game review. Loaded from the internet (about 1.7 MB, from unpkg.com). If turned off, the built-in engine is used.',
   'Доска для шашек':'Checkers board','Внешний вид шашек.':'How the checkers look.','Доска для шахмат':'Chess board','Шахматные фигуры':'Chess pieces','Общее':'General',
@@ -4924,7 +4970,7 @@ function runAnalysis(rec, onProg, onDone, alive){
     const side = k % 2 ? -1 : 1, pn = notation(line[k]);
     const list = rootScores(b, side, per);
     const pl = list.find(x => notation(x.m) === pn) || list[0];
-    an.push({ c: classify(list, pl, an[k-1] && an[k-1].c), b: notation(list[0].m) });
+    an.push(classify2(b, side, list, pl, an[k-1]));
     b = applyMove(b, line[k]); k++;
     if(onProg) onProg(k, line.length);
     setTimeout(step, 0);
@@ -5003,7 +5049,7 @@ function showResult(o){
       </div><div class="rr-side">
         <div><span>${tr('Точность')}:</span><span class="rr-pill">${c.acc}%</span></div>
         <div><span>${tr('Лучших ходов')}:</span><span class="rr-pill">${c.best}</span></div>
-        <div><span>${tr('Ходов сделано')}:</span><span class="rr-pill">${c.all}</span></div>
+        <div><span>${tr('Уровень игры')}:</span><span class="rr-pill">${c.all >= 5 ? '≈' + c.perf : '—'}</span></div>
       </div></div>`;
   }
   drawReport(0, rec.mv ? rec.mv.length : 0);
@@ -5417,9 +5463,9 @@ const CHESS_ICON = (h = 26) => `<svg viewBox="0 0 45 45" height="${h}" class="ch
 
 /* ---------- шахматные боты ---------- */
 const CHESS_BOTS = [
-  { elo:400,  name:'Пешка Петя',    about:'Только выучил, как ходит конь', depth:1, random:.35, noise:140, time:150,
+  { elo:400,  name:'Пешка Петя',    about:'Только выучил, как ходит конь', depth:2, random:.25, noise:60, time:200,
     face:{bg:'#ffe79a', skin:'#f9d6bb', hair:'#d9822b', style:'curl', shirt:'#4aa3e0', blush:1} },
-  { elo:800,  name:'Конь Костя',    about:'Любит вилки',                  depth:2, random:.1,  noise:70,  time:250,
+  { elo:800,  name:'Конь Костя',    about:'Любит вилки',                  depth:3, random:.08, noise:35,  time:300,
     face:{bg:'#c9f0c4', skin:'#f3c7a5', hair:'#2e2a26', style:'spiky', shirt:'#2e9e4f'} },
   { elo:1200, name:'Слон Саша',     about:'Держит диагонали',             depth:3, random:.03, noise:30,  time:450,
     face:{bg:'#bfe3ff', skin:'#eeb996', hair:'#5b3a22', style:'side', shirt:'#3a7bd5', glasses:'round'} },
@@ -5597,9 +5643,9 @@ const CHESS_RULES_EN = `<h1 class="rules-sep">Chess</h1>
 /* =========================================================
    13e. v12: пиксельные фигуры, превращение, звук шаха, задачи по темам, PGN, шахматы 960
    ========================================================= */
-PIECE_THEMES.push(['pixel', 'Пиксели']);
+// (тема «Пиксели» убрана в v15)
 PIECE_SOUND.pixel = 'classic';
-if(!db.settings.pix12){ db.settings.pix12 = 1; if(db.settings.pieceTheme === 'classic') db.settings.pieceTheme = 'pixel'; try{ localStorage.setItem(KEY, JSON.stringify({ settings: db.settings, menu: db.menu })); }catch(e){} }
+if(!db.settings.pix12){ db.settings.pix12 = 1; try{ localStorage.setItem(KEY, JSON.stringify({ settings: db.settings, menu: db.menu })); }catch(e){} }
 
 /* ---------- звук шаха: короткий двойной «дзинь» ---------- */
 SND.check = () => { const v = volMove(); tone(v * .22, 988, 0, .09, 'triangle'); tone(v * .22, 1319, .09, .14, 'triangle'); };
@@ -5792,7 +5838,7 @@ const ENGINE = (() => {
 
 /* ---------- темы: у шашек и шахмат свои ---------- */
 const bth = () => V.chess ? (db.settings.cBoardTheme || 'classic') : db.settings.boardTheme;
-const pth = () => V.chess ? (db.settings.cPieceTheme || 'pixel') : db.settings.pieceTheme;
+const pth = () => V.chess ? (db.settings.cPieceTheme || 'cartoon') : db.settings.pieceTheme;
 function themePreviewChess(bt, pt){
   return `<div class="tprev bt-${bt} pt-${pt}">
     <div class="sq light"><span class="pcw chess b"><span class="cp t2">${cpSVG(2)}</span></span></div><div class="sq dark"></div>
@@ -5800,7 +5846,7 @@ function themePreviewChess(bt, pt){
 }
 
 /* ---------- аватарки ботов (картинки из набора) ---------- */
-['av1','av4','av5','av2','av3','av4','av5','av6'].forEach((a, i) => { if(BOTS[i]) BOTS[i].face.img = a; });
+['av1','av7','av8','av2','av3','av4','av5','av6'].forEach((a, i) => { if(BOTS[i]) BOTS[i].face.img = a; });
 CHESS_BOTS.forEach((b, i) => b.face.img = 'av' + (i + 1));
 
 /* ---------- стрелки на кнопках ---------- */
@@ -5881,7 +5927,7 @@ const SF = (() => {
     // для разбора: лучшие ходы + сыгранный ход с оценками (как rootScores у встроенного движка)
     async analyze(b, side, played){
       const ms = genMoves(b, side);
-      const r = await search(b, side, 'go movetime 170', Math.min(3, ms.length));
+      const r = await search(b, side, 'go depth 13 movetime 500', Math.min(2, ms.length));
       const list = [];
       for(const [n, sc] of r.lines){ const m = ms.find(x => notation(x) === n); if(m && !list.some(x => x.m === m)) list.push({ m, sc }); }
       const pn = notation(played);
@@ -5889,7 +5935,7 @@ const SF = (() => {
         const pm = ms.find(x => notation(x) === pn) || played, nb = applyMove(b, pm);
         let sc;
         if(!genMoves(nb, -side).length) sc = cInCheck(nb, -side) ? WIN - 1 : 0;
-        else { const r2 = await search(nb, -side, 'go movetime 100', 1); sc = r2.lines.length ? -r2.lines[0][1] : 0; }
+        else { const r2 = await search(nb, -side, 'go depth 12 movetime 320', 1); sc = r2.lines.length ? -r2.lines[0][1] : 0; }
         list.push({ m: pm, sc });
       }
       return list.sort((x, y) => y.sc - x.sc);
@@ -5921,13 +5967,133 @@ async function runAnalysisSF(rec, onProg, onDone, alive){
       catch(e){ runAnalysis.noSF = true; runAnalysis(rec, onProg, onDone, alive); return; }   // не вышло — встроенный движок
       if(alive && !alive()) return;
       const pl = list.find(x => notation(x.m) === pn) || list[0];
-      an.push({ c: classify(list, pl, an[k-1] && an[k-1].c), b: notation(list[0].m), sf: 1 });
+      an.push(Object.assign(classify2(b, side, list, pl, an[k-1]), { sf: 1 }));
     }
     b = applyMove(b, line[k]);
     if(onProg) onProg(k + 1, line.length);
   }
   rec.an = an; if(onDone) onDone(an);
 }
+
+
+/* =========================================================
+   13h. v15: оценка ходов «как на chess.com», дебюты у ботов, новые наборы фигур
+   ========================================================= */
+/* ---------- вероятность победы и точность ----------
+   Оценку движка (100 = одна пешка/шашка) переводим в «шанс на победу» от 0 до 100 % по сигмоиде.
+   Важна не потеря пешки сама по себе, а насколько упал шанс: при равной игре это много, при лишнем ферзе — почти ничего. */
+const winPct = sc => { const cp = Math.abs(sc) > WIN - 1000 ? Math.sign(sc) * 10000 : sc; return 50 + 50 * (2 / (1 + Math.exp(-0.00368208 * cp)) - 1); };
+const moveAcc = loss => Math.max(0, Math.min(100, 103.1668 * Math.exp(-0.04354 * Math.max(0, loss)) - 3.1669));
+const PIECE_V = { 1:1, 2:3, 3:3, 4:5, 5:9, 6:0 };
+// жертва: после хода фигура стоит под боем, и бьющий дешевле её (или её никто не защищает), а взяли мы меньше, чем отдаём
+function isSacrifice(b, m){
+  if(!V.chess || m.castle) return false;
+  const nb = applyMove(b, m), side = Math.sign(b[m.from]), t = Math.abs(nb[m.to]), val = PIECE_V[t];
+  if(val < 3) return false;
+  const got = m.caps.length ? PIECE_V[Math.abs(b[m.caps[0]])] : 0;
+  if(got >= val) return false;
+  if(!cAttacked(nb, m.to, -side)) return false;
+  const attackers = cGen(nb, -side).filter(x => x.to === m.to).map(x => PIECE_V[Math.abs(nb[x.from])] || 0);
+  const cheapest = attackers.length ? Math.min(...attackers.map(v => v || 100)) : 100;
+  return !cAttacked(nb, m.to, side) || cheapest < val;
+}
+// главная функция: ярлык хода по потере шанса на победу (Δ Win%)
+function classify2(b, side, list, pl, prev){
+  const best = list[0], second = list[1];
+  const wBest = winPct(best.sc), wPlayed = winPct(pl.sc), loss = Math.max(0, wBest - wPlayed);
+  const out = { b: notation(best.m), wb: Math.round(wBest * 10) / 10, wa: Math.round(wPlayed * 10) / 10, acc: Math.round(moveAcc(loss) * 10) / 10 };
+  if(list.length === 1 || genMoves(b, side).length === 1){ out.c = 'forced'; out.acc = 100; return out; }
+  const isBest = pl.m === best.m || notation(pl.m) === notation(best.m) || loss < 0.3;
+  let c;
+  if(loss >= 20) c = 'blunder';
+  else if(loss >= 10) c = 'mistake';
+  else if(loss >= 5) c = 'inacc';
+  else if(isBest) c = 'best';
+  else if(loss < 2) c = 'excellent';
+  else c = 'good';
+  // упущенный шанс: соперник только что ошибся, а мы не воспользовались
+  if((c === 'mistake' || c === 'inacc' || c === 'blunder') && prev && (prev.c === 'mistake' || prev.c === 'blunder') && loss >= 8 && wPlayed >= 35) c = 'miss';
+  // замечательный: единственный хороший ход в непростой позиции
+  if(c === 'best' && second && wBest - winPct(second.sc) >= 15 && wBest > 25 && wBest < 93) c = 'great';
+  // блестящий: лучший (или почти) ход с жертвой фигуры; до хода позиция не была выигранной, после — не проиграна
+  if((c === 'best' || c === 'great' || c === 'excellent') && loss < 2 && wBest < 96 && wPlayed >= 45 && isSacrifice(b, pl.m)) c = 'brilliant';
+  out.c = c;
+  return out;
+}
+// итог партии для одной стороны: счётчики, точность (взвешенное и гармоническое среднее), «уровень игры»
+function reportOf(rec, side){
+  const c = { good:0, inacc:0, blunder:0, best:0, forced:0, all:0, acc:0, perf:0 };
+  const accs = [], wts = [], hist = [];
+  (rec.an || []).forEach((a, i) => {
+    if(a.wb != null) hist.push(a.wb);
+    if((i % 2 ? -1 : 1) !== side) return;
+    c.all++;
+    if(['brilliant','great','best','excellent','good','book'].includes(a.c)) c.good++;
+    if(['brilliant','great','best'].includes(a.c)) c.best++;
+    if(a.c === 'inacc' || a.c === 'mistake') c.inacc++;
+    if(a.c === 'blunder' || a.c === 'miss') c.blunder++;
+    if(a.c === 'forced') c.forced++;
+    if(a.c === 'book'){ accs.push(100); wts.push(1); return; }
+    if(a.acc != null){
+      // вес хода — насколько «острой» была позиция (разброс шансов в последних ходах)
+      const win = hist.slice(-4), mean = win.reduce((s, v) => s + v, 0) / (win.length || 1);
+      const sd = Math.sqrt(win.reduce((s, v) => s + (v - mean) ** 2, 0) / (win.length || 1));
+      accs.push(a.acc); wts.push(Math.max(.5, Math.min(12, sd)));
+    }
+  });
+  if(accs.length){
+    const wMean = accs.reduce((s, v, i) => s + v * wts[i], 0) / wts.reduce((s, v) => s + v, 0);
+    const hMean = accs.length / accs.reduce((s, v) => s + 1 / Math.max(v, 1), 0);
+    c.acc = Math.round((wMean + hMean) / 2);
+  } else c.acc = c.all ? Math.round((c.good + c.forced) / c.all * 100) : 0;
+  c.perf = Math.round((Math.max(300, Math.min(2900, 400 + 0.24 * c.acc * c.acc))) / 25) * 25;   // очень примерная оценка уровня
+  return c;
+}
+/* ---------- ярлыки и значки ---------- */
+Object.assign(MC, {
+  brilliant: { name:'Блестящий',     color:'#1baca6', tip:'Сильная жертва, которая заметно улучшает позицию' },
+  great:     { name:'Замечательный', color:'#5c8bb0', tip:'Единственный хороший ход в этой позиции' },
+  best:      { name:'Лучший',        color:'#81b64c', tip:'Первый выбор движка' },
+  excellent: { name:'Прекрасный',    color:'#96bc4b', tip:'Почти так же силён, как ход движка' },
+  good:      { name:'Хороший',       color:'#77915f', tip:'Крепкий ход, позиция почти не ухудшилась' },
+  inacc:     { name:'Неточность',    color:'#f7c631', tip:'Небольшое ухудшение позиции' },
+  mistake:   { name:'Ошибка',        color:'#ffa459', tip:'Заметная потеря преимущества' },
+  miss:      { name:'Упущенный шанс', color:'#ff7769', tip:'Соперник ошибся, но сильный ответ не найден' },
+  blunder:   { name:'Зевок',         color:'#fa412d', tip:'Грубый промах: потеря материала или игры' },
+  forced:    { name:'Вынужденный',   color:'#8e9e86', tip:'Другого хода не было' }
+});
+const GT = t => `<text x="20" y="27.5" text-anchor="middle" font-size="${t.length > 1 ? 17 : 20}" font-weight="900" fill="#fff" font-family="Arial Black,Arial,sans-serif">${t}</text>`;
+Object.assign(MC_GLYPH, {
+  brilliant: GT('!!'), great: GT('!'), inacc: GT('?!'), mistake: GT('?'), blunder: GT('??'),
+  excellent: '<path d="M12 19h3.5v10H12zM17.5 29V19l4-7c2.2 0 3 1.6 2.5 3.4L23 19h5c1.6 0 2.6 1.4 2.2 2.9l-1.9 5.8c-.4 1.3-1.5 1.8-2.6 1.8z" fill="#fff"/>',
+  miss: '<path d="M13.5 13.5l13 13M26.5 13.5l-13 13" stroke="#fff" stroke-width="4.5" stroke-linecap="round"/>'
+});
+MC_ORDER.splice(0, MC_ORDER.length, 'brilliant', 'great', 'best', 'excellent', 'good', 'book', 'inacc', 'mistake', 'miss', 'blunder', 'forced');
+
+/* ---------- дебюты у ботов: даже слабые боты первые ходы играют «по книге» ---------- */
+function botBookMove(){
+  if(!V.chess || game.start) return null;
+  const done = game.mvs.map(notation), pre = done.join(' ');
+  if(done.length >= 10) return null;
+  const next = new Set();
+  for(const [line] of BOOK){
+    const mv = line.split(' ');
+    if(mv.length > done.length && mv.slice(0, done.length).join(' ') === pre) next.add(mv[done.length]);
+  }
+  if(!next.size) return null;
+  const pick = [...next][Math.floor(Math.random() * next.size)];
+  return genMoves(game.board, game.turn).find(x => notation(x) === pick) || null;
+}
+
+/* ---------- наборы фигур: шашки — 6 тем, шахматы — 6 + «Мультяшные» и «Контурные» ---------- */
+const CHESS_PIECE_THEMES = PIECE_THEMES.concat([['cartoon', 'Мультяшные'], ['contour', 'Контурные']]);
+Object.assign(PIECE_SOUND, { cartoon: 'classic', contour: 'wood' });
+(() => {   // «Пиксели» больше нет: переносим на похожие темы
+  let ch = false;
+  if(db.settings.pieceTheme === 'pixel'){ db.settings.pieceTheme = 'classic'; ch = true; }
+  if(!db.settings.cPieceTheme || db.settings.cPieceTheme === 'pixel'){ db.settings.cPieceTheme = 'cartoon'; ch = true; }
+  if(ch) try{ localStorage.setItem(KEY, JSON.stringify({ settings: db.settings, menu: db.menu })); }catch(e){}
+})();
 
 /* =========================================================
    14. СТАРТ
