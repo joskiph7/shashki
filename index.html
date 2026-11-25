@@ -583,6 +583,10 @@ main{max-width:1320px;width:100%;padding:24px 24px 100px}
 .side-col.card{padding:18px}
 .status{font-family:var(--fd);font-size:20px;font-weight:600;text-transform:uppercase;letter-spacing:.02em;min-height:52px;display:flex;align-items:center}
 .clock{font-family:var(--fd);font-weight:600;font-size:24px;border:1px solid var(--card-line);background:transparent}
+.pbar .pm-cancel{margin-left:auto;border:1px solid #c0392b;background:rgba(225,30,30,.1);color:#c0392b;border-radius:999px;padding:6px 11px;font-weight:700;font-size:13px;white-space:nowrap;animation:pmIn .25s ease}
+.pbar .pm-cancel:hover{background:#c0392b;color:#fff}
+.pbar .pm-cancel + .clock{margin-left:8px}
+@keyframes pmIn{from{transform:scale(.8);opacity:0}}
 .clock.active{background:var(--text);color:var(--bg);border-color:var(--text)}
 .moves{background:transparent;border:1px solid var(--line)}
 .offer{background:transparent;border:1px solid var(--text)}
@@ -2418,12 +2422,16 @@ function renderBars(){
   for(const [box, side, clk] of [['#pbTop', ts, 'clkTop'], ['#pbBot', -ts, 'clkBot']]){
     const i = sideInfo(side);
     let right = `<div class="clock" id="${clk}"></div>`;
+    // кнопка отмены премувов возле своих часов
+    if(!game.review && !game.over && side === game.me && game.premoves.length)
+      right = `<button class="pm-cancel" id="pmCancel" title="Отменить все премувы">✕ Премувы: ${game.premoves.length}</button>` + right;
     if(game.review) right = side === game.me ? `<span class="res ${game.rec.result}" style="margin-left:auto">${{win:'Победа',draw:'Ничья',loss:'Поражение'}[game.rec.result]}</span>` : '';
     // у живого соперника аватарка и ник — ссылка на его профиль
     const pk = side !== game.me && game.online && game.online.key && db.accounts[game.online.key] ? game.online.key : null;
     const lk = pk ? ` class="to-prof" data-prof="${esc(pk)}" title="Открыть профиль"` : '';
     $(box).innerHTML = `<span class="ava${pk ? ' to-prof' : ''}"${pk ? ` data-prof="${esc(pk)}" title="Открыть профиль"` : ''}>${i.ava}</span><div class="nm"><span${lk}>${i.name}</span> <small>${i.sub}</small>${takenDots(side)}</div>${right}`;
     $(box).querySelectorAll('[data-prof]').forEach(el => el.onclick = () => openPlayer(el.dataset.prof, true));
+    const pc = $(box).querySelector('#pmCancel'); if(pc) pc.onclick = cancelPremoves;
   }
   renderClocks();
 }
@@ -2633,7 +2641,7 @@ function tryTarget(s){
   if(pseudoTargets(game.sel, virtualBoard()).includes(s)){
     if(game.premoves.length >= 10){ toast('Не больше 10 премувов'); return true; }
     game.premoves.push({ from: game.sel, to: s });
-    clearSel(); renderSquares(); renderPieces(); renderStatus();
+    clearSel(); renderSquares(); renderPieces(); renderStatus(); renderBars();
     return true;
   }
   return false;
@@ -2703,7 +2711,7 @@ function tryPremove(){
   const ms = legalMine().filter(m => m.from === pm.from && m.to === pm.to).sort((a,b) => b.caps.length - a.caps.length);
   if(!ms.length){
     game.premoves = [];
-    renderSquares(); renderStatus();
+    renderSquares(); renderStatus(); renderBars();
     toast('Премув отменён — так ходить нельзя');
     return;
   }
@@ -2904,7 +2912,7 @@ boardEl.addEventListener('pointerdown', e => {
   try{ boardEl.setPointerCapture(e.pointerId); }catch(err){}
   if(e.button === 2){
     rDown = s;
-    if(game.premoves.length || game.sel != null){ game.premoves = []; clearSel(); renderSquares(); renderPieces(); renderStatus(); }
+    if(game.premoves.length || game.sel != null){ game.premoves = []; clearSel(); renderSquares(); renderPieces(); renderStatus(); renderBars(); }
     return;
   }
   if(e.button !== 0) return;
@@ -2918,8 +2926,16 @@ boardEl.addEventListener('pointerdown', e => {
     selectSq(s);
     const el = $(`#pieces .piece[data-sq="${s}"]`);      // тянуть можно и обычный ход, и премув
     if(el) drag = { s, el, x0: e.clientX, y0: e.clientY, moved: false };
+  } else if(game.premoves.length && game.sel == null){
+    cancelPremoves();            // тап по пустой клетке — отмена премувов (на телефоне нет правой кнопки)
   } else { clearSel(); renderSquares(); renderPieces(); }
 });
+function cancelPremoves(){
+  if(!game || !game.premoves.length) return;
+  game.premoves = []; clearSel();
+  renderSquares(); renderPieces(); renderStatus(); renderBars();
+  toast('Премувы отменены');
+}
 boardEl.addEventListener('pointermove', e => {
   if(!drag) return;
   if(!drag.moved && Math.hypot(e.clientX - drag.x0, e.clientY - drag.y0) < 5) return;
