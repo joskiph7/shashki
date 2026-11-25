@@ -1190,7 +1190,7 @@ const CHECKER_IMG = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAACUCAYAA
    1. ХРАНИЛИЩЕ: аккаунты и настройки (в памяти браузера)
    ========================================================= */
 const KEY = 'shashki4_v2', OLD_KEY = 'shashki4_v1';
-const DEF_SETTINGS = { theme:'light', premove:true, hints:true, moveVol:70, uiVol:40, boardTheme:'classic', pieceTheme:'classic', soundPack:'auto', lang:'ru', topbar:false, cBoardTheme:'classic', cPieceTheme:'pixel' };
+const DEF_SETTINGS = { theme:'light', premove:true, hints:true, moveVol:70, uiVol:40, boardTheme:'classic', pieceTheme:'classic', soundPack:'auto', lang:'ru', topbar:false, sf:true, cBoardTheme:'classic', cPieceTheme:'pixel' };
 const DEF_MENU = { variant:'32', opp:'bot', bot:2, tc:'300', inc:0, color:'white', friendName:'Друг', friendFlip:false, undo:false };
 function clone(o){ return JSON.parse(JSON.stringify(o)); }
 function loadOld(){ try{ const s = JSON.parse(localStorage.getItem(OLD_KEY)); if(s && s.nick) return s; }catch(e){} return null; }
@@ -3048,6 +3048,7 @@ function launchGame(o){
     game.seed = o.seed != null ? o.seed : Math.floor(Math.random() * 960);
     game.start = cInit(c960Back(game.seed)); game.board = game.start.slice();
   }
+  if(V.chess && SF.ok) SF.start().catch(() => {});
   countRep();
   setPanelMode(false);
   $('#undoRow').hidden = !game.undo;
@@ -3146,7 +3147,7 @@ function sideInfo(side){
   if(game.online) return { ava: avatarHTML(game.online.avatar || { type:'preset', id:'cat' }), name: esc(game.online.nick),
     sub: (game.online.rating ? game.online.rating + ' · ' : '') + colorName + ' · онлайн' };
   if(game.puzzle) return { ava: PIX(game.puzzle.pz ? 'target' : 'hint'), name: tr(game.puzzle.p.title || 'Задача дня'), sub: tr(colorName) + (game.thinking ? ' · <span class="thinking">думает…</span>' : '') };
-  return { ava: botFace(game.bot.face), name: game.bot.name, sub: `${game.bot.elo} Эло · ${colorName}` + (game.thinking ? ' · <span class="thinking">думает…</span>' : '') };
+  return { ava: botFace(game.bot.face), name: game.bot.name, sub: `${game.bot.elo} Эло · ${colorName}` + (game.bot.sf && SF.ok ? ' · Stockfish' : '') + (game.thinking ? ' · <span class="thinking">думает…</span>' : '') };
 }
 function renderBars(){
   const ts = topSide();
@@ -3505,7 +3506,10 @@ function scheduleBot(){
       game.thinking = false;
       makeMove(m);
     };
-    const pr = ENGINE.ask({ variant: game.variant, board: game.board, side, bot: game.bot, time: timeMs });
+    const own = () => ENGINE.ask({ variant: game.variant, board: game.board, side, bot: game.bot, time: timeMs }) || Promise.resolve(null);
+    const pr = V.chess && game.bot.sf && SF.ok
+      ? SF.best(game.board, side, Object.assign({}, game.bot, { sfTime: Math.max(150, Math.min(game.bot.sfTime || 800, timeMs)) })).then(n => n || own())
+      : own();
     if(pr) pr.then(n => {
       if(!game || game.id !== gid || game.botToken !== token) return;
       setVariant(game.variant);
@@ -3841,12 +3845,16 @@ $('#rvHint').onclick = () => {
   if(!game || !game.review || game.animating) return;
   if(!genMoves(game.board, game.turn).length){ toast('В этой позиции ходов нет'); return; }
   $('#rvHint').disabled = true;
-  setTimeout(() => {
-    const m = searchBest(game.board, game.turn, 30, 900);
-    game.hint = m; renderAnnot();
-    $('#rvHint').disabled = false;
-    toast(`Движок советует: ${notation(m)}`);
-  }, 20);
+  const show = m => { game.hint = m; renderAnnot(); $('#rvHint').disabled = false; toast(`${tr('Движок советует')}: ${V.chess ? cSan(game.board, m) : notation(m)}`); };
+  const b0 = game.board, t0 = game.turn;
+  if(V.chess && SF.ok){
+    SF.best(b0, t0, { sfTime: 900 }).then(n => {
+      if(!game || game.board !== b0) return;
+      show(genMoves(b0, t0).find(x => notation(x) === n) || searchBest(b0, t0, 30, 900));
+    });
+    return;
+  }
+  setTimeout(() => show(searchBest(game.board, game.turn, 30, 900)), 20);
 };
 document.addEventListener('keydown', e => {
   if(current !== 'game' || !game || !game.review || $('#modalRoot').innerHTML) return;
@@ -3946,6 +3954,14 @@ function updateEval(){
   const gid = game.id, pos = game.rv.pos, line = game.rv.line;
   setTimeout(() => {
     if(!game || game.id !== gid || !game.review || game.rv.pos !== pos || game.rv.line !== line) return;
+    if(V.chess && SF.ok && genMoves(game.board, game.turn).length){
+      const key = 'sf' + game.board.join(',') + '|' + game.turn, same = () => game && game.id === gid && game.review && game.rv.pos === pos && game.rv.line === line;
+      if(evalCache.has(key)){ renderEval(evalCache.get(key)); return; }
+      SF.evalWhite(game.board, game.turn)
+        .then(w => { if(w == null) throw new Error('sf'); evalCache.set(key, w); if(same()) renderEval(w); })
+        .catch(() => { if(same()) renderEval(evalWhite(game.board, game.turn, 250)); });
+      return;
+    }
     renderEval(evalWhite(game.board, game.turn, 250));
   }, 30);
 }
@@ -4423,6 +4439,7 @@ function renderSettings(){
       <div class="theme-grid">${BOARD_THEMES.map(([id,l]) => `<button class="tcard ${s.cBoardTheme===id?'on':''}" data-cbt="${id}">${themePreviewChess(id, s.cPieceTheme)}${l}</button>`).join('')}</div></div>
     <div class="set"><div><b>Шахматные фигуры</b><p>Внешний вид фигур.</p></div>
       <div class="theme-grid">${PIECE_THEMES.map(([id,l]) => `<button class="tcard ${s.cPieceTheme===id?'on':''}" data-cpt="${id}">${themePreviewChess(s.cBoardTheme, id)}${l}</button>`).join('')}</div></div>
+    <div class="set"><div><b>Движок Stockfish</b><p>Сильные боты (1500+), шкала оценки, «Лучший ход» и разбор партий. Загружается из интернета (около 1,7 МБ, с сайта unpkg.com). Если выключить — работает встроенный движок.</p></div><button class="switch ${s.sf !== false ? 'on' : ''}" data-k="sf"></button></div>
     <div class="set set-head"><div><b class="set-ttl">${PIX('settings')} Общее</b></div></div>
     <div class="set"><div><b>Премувы</b><p>Ходы заранее, пока думает бот. Можно несколько подряд.</p></div><button class="switch ${s.premove?'on':''}" data-k="premove"></button></div>
     <div class="set"><div><b>Подсказки ходов</b><p>Точки на клетках, куда можно пойти.</p></div><button class="switch ${s.hints?'on':''}" data-k="hints"></button></div>
@@ -4473,6 +4490,8 @@ function renderSettings(){
 const LANG = () => db.settings.lang === 'en' ? 'en' : 'ru';
 const LOC = () => LANG() === 'en' ? 'en-GB' : 'ru-RU';        // формат дат
 const EN = {
+  'Движок Stockfish':'Stockfish engine','Робот Стокфиш':'Robot Stockfish','Настоящий Stockfish на полной силе':'Real Stockfish at full strength',
+  'Сильные боты (1500+), шкала оценки, «Лучший ход» и разбор партий. Загружается из интернета (около 1,7 МБ, с сайта unpkg.com). Если выключить — работает встроенный движок.':'Strong bots (1500+), evaluation bar, “Best move” and game review. Loaded from the internet (about 1.7 MB, from unpkg.com). If turned off, the built-in engine is used.',
   'Доска для шашек':'Checkers board','Внешний вид шашек.':'How the checkers look.','Доска для шахмат':'Chess board','Шахматные фигуры':'Chess pieces','Общее':'General',
   'К профилю':'To profile','Выйти из партии':'Leave the game',
   'Шахматы 960':'Chess960','случайная расстановка фигур':'random piece setup','Пиксели':'Pixel','Превращение':'Promotion','Во что превратить пешку?':'Promote the pawn to?',
@@ -4892,6 +4911,7 @@ $('#chatMute').onclick = () => { if(!game) return; game.chatMuted = !game.chatMu
 
 /* ---------- анализ партии (общий для разбора и окна конца партии) ---------- */
 function runAnalysis(rec, onProg, onDone, alive){
+  if((VARIANTS[rec.variant] || {}).chess && SF.ok && !runAnalysis.noSF){ runAnalysisSF(rec, onProg, onDone, alive); return; }
   const line = rec.mv, an = [], per = (rec.variant === '64') ? 160 : 110;
   let b = null, k = 0;
   (function step(){
@@ -5543,7 +5563,8 @@ const CHESS_RULES_RU = `<h1 class="rules-sep">Шахматы</h1>
     <li>Позиция повторилась 3 раза; 50 ходов подряд без взятий и ходов пешкой; на доске мало фигур для мата (например, король и конь против короля); по согласию.</li></ul>
   <h2>Разбор и задачи</h2><ul>
     <li>В разборе ходы из известных дебютов отмечаются как «Теоретический», и показывается название дебюта.</li>
-    <li>Задача дня в шахматах — мат в 2 хода.</li></ul>`;
+    <li>Задача дня в шахматах — мат в 2 хода.</li>
+    <li>Сильные боты, оценка позиции и разбор работают на движке <b>Stockfish</b> — свободной программе с лицензией GPL-3.0 (исходный код: github.com/official-stockfish/Stockfish). Он загружается с сайта unpkg.com; если не загрузится — работает встроенный движок.</li></ul>`;
 const CHESS_RULES_EN = `<h1 class="rules-sep">Chess</h1>
   <h2>Goal</h2><ul><li>Checkmate: the opponent’s king is attacked (check) and cannot escape.</li><li>White moves first, then the players take turns. You cannot skip a move.</li></ul>
   <h2>How the pieces move</h2><ul>
@@ -5562,7 +5583,8 @@ const CHESS_RULES_EN = `<h1 class="rules-sep">Chess</h1>
     <li>Threefold repetition; 50 moves without a capture or pawn move; not enough material to mate (e.g. king and knight vs king); by agreement.</li></ul>
   <h2>Review and puzzles</h2><ul>
     <li>In the review, moves from known openings are marked “Book” and the opening name is shown.</li>
-    <li>The chess daily puzzle is mate in 2.</li></ul>`;
+    <li>The chess daily puzzle is mate in 2.</li>
+    <li>Strong bots, evaluation and review use the <b>Stockfish</b> engine — free software under GPL-3.0 (source: github.com/official-stockfish/Stockfish). It is loaded from unpkg.com; if it can’t load, the built-in engine is used.</li></ul>`;
 {
   const _rr = renderRules;
   renderRules = function(){
@@ -5783,6 +5805,129 @@ CHESS_BOTS.forEach((b, i) => b.face.img = 'av' + (i + 1));
 
 /* ---------- стрелки на кнопках ---------- */
 $('#rvPrev').innerHTML = PIX('back'); $('#rvNext').innerHTML = PIX('fwd');
+
+
+/* =========================================================
+   13g. v14: STOCKFISH — сильнейший шахматный движок (лицензия GPL-3.0)
+   Файл движка (~1,7 МБ) грузится с бесплатного CDN unpkg.com и работает в фоновом потоке.
+   Если загрузить не получилось (нет интернета, CDN недоступен) — молча работает встроенный движок.
+   ========================================================= */
+const SF = (() => {
+  const BASE = 'https://unpkg.com/stockfish@19.0.1/bin/stockfish-19-lite-single';
+  let w = null, ready = null, queue = Promise.resolve(), onLine = null, failed = false;
+  function start(){
+    if(ready) return ready;
+    ready = new Promise((res, rej) => {
+      try{
+        // поток создаётся из «обёртки», которая подключает файл с CDN; путь к .wasm передаётся после #
+        const blob = new Blob(['importScripts(' + JSON.stringify(BASE + '.js') + ');'], { type: 'text/javascript' });
+        w = new Worker(URL.createObjectURL(blob) + '#' + encodeURIComponent(BASE + '.wasm'));
+        const to = setTimeout(() => { failed = true; rej(new Error('timeout')); }, 25000);
+        w.onmessage = e => { if(typeof e.data === 'string' && onLine) onLine(e.data); };
+        w.onerror = () => { clearTimeout(to); failed = true; rej(new Error('load')); };
+        onLine = l => { if(l === 'uciok'){ clearTimeout(to); onLine = null; w.postMessage('isready'); res(); } };
+        w.postMessage('uci');
+      }catch(e){ failed = true; rej(e); }
+    });
+    ready.catch(() => {});
+    return ready;
+  }
+  // команды выполняются строго по очереди: ответы движка не перепутаются
+  function run(cmds, until, limitMs){
+    const job = queue.then(() => start()).then(() => new Promise((res, rej) => {
+      const got = [];
+      const to = setTimeout(() => { onLine = null; w.postMessage('stop'); rej(new Error('slow')); }, limitMs || 15000);
+      onLine = l => { got.push(l); if(until(l)){ clearTimeout(to); onLine = null; res(got); } };
+      cmds.forEach(c => w.postMessage(c));
+    }));
+    queue = job.catch(() => {});
+    return job;
+  }
+  const is960 = b => !(b[67] === 7 && b[68] === 0 && (b.indexOf(6) & 7) === 4 && (b.indexOf(-6) & 7) === 4) && !!b[64];
+  const score = (kind, v) => kind === 'cp' ? +v : (+v > 0 ? WIN - (2 * +v - 1) : -(WIN - 2 * Math.abs(+v)));
+  // поиск: [[первый ход, оценка за того, кто ходит], …] по линиям MultiPV
+  async function search(b, side, go, multipv, strength){
+    const cmds = [
+      'setoption name UCI_Chess960 value ' + is960(b),
+      'setoption name MultiPV value ' + (multipv || 1),
+      'setoption name UCI_LimitStrength value ' + !!(strength && strength.elo),
+      strength && strength.elo ? 'setoption name UCI_Elo value ' + Math.max(1320, Math.min(3190, strength.elo)) : null,
+      'position fen ' + cFen(b, side), go
+    ].filter(Boolean);
+    const got = await run(cmds, l => l.startsWith('bestmove'));
+    const best = {};
+    for(const l of got){
+      const m = l.match(/^info .*?multipv (\d+) .*?score (cp|mate) (-?\d+).*? pv (\S+)/);
+      if(m) best[m[1]] = [m[4], score(m[2], m[3])];
+    }
+    const out = Object.keys(best).sort((a, b2) => a - b2).map(k => best[k]);
+    const bm = (got[got.length - 1] || '').split(' ')[1];
+    if(!out.length && bm && bm !== '(none)') out.push([bm, 0]);
+    return { lines: out, best: bm && bm !== '(none)' ? bm : null };
+  }
+  return {
+    start,
+    get ok(){ return !failed && db.settings.sf !== false; },
+    // ход бота: сила ограничена Эло (у Stockfish минимум 1320)
+    async best(b, side, bot){
+      try{ const r = await search(b, side, 'go movetime ' + (bot.sfTime || 800), 1, { elo: bot.sfElo }); return r.best; }
+      catch(e){ return null; }
+    },
+    // оценка позиции за белых (для шкалы перевеса)
+    async evalWhite(b, turn){
+      const r = await search(b, turn, 'go movetime 300', 1);
+      return r.lines.length ? r.lines[0][1] * turn : null;
+    },
+    // для разбора: лучшие ходы + сыгранный ход с оценками (как rootScores у встроенного движка)
+    async analyze(b, side, played){
+      const ms = genMoves(b, side);
+      const r = await search(b, side, 'go movetime 170', Math.min(3, ms.length));
+      const list = [];
+      for(const [n, sc] of r.lines){ const m = ms.find(x => notation(x) === n); if(m && !list.some(x => x.m === m)) list.push({ m, sc }); }
+      const pn = notation(played);
+      if(!list.some(x => notation(x.m) === pn)){
+        const pm = ms.find(x => notation(x) === pn) || played, nb = applyMove(b, pm);
+        let sc;
+        if(!genMoves(nb, -side).length) sc = cInCheck(nb, -side) ? WIN - 1 : 0;
+        else { const r2 = await search(nb, -side, 'go movetime 100', 1); sc = r2.lines.length ? -r2.lines[0][1] : 0; }
+        list.push({ m: pm, sc });
+      }
+      return list.sort((x, y) => y.sc - x.sc);
+    }
+  };
+})();
+
+/* ---------- шахматные боты на Stockfish (сильные) ---------- */
+Object.assign(CHESS_BOTS[3], { sf: true, sfElo: 1500, sfTime: 600 });
+Object.assign(CHESS_BOTS[4], { sf: true, sfElo: 1800, sfTime: 800 });
+Object.assign(CHESS_BOTS[5], { sf: true, sfElo: 2200, sfTime: 1000 });
+CHESS_BOTS.push({ elo:3200, name:'Робот Стокфиш', about:'Настоящий Stockfish на полной силе', depth:30, random:0, noise:0, time:2600,
+  sf: true, sfTime: 1200, face:{ bg:'#cfe8ff', skin:'#c9d1d9', hair:'#888', style:'short', shirt:'#4a76b8', img:'bot' } });
+
+// разбор шахматной партии силами Stockfish (если он загрузился); иначе — встроенный движок
+async function runAnalysisSF(rec, onProg, onDone, alive){
+  const line = rec.mv, an = [];
+  setVariant(rec.variant);
+  let b = rec.start ? rec.start.slice() : initBoard();
+  for(let k = 0; k < line.length; k++){
+    if(alive && !alive()) return;
+    setVariant(rec.variant);
+    const bk = !rec.start ? bookAt(line, k) : null;
+    if(bk) an.push({ c:'book', b: notation(line[k]), o: bk });
+    else {
+      const side = k % 2 ? -1 : 1, pn = notation(line[k]);
+      let list;
+      try{ list = await SF.analyze(b, side, line[k]); }
+      catch(e){ runAnalysis.noSF = true; runAnalysis(rec, onProg, onDone, alive); return; }   // не вышло — встроенный движок
+      if(alive && !alive()) return;
+      const pl = list.find(x => notation(x.m) === pn) || list[0];
+      an.push({ c: classify(list, pl, an[k-1] && an[k-1].c), b: notation(list[0].m), sf: 1 });
+    }
+    b = applyMove(b, line[k]);
+    if(onProg) onProg(k + 1, line.length);
+  }
+  rec.an = an; if(onDone) onDone(an);
+}
 
 /* =========================================================
    14. СТАРТ
