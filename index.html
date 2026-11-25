@@ -670,7 +670,8 @@ span.to-prof:hover{text-decoration:underline;text-underline-offset:3px}
   .moves{height:140px}
   /* телефон: доска + обе плашки игроков должны влезть в экран (dvh учитывает адресную строку браузера) */
   :root{--cell:clamp(28px,min(calc((100vh - 350px) / 8),calc((100vw - 90px) / var(--cols))),72px)}
-  @supports (height:100dvh){ :root{--cell:clamp(28px,min(calc((100dvh - 350px) / 8),calc((100vw - 90px) / var(--cols))),72px)} }
+  /* svh — высота экрана с открытой адресной строкой: не меняется при прокрутке, поэтому доска не «прыгает» в размере */
+  @supports (height:100svh){ :root{--cell:clamp(28px,min(calc((100svh - 350px) / 8),calc((100vw - 90px) / var(--cols))),72px)} }
 }
 @media (max-width:560px){
   .sidebar nav button span{display:none}
@@ -699,6 +700,189 @@ span.to-prof:hover{text-decoration:underline;text-underline-offset:3px}
   main{padding:16px 12px 100px}
   .ach-row{grid-template-columns:repeat(2,1fr)}
 }
+
+/* =====================================================================
+   v9: два тона (панель слева темнее, рабочая область светлее), профиль внизу панели,
+   пиксельные иконки, чат, новое окно конца партии, админ-панель
+   ===================================================================== */
+:root{--bg:#eceae6;--side:#dcd9d2;--panel:#f6f5f2;--panel2:#e5e2dd;--line:#d2cdc5;--gold:#c9952b}
+:root[data-theme="dark"]{--bg:#161614;--side:#0a0a09;--panel:#1d1c1a;--panel2:#272623;--line:#33322e;--line2:#5a5750;--gold:#e0b04a}
+*{-webkit-tap-highlight-color:transparent}
+.sidebar{background:var(--side)}
+.topbar{background:var(--bg)}
+.layout-side .topbar{display:none}
+.crumb-slot{display:none}
+.layout-side .crumb-slot:has(.crumb-back){display:flex;align-items:center;gap:14px;margin:-6px 0 14px}
+.layout-side .crumb-slot .eyebrow{display:none}
+
+/* профиль и колокольчик внизу левой панели */
+.side-me{margin-top:auto;padding:0 14px;display:grid;gap:10px}
+.side-me:empty{display:none}
+.side-me + .logout-btn{margin-top:12px}
+.side-me .game-banner{margin:0;max-width:none;border-radius:14px;flex-wrap:wrap;justify-content:space-between}
+.side-me .game-banner span:nth-child(2){white-space:normal}
+.side-row{display:flex;align-items:center;gap:6px;border:1px solid var(--card-line);border-radius:14px;padding:6px 6px 6px 6px;background:var(--bg)}
+.side-row .me-chip{flex:1;min-width:0;border:0;padding:4px 6px;gap:10px}
+.side-row .me-chip .ava{width:40px;height:40px}
+.side-row .me-txt{min-width:0}
+.side-row .me-txt b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:4px}
+.side-row .bell svg{width:24px;height:24px}
+.layout-side .notif-pop{position:fixed;top:auto;bottom:86px;left:248px;right:auto}
+
+/* галочка администратора */
+.adm{display:inline-grid;place-items:center;width:1em;height:1em;min-width:15px;min-height:15px;margin-left:5px;vertical-align:-.1em;flex:none;color:#2f80ed}
+.adm svg{width:100%;height:100%;display:block}
+.nick-line .adm{width:30px;height:30px}
+
+/* пиксельные иконки */
+.pix{display:block;width:24px;height:24px;object-fit:contain;flex:none}
+.mc-ico .pix{width:64px;height:64px}
+.btn .pix{width:20px;height:20px;margin:-2px 0}
+.qs-line .pix{width:24px;height:24px}
+.q-ico .pix{width:28px;height:28px;margin-top:20px}
+.ph-stats .pix{width:32px;height:32px}
+h2 .pix{width:26px;height:26px}
+.sidebar nav button .pix{width:24px;height:24px}
+.st-ico{display:inline-grid;place-items:center}
+
+/* плашки игроков: фиксированная высота — доска больше не сдвигается от хода к ходу */
+.pbar{height:52px;min-height:52px}
+.pb-ava{flex:none;display:block}
+.pbar .nm{flex:1;min-width:0;overflow:hidden}
+.pbar .nm-line{display:flex;align-items:center;min-width:0;white-space:nowrap}
+.pbar .nm-line > span:first-child{overflow:hidden;text-overflow:ellipsis}
+.pbar .nm small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pbar .taken{flex-wrap:nowrap;overflow:hidden;max-width:100%}
+.pb-right{display:flex;align-items:center;gap:8px;flex:none;margin-left:auto}
+.pb-right .clock,.pb-right .pm-cancel{margin-left:0}
+.pbar .pm-cancel + .clock{margin-left:0}
+
+/* чат в партии */
+.chat{border:1px solid var(--line);border-radius:12px;display:flex;flex-direction:column;overflow:hidden}
+.chat-head{display:flex;align-items:center;gap:8px;padding:8px 10px;border-bottom:1px solid var(--line);font-size:13px;letter-spacing:.12em;text-transform:uppercase}
+.chat-head .icon-btn{margin-left:auto}
+.chat-head .icon-btn svg{width:18px;height:18px}
+.chat-n{background:var(--loss);color:#fff;border-radius:9px;font-size:11px;padding:0 6px;letter-spacing:0}
+.chat-list{height:150px;overflow:auto;padding:8px 10px;display:flex;flex-direction:column;gap:6px;font-size:14px}
+.chat-msg{max-width:85%;padding:6px 10px;border-radius:12px;background:var(--panel2);line-height:1.35;word-wrap:break-word;align-self:flex-start;animation:chatIn .2s ease}
+.chat-msg.mine{align-self:flex-end;background:var(--text);color:var(--bg)}
+.chat-msg.sys{align-self:center;background:none;color:var(--muted);font-size:12px;padding:2px}
+@keyframes chatIn{from{transform:translateY(6px);opacity:0}}
+.chat-quick{display:flex;gap:6px;padding:6px 8px 0;overflow-x:auto;scrollbar-width:none}
+.chat-quick button{flex:none;border:1px solid var(--line);background:none;border-radius:999px;padding:4px 10px;font-size:12.5px;font-weight:600;white-space:nowrap}
+.chat-quick button:hover{border-color:var(--text)}
+.chat-form{display:flex;gap:6px;padding:8px}
+.chat-form input{flex:1;min-width:0;padding:8px 10px !important}
+.chat-form .btn{flex:none}
+.chat.off .chat-form input{opacity:.6}
+
+/* окно конца партии (как на макете) */
+.overlay.res-ov{background:rgba(0,0,0,.6);backdrop-filter:blur(3px);overflow-y:auto;align-items:start}
+.overlay.res-ov .modal.resm{max-height:none;margin-bottom:16px;align-self:center}
+.modal.resm{max-width:640px;padding:22px 26px 24px;border:2px solid var(--text);border-radius:22px;position:relative;overflow:visible;margin-top:46px;animation:resIn .45s cubic-bezier(.2,1.3,.4,1)}
+@keyframes resIn{from{transform:scale(.85) translateY(20px);opacity:0}}
+.res-x{position:absolute;top:12px;right:12px;border:0;background:none;padding:6px;border-radius:10px;color:var(--text)}
+.res-x svg{width:26px;height:26px;display:block}
+.res-x:hover{background:var(--panel2)}
+.res-cup{display:flex;justify-content:center;align-items:flex-end;gap:10px;margin:-70px 0 4px}
+.res-cup .cup{width:104px;height:104px;object-fit:contain;filter:drop-shadow(0 6px 14px rgba(0,0,0,.35))}
+.res-cup .laurel{width:34px;height:64px;color:var(--text);opacity:.85}
+.res-cup .laurel.r{transform:scaleX(-1)}
+.resm.rs-loss .cup{filter:grayscale(1) brightness(.75);opacity:.75}
+.resm.rs-draw .cup{filter:grayscale(.85);opacity:.85}
+.res-title{font-family:var(--fd);font-size:54px !important;font-weight:700;line-height:1;margin:6px 0 4px !important;text-transform:none}
+.res-sub{color:var(--muted);font-size:17px;font-weight:600;margin:0 0 18px}
+.res-players{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:14px;margin-bottom:18px}
+.rp{display:flex;align-items:center;gap:12px;text-align:left;min-width:0}
+.rp.r{justify-content:flex-end}
+.rp .ava{width:64px;height:64px;border-radius:14px;border:2px solid var(--text);flex:none}
+.rp b{display:flex;align-items:center;font-size:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rp small{display:block;color:var(--muted);font-weight:600;font-size:13px;margin-top:2px}
+.res-score{font-family:var(--fd);font-size:46px;font-weight:700;padding:0 18px;border-left:1px solid var(--line);border-right:1px solid var(--line);white-space:nowrap}
+.res-report{border:2px solid var(--text);border-radius:16px;padding:12px 16px;text-align:left}
+.rr-head{display:flex;align-items:center;gap:10px;font-weight:800;padding-bottom:10px;border-bottom:1px solid var(--line);margin-bottom:10px}
+.rr-head svg{width:22px;height:22px}
+.rr-body{display:grid;grid-template-columns:1fr auto;gap:18px;align-items:center}
+.rr-line{display:grid;grid-template-columns:24px 1fr auto;gap:10px;align-items:center;padding:5px 0;font-weight:600}
+.rr-line b{font-size:18px}
+.rr-dot{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:900;color:#fff}
+.rr-side{border-left:1px solid var(--line);padding-left:18px;display:grid;gap:10px}
+.rr-side div{display:flex;align-items:center;justify-content:space-between;gap:14px;font-weight:600;font-size:14px}
+.rr-pill{border:1px solid var(--card-line);border-radius:999px;padding:4px 12px;font-weight:800;font-size:15px;min-width:64px;text-align:center}
+.rr-wait{color:var(--muted);font-weight:600;font-size:14px}
+.res-btns{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:18px}
+.res-btns.two{grid-template-columns:repeat(2,1fr)}
+.res-btns .btn{padding:13px 10px;border-radius:999px;border-width:2px;border-color:var(--text);white-space:nowrap;font-size:14.5px}
+.res-rt{font-weight:800;margin-left:4px}
+
+/* админ-панель */
+.adm-stats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px;margin-bottom:20px}
+.adm-stats .card{padding:14px 16px}
+.adm-stats b{display:block;font-family:var(--fd);font-size:34px;font-weight:600;line-height:1.1}
+.adm-stats small{color:var(--muted);font-weight:600;font-size:12px}
+.adm-grid{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:20px;align-items:start}
+.adm-row{display:grid;grid-template-columns:40px minmax(0,1fr) auto;gap:12px;align-items:center;padding:8px;border-radius:12px;cursor:pointer;border:1px solid transparent}
+.adm-row:hover{border-color:var(--line2)}
+.adm-row .ava{width:40px;height:40px}
+.adm-row b{display:flex;align-items:center}
+.adm-tags{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.atag{font-size:11px;font-weight:800;border-radius:6px;padding:2px 7px;border:1px solid var(--line2);white-space:nowrap}
+.atag.red{border-color:var(--loss);color:var(--loss)}
+.atag.blue{border-color:#2f80ed;color:#2f80ed}
+.atag.amber{border-color:#d08a12;color:#d08a12}
+.adm-log{display:grid;gap:2px;max-height:520px;overflow:auto;font-size:13px}
+.adm-log div{padding:8px 4px;border-bottom:1px solid var(--line);line-height:1.4}
+.adm-log small{display:block;color:var(--muted)}
+.modal.adm-m{max-width:620px;text-align:left}
+.modal.adm-m h2{justify-content:flex-start}
+.am-head{display:flex;align-items:center;gap:14px;margin-bottom:12px}
+.am-head .ava{width:60px;height:60px}
+.am-sec{border-top:1px solid var(--line);padding:12px 0}
+.am-sec .lbl{margin:0 0 8px}
+.am-line{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.am-line input,.am-line select{flex:1;min-width:140px;width:auto}
+.am-line .btn{flex:none}
+.am-now{font-size:13px;color:var(--muted);font-weight:600;margin:0 0 8px}
+.am-now.red{color:var(--loss)}
+.ban-screen .big-ico{font-size:54px}
+
+@media (max-width:1100px){ .adm-stats{grid-template-columns:repeat(3,minmax(0,1fr))} .adm-grid{grid-template-columns:1fr} }
+@media (max-width:900px){
+  .side-me{margin:0;padding:0;display:flex;align-items:center;gap:4px}
+  .side-me .game-banner{display:none}
+  .side-row{border:0;padding:0;background:none;gap:2px}
+  .side-row .me-chip{padding:2px;flex:none}
+  .side-row .me-chip .ava{width:32px;height:32px}
+  .side-me + .logout-btn{margin:0}
+  .layout-side .notif-pop{position:fixed;top:56px;bottom:auto;left:auto;right:8px}
+  .layout-side .crumb-slot:has(.crumb-back){margin:0 0 12px}
+  .adm-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .chat-list{height:120px}
+}
+@media (max-width:600px){
+  .modal.resm{padding:18px 14px 18px;margin-top:40px}
+  .res-cup{margin-top:-58px}
+  .res-cup .cup{width:84px;height:84px}
+  .res-title{font-size:40px !important}
+  .res-sub{font-size:14px;margin-bottom:14px}
+  .res-players{grid-template-columns:1fr auto 1fr;gap:6px;margin-bottom:14px}
+  .rp,.rp.r{flex-direction:column;justify-content:flex-start;text-align:center;gap:6px}
+  .rp.r{flex-direction:column-reverse;justify-content:flex-end}
+  .rp .ava{width:50px;height:50px}
+  .rp b{justify-content:center;font-size:15px;white-space:normal;overflow-wrap:anywhere}
+  .rp.r > div{text-align:center !important}
+  .res-score{border:0;padding:0 4px;font-size:30px;align-self:center}
+  .rr-body{grid-template-columns:1fr}
+  .rr-side{border-left:0;padding-left:0;border-top:1px solid var(--line);padding-top:10px;grid-template-columns:repeat(3,1fr);gap:6px}
+  .rr-side div{flex-direction:column;gap:4px;font-size:12px;text-align:center}
+  .rr-pill{min-width:0;padding:3px 8px}
+  .res-report{padding:10px 12px}
+  .rr-line{padding:3px 0}
+  .res-btns{grid-template-columns:1fr;gap:8px}
+  .res-btns.two{grid-template-columns:1fr}
+  .res-btns .btn{padding:11px}
+  .modal.adm-m{padding:18px 14px}
+}
 </style>
 </head>
 <body>
@@ -710,7 +894,9 @@ span.to-prof:hover{text-decoration:underline;text-underline-offset:3px}
     <button data-go="profile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4.5 4.5-6.5 8-6.5s7 2 8 6.5"/></svg><span>Профиль</span></button>
     <button data-go="rules"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M3 5c3-1.5 6-1.5 9 1 3-2.5 6-2.5 9-1v14c-3-1.5-6-1.5-9 1-3-2.5-6-2.5-9-1z"/><path d="M12 6v14"/></svg><span>Правила</span></button>
     <button data-go="settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/></svg><span>Настройки</span></button>
+    <button data-go="admin" id="navAdmin" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7.5 3v5.5c0 4.6-3.2 8.3-7.5 9.5-4.3-1.2-7.5-4.9-7.5-9.5V6z"/><path d="M8.8 12.2l2.2 2.2 4.3-4.6"/></svg><span>Админ</span></button>
   </nav>
+  <div class="side-me" id="sideMe"></div>
   <button class="logout-btn" id="logoutSide"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h4.5A1.5 1.5 0 0 1 20 5.5v13a1.5 1.5 0 0 1-1.5 1.5H14M10 8l-4 4 4 4M6 12h10"/></svg><span>Выйти</span></button>
 </aside>
 
@@ -727,6 +913,8 @@ span.to-prof:hover{text-decoration:underline;text-underline-offset:3px}
   </header>
 
 <main>
+  <div class="crumb-slot" id="crumbSlot"></div>
+  <section id="scr-admin" class="screen" hidden><div id="adminBox"></div></section>
   <section id="scr-home" class="screen"><div id="homeBox"></div></section>
   <section id="scr-bots" class="screen" hidden><div id="botsBox"></div></section>
   <section id="scr-friend" class="screen" hidden><div id="friendBox"></div></section>
@@ -765,6 +953,12 @@ span.to-prof:hover{text-decoration:underline;text-underline-offset:3px}
         <div class="actions" id="playActions">
           <button class="btn" id="btnDraw">½ Ничья</button>
           <button class="btn" id="btnResign">⚑ Сдаться</button>
+        </div>
+        <div class="chat" id="chatBox" hidden>
+          <div class="chat-head"><b>Чат</b><span class="chat-n" id="chatN" hidden></span><button class="icon-btn" id="chatMute" title="Скрыть сообщения соперника"></button></div>
+          <div class="chat-list" id="chatList" translate="no"></div>
+          <div class="chat-quick" id="chatQuick"></div>
+          <form class="chat-form" id="chatForm" autocomplete="off"><input id="chatIn" maxlength="200" placeholder="Сообщение…"><button class="btn sm primary" id="chatSend" title="Отправить">➤</button></form>
         </div>
         <div class="undo-row" id="undoRow" hidden><button class="btn" id="btnUndo">↶ Вернуть ход</button></div>
         <div id="reviewBox" hidden>
@@ -812,7 +1006,7 @@ const CHECKER_IMG = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAACUCAYAA
    1. ХРАНИЛИЩЕ: аккаунты и настройки (в памяти браузера)
    ========================================================= */
 const KEY = 'shashki4_v2', OLD_KEY = 'shashki4_v1';
-const DEF_SETTINGS = { theme:'light', premove:true, hints:true, moveVol:70, uiVol:40, boardTheme:'classic', pieceTheme:'classic', soundPack:'auto' };
+const DEF_SETTINGS = { theme:'light', premove:true, hints:true, moveVol:70, uiVol:40, boardTheme:'classic', pieceTheme:'classic', soundPack:'auto', lang:'ru', topbar:false };
 const DEF_MENU = { variant:'32', opp:'bot', bot:2, tc:'300', inc:0, color:'white', friendName:'Друг', friendFlip:false, undo:false };
 function clone(o){ return JSON.parse(JSON.stringify(o)); }
 function loadOld(){ try{ const s = JSON.parse(localStorage.getItem(OLD_KEY)); if(s && s.nick) return s; }catch(e){} return null; }
@@ -872,7 +1066,17 @@ function syncProfile(){
 }
 const rowToAcc = (r, old) => fixAcc({ nick: r.nick, avatar: r.avatar || { type:'preset', id:'cat' }, about: r.about || '', ratings: r.ratings || {},
   customAva: r.avatar && r.avatar.type === 'img' ? r.avatar.data : null,
-  created: Date.parse(r.created_at), history: old ? old.history : null, gamesN: old ? old.gamesN : 0 });
+  created: Date.parse(r.created_at), history: old ? old.history : null, gamesN: old ? old.gamesN : 0,
+  isAdmin: !!r.is_admin, bannedUntil: r.banned_until ? Date.parse(r.banned_until) : 0, banReason: r.ban_reason || '',
+  playBanUntil: r.play_ban_until ? Date.parse(r.play_ban_until) : 0, chatBanUntil: r.chat_ban_until ? Date.parse(r.chat_ban_until) : 0 });
+// v9: какие колонки читать. Если в базе ещё не запущен schema_v9.sql — работаем по-старому, без админки.
+const COLS_OLD = 'id,nick,avatar,about,ratings,created_at';
+let PROF_COLS = COLS_OLD + ',is_admin,banned_until,ban_reason,play_ban_until,chat_ban_until', ADMIN_DB = true;
+async function selProfiles(build){
+  let r = await build(sb.from('profiles').select(PROF_COLS));
+  if(r.error && ADMIN_DB && /column|42703/i.test(r.error.message + r.error.code)){ ADMIN_DB = false; PROF_COLS = COLS_OLD; r = await build(sb.from('profiles').select(PROF_COLS)); }
+  return r;
+}
 // обновляем профиль в кэше, не теряя уже загруженную историю
 function upsertAcc(r){
   const fresh = rowToAcc(r, db.accounts[r.id]);
@@ -883,21 +1087,22 @@ function upsertAcc(r){
 async function fetchProfiles(){
   if(!sb) return;
   const [{ data: rows, error }, { data: gl }] = await Promise.all([
-    sb.from('profiles').select('id,nick,avatar,about,ratings,created_at').limit(2000),
+    selProfiles(q => q.limit(2000)),
     sb.from('games').select('user_id').limit(20000)
   ]);
   if(error){ toast('Сервер недоступен: ' + error.message); return; }
   const cnt = {}; (gl || []).forEach(g => cnt[g.user_id] = (cnt[g.user_id] || 0) + 1);
   const mine = me();
   for(const r of rows){
-    if(r.id === db.current && mine) continue;            // свой профиль в памяти главнее
+    if(r.id === db.current && mine){ applyMyFlags(r); continue; }   // свой профиль в памяти главнее (кроме флагов админа)
     upsertAcc(r);
     db.accounts[r.id].gamesN = cnt[r.id] || 0;
   }
 }
 async function fetchProfile(id){
-  const { data } = await sb.from('profiles').select('id,nick,avatar,about,ratings,created_at').eq('id', id).maybeSingle();
+  const { data } = await selProfiles(q => q.eq('id', id).maybeSingle());
   if(data && id !== db.current) upsertAcc(data);
+  if(data && id === db.current && me()) applyMyFlags(data);
   return data;
 }
 async function fetchHistory(id){
@@ -1532,7 +1737,7 @@ $('#logoBtn').onclick = () => {          // клик по двум шашкам 
 };
 function renderMeMini(){
   const u = me();
-  $('#meMini').innerHTML = u ? `<span class="ava round">${avatarHTML(u.avatar)}</span><span class="me-txt"><b>${esc(u.nick)}</b><small>Рейтинг: ${rating(db.menu.variant, db.menu.tc)}</small></span>` : '';
+  $('#meMini').innerHTML = u ? `<span class="ava round">${avatarHTML(u.avatar)}</span><span class="me-txt"><b><span translate="no">${esc(u.nick)}</span>${adminBadge(db.current)}</b><small>Рейтинг: ${rating(db.menu.variant, db.menu.tc)}</small></span>` : '';
   if(typeof renderBell === 'function') renderBell();
 }
 
@@ -1555,10 +1760,10 @@ function go(name, force){
   document.querySelectorAll('.sidebar nav button').forEach(b => b.classList.toggle('active', b.dataset.go === navName));
   $('#crumb').innerHTML = CRUMBS[name] ? CRUMBS[name]() : '';
   closeNotif();
-  const R = { home: renderHome, bots: renderBots, friend: renderFriendSetup, online: renderOnline, players: renderPlayers,
+  const R = { admin: renderAdmin, home: renderHome, bots: renderBots, friend: renderFriendSetup, online: renderOnline, players: renderPlayers,
               profile: renderProfile, settings: renderSettings, rules: renderRules };
   if(R[name]) R[name]();
-  if(name === 'game' && game) renderAll();
+  if(name === 'game' && game){ setVariant(game.variant); renderAll(); }
   updateGameBanner();
   window.scrollTo(0,0);
 }
@@ -1566,6 +1771,7 @@ document.querySelectorAll('[data-go]').forEach(b => b.addEventListener('click', 
 const back = (to, label) => `<button class="crumb-back" onclick="go('${to}')">← ${label}</button>`;
 const CRUMBS = {
   home: () => '<span class="eyebrow">Главная</span>',
+  admin: () => '<span class="eyebrow">Админ-панель</span>',
   bots: () => back('home', 'Играть') + '<span class="eyebrow">Против бота</span>',
   friend: () => back('home', 'Играть') + '<span class="eyebrow">С другом рядом</span>',
   online: () => back('home', 'Играть') + '<span class="eyebrow">Онлайн</span>',
@@ -1603,7 +1809,7 @@ function showAuth(tab){
   </div></div>`;
   document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => showAuth(b.dataset.t));
   $('#aShow').onchange = e => document.querySelectorAll('#aPass,#aPass2').forEach(i => i.type = e.target.checked ? 'text' : 'password');
-  setTimeout(() => ($('#aNick') || $('#aMail')).focus(), 30);
+  setTimeout(() => { const f = $('#aNick') || $('#aMail'); if(f) f.focus(); }, 30);
   $('#authForm').onsubmit = async e => {
     e.preventDefault();
     if(!sb) return;
@@ -1642,11 +1848,15 @@ async function afterLogin(user, fresh){
     row = await fetchProfile(user.id) || { nick, ratings:{}, created_at: new Date().toISOString() };
   }
   db.accounts[user.id] = rowToAcc(row, null);
-  me().history = await fetchHistory(user.id);
-  me().gamesN = me().history.length;
+  if(isBanned(me())){ showBan(me()); return; }
+  updateAdminNav();
+  const hist = await fetchHistory(user.id);
+  if(db.current !== user.id || !me()) return;        // пока грузились — вышли или заблокировали
+  me().history = hist;
+  me().gamesN = hist.length;
   lastSync = JSON.stringify(profData(me()));
   await fetchSocial();
-  joinLobby();
+  joinLobby(); watchProfiles();
   closeModal(); renderMeMini(); go('home', true);
   setTimeout(popFriendReqs, 600);
   toast(fresh ? `Добро пожаловать, ${me().nick}!` : `Привет, ${me().nick}!`);
@@ -1658,13 +1868,16 @@ async function boot(){
   if(data && data.session) await afterLogin(data.session.user);
   else showAuth();
 }
-async function logout(){
-  if(pending){ askPending(logout); return; }
+async function logout(force){
+  if(pending && !force){ askPending(logout); return; }
+  if(pending) hideSaveBar();
   if(game && !game.over && !game.review){ resignOnline(); endGame('loss', 'resign', true); }
   stopSearch(true);
   leaveLobby();
   game = null; clearInterval(timer);
   db.current = null; db.accounts = {}; socialCache = { friends:[], requests:[] };
+  if(profWatch && sb){ sb.removeChannel(profWatch); profWatch = null; }
+  updateAdminNav();
   renderMeMini();
   document.querySelectorAll('.screen').forEach(s => s.hidden = s.id !== 'scr-home');
   if(sb) await sb.auth.signOut();
@@ -1833,7 +2046,7 @@ function renderFriendsCard(){
   box.innerHTML = `<div class="sc-head"><h2>Друзья онлайн (${on})</h2><button class="icon-btn" title="Все друзья" id="frAll">${ICON.arrow}</button></div>
     ${fr.length ? fr.slice(0, 6).map(k => { const a = db.accounts[k]; return `
       <div class="fr-row" data-open="${esc(k)}"><span class="ava round">${avatarHTML(a.avatar)}</span>
-        <div><b>${esc(a.nick)}</b>${statusDot(k)}</div>
+        <div><b>${nickH(k)}</b>${statusDot(k)}</div>
         <button class="icon-btn" data-inv="${esc(k)}" title="Позвать на партию" ${statusOf(k)==='offline'?'disabled':''}>${ICON.swords}</button></div>`; }).join('')
       : `<p class="muted small">Друзей пока нет. Найди игроков и добавь их.</p><button class="btn wide" onclick="go('players')">${ICON.search} Найти игроков</button>`}`;
   $('#frAll').onclick = () => { profTab = 'friends'; go('profile'); };
@@ -1846,7 +2059,7 @@ function renderTopCard(){
     .sort((x,y) => y.r - x.r || y.n - x.n).slice(0, 5);
   box.innerHTML = `<div class="sc-head"><h2>${ICON.trophy} Топ игроков</h2><button class="icon-btn" title="Все игроки" onclick="go('players')">${ICON.arrow}</button></div>
     <div class="muted small" style="margin:-4px 0 8px">${VAR_NAMES[m.variant]} · ${tcById(m.tc).short}</div>
-    ${list.map((x,i) => `<div class="top-row ${x.k===db.current?'me':''}" data-open="${esc(x.k)}"><span class="n">${i+1}</span><span class="nm">${esc(x.a.nick)}</span><b>${x.r}</b></div>`).join('')}
+    ${list.map((x,i) => `<div class="top-row ${x.k===db.current?'me':''}" data-open="${esc(x.k)}"><span class="n">${i+1}</span><span class="nm">${nickH(x.k)}</span><b>${x.r}</b></div>`).join('')}
     ${list.length < 2 ? '<p class="muted small">Здесь появятся другие игроки, когда они зарегистрируются.</p>' : ''}`;
   bindPeople(box);
 }
@@ -1910,7 +2123,7 @@ function renderOnline(){
         <div class="card"><div class="sc-head"><h2>${ICON.users} Позвать друга</h2><button class="btn sm" onclick="go('players')">${ICON.addUser} Найти друзей</button></div>
           ${fr.length ? fr.map(k => { const a = db.accounts[k]; return `
             <div class="fr-row" data-open="${esc(k)}"><span class="ava round">${avatarHTML(a.avatar)}</span>
-              <div><b>${esc(a.nick)}</b>${statusDot(k)}</div>
+              <div><b>${nickH(k)}</b>${statusDot(k)}</div>
               <button class="btn sm" data-inv="${esc(k)}" ${statusOf(k)==='offline'?'disabled':''}>${ICON.swords} Позвать</button></div>`; }).join('')
             : '<p class="muted">Друзей пока нет. Открой «Игроки», найди человека и отправь заявку в друзья.</p>'}
         </div>
@@ -2046,6 +2259,7 @@ netHandlers.social = () => fetchSocial().then(onSocialChange);
 /* ---------- поиск случайного соперника ---------- */
 let search = null;
 function startSearch(){
+  if(playBlocked()) return;
   if(liveOnline()){ toast('Сначала закончи онлайн-партию'); go('game'); return; }
   if(!lobby){ toast('Нет связи с сервером'); return; }
   const m = db.menu;
@@ -2103,6 +2317,7 @@ netHandlers.match_ok = msg => {
 let invites = [];          // входящие: { iid, from, nick, variant, tc, inc, t }
 let sentInvite = null;     // исходящее
 function askInvite(k){
+  if(playBlocked()) return;
   const st = statusOf(k);
   if(st === 'offline'){ toast('Игрок не в сети'); return; }
   if(st === 'playing'){ toast('Игрок сейчас в партии'); return; }
@@ -2203,6 +2418,7 @@ netHandlers.invite_decline = msg => {
 };
 function acceptInvite(iid){
   const inv = invites.find(i => i.iid === iid); if(!inv) return;
+  if(playBlocked()){ declineInvite(iid); return; }
   if(game && !game.over && !game.review){ toast('Сначала закончи текущую партию'); return; }
   if(statusOf(inv.from) === 'offline'){ toast('Игрок уже не в сети'); invites = invites.filter(i => i !== inv); renderBell(); renderNotif(); return; }
   invites = invites.filter(i => i !== inv); renderBell(); closeNotif(); popClose('inv:' + iid);
@@ -2306,6 +2522,7 @@ window.addEventListener('beforeunload', () => { resignOnline(); stopSearch(true)
    9. ПАРТИЯ
    ========================================================= */
 function startGame(kind){
+  if(playBlocked()) return;
   const m = db.menu;
   m.opp = kind; save();
   const friend = kind === 'friend';
@@ -2382,7 +2599,7 @@ function buildBoard(){
   $('#ranksL').innerHTML = rHTML; $('#ranksR').innerHTML = rHTML;
 }
 
-function renderAll(){ renderBars(); renderSquares(); renderPieces(); renderAnnot(); renderStatus(); renderMoves(); renderOffer(); if(game.review) renderReviewExtras(); }
+function renderAll(){ renderBars(); renderSquares(); renderPieces(); renderAnnot(); renderStatus(); renderMoves(); renderOffer(); renderChat(); if(game.review) renderReviewExtras(); }
 
 function fmtClock(ms){
   if(!game.tc.sec) return '∞';
@@ -2429,12 +2646,25 @@ function renderBars(){
     // у живого соперника аватарка и ник — ссылка на его профиль
     const pk = side !== game.me && game.online && game.online.key && db.accounts[game.online.key] ? game.online.key : null;
     const lk = pk ? ` class="to-prof" data-prof="${esc(pk)}" title="Открыть профиль"` : '';
-    $(box).innerHTML = `<span class="ava${pk ? ' to-prof' : ''}"${pk ? ` data-prof="${esc(pk)}" title="Открыть профиль"` : ''}>${i.ava}</span><div class="nm"><span${lk}>${i.name}</span> <small>${i.sub}</small>${takenDots(side)}</div>${right}`;
-    $(box).querySelectorAll('[data-prof]').forEach(el => el.onclick = () => openPlayer(el.dataset.prof, true));
-    const pc = $(box).querySelector('#pmCancel'); if(pc) pc.onclick = cancelPremoves;
+    const badge = side === game.me ? adminBadge(game.ownerKey || db.current) : (pk ? adminBadge(pk) : '');
+    // v9: плашка собрана из трёх частей, и меняется только то, что поменялось —
+    // аватарка не перерисовывается каждый ход (на телефоне это давало мигание)
+    const el = $(box);
+    if(!el._parts){
+      el.innerHTML = '<span class="pb-ava"></span><div class="nm"></div><div class="pb-right"></div>';
+      el._parts = el.children;
+    }
+    const [pa, pn, pr] = el._parts;
+    setHTML(pa, `<span class="ava${pk ? ' to-prof' : ''}"${pk ? ` data-prof="${esc(pk)}" title="Открыть профиль"` : ''}>${i.ava}</span>`);
+    setHTML(pn, `<span class="nm-line"><span${lk}>${i.name}</span>${badge}</span><small>${i.sub}</small>${takenDots(side)}`);
+    setHTML(pr, right);
+    el.querySelectorAll('[data-prof]').forEach(x => x.onclick = () => openPlayer(x.dataset.prof, true));
+    const pc = el.querySelector('#pmCancel'); if(pc) pc.onclick = cancelPremoves;
   }
   renderClocks();
 }
+// записать HTML, только если он изменился (меньше перерисовок — меньше мигания)
+function setHTML(el, html){ if(el._h !== html){ el.innerHTML = html; el._h = html; } }
 // плашка «Вернуться к партии», когда во время онлайн-партии ушёл на другую страницу
 function updateGameBanner(){
   const el = $('#gameBanner'); if(!el) return;
@@ -2500,21 +2730,30 @@ function renderSquares(){
 
 function placeEl(el, s){ const { x, y } = disp(s); el.style.left = (x*100/COLS) + '%'; el.style.top = y*12.5 + '%'; }
 function renderPieces(){
-  const box = $('#pieces'); box.innerHTML = '';
+  const box = $('#pieces');
   let must = new Set();
   if(myTurn() && game.sel == null){
     const ms = legalMine();
     if(ms.length && ms[0].caps.length) must = new Set(ms.map(m => m.from));
   }
+  // v9: шашки, которые стоят на месте, не пересоздаются (раньше вся доска перерисовывалась каждый ход)
+  const old = new Map();
+  box.querySelectorAll('.piece').forEach(el => {
+    if(el.classList.contains('dragging') || el.classList.contains('moving') || el.classList.contains('captured')) el.remove();
+    else old.set(+el.dataset.sq, el);
+  });
+  box.querySelectorAll('.mc-badge').forEach(el => el.remove());
   for(let s=0;s<N;s++){
-    const v = game.board[s]; if(!v) continue;
-    const el = document.createElement('div');
-    el.className = 'piece ' + (v > 0 ? 'w' : 'b') + (Math.abs(v) === 2 ? ' k' : '') + (must.has(s) ? ' must' : '');
-    el.dataset.sq = s;
+    const v = game.board[s];
+    let el = old.get(s); old.delete(s);
+    if(!v){ if(el) el.remove(); continue; }
+    const cls = 'piece ' + (v > 0 ? 'w' : 'b') + (Math.abs(v) === 2 ? ' k' : '') + (must.has(s) ? ' must' : '');
+    if(!el){ el = document.createElement('div'); el.dataset.sq = s; box.appendChild(el); }
+    if(el.className !== cls) el.className = cls;
     placeEl(el, s);
-    el.innerHTML = `<div class="disc">${Math.abs(v) === 2 ? CROWN : ''}</div>`;
-    box.appendChild(el);
+    setHTML(el, `<div class="disc">${Math.abs(v) === 2 ? CROWN : ''}</div>`);
   }
+  old.forEach(el => el.remove());
   // значок оценки хода на клетке, куда пришла шашка
   if(game.review && game.rec.an && game.rv.pos > 0 && lineMatches(game.rv.pos)){
     const a = game.rec.an[game.rv.pos-1], m = game.rv.line[game.rv.pos-1];
@@ -2840,19 +3079,7 @@ function endGame(result, reason, silent){
   if(silent) return;
   SND[result]();
   if(result === 'win' && game.bot && game.bot.elo >= 1400) fireworks();
-  const ico = { win:'🏆', loss:'😔', draw:'🤝' }[result];
-  const rt = game.friend ? '<p class="muted">Игра с другом — рейтинг не меняется</p>'
-    : game.undo ? '<p class="muted">Был включён возврат ходов — партия без рейтинга</p>'
-    : `<p>Рейтинг (${V.label}, ${game.tc.short}): <b>${Math.round(R + delta)}</b> <span class="delta ${delta >= 0 ? 'up' : 'down'}">${delta >= 0 ? '+' : ''}${delta}</span></p>`;
-  modal(`<div class="big-ico">${ico}</div><h2>${title}</h2><p class="muted">${REASONS[result][reason]}</p>${rt}`, [
-    { label:'Посмотреть доску' },
-    { label:'Разбор партии', onClick: () => openReview(0) },
-    { label:'В меню', onClick: () => go('home') },
-    { label:'Реванш', cls:'primary', onClick: () => {
-      if(game.online){ const o = game.online; sendInvite(o.key, { variant: game.variant, tc: game.tc.id, inc: game.inc, color: game.me === 1 ? 'black' : 'white' }); return; }
-      startGame(game.friend ? 'friend' : 'bot');
-    } }
-  ]);
+  showResult({ result, reason, rec, delta, newR: Math.round(R + delta) });
   heartbeat();
 }
 
@@ -3104,25 +3331,10 @@ function classify(list, pl, prevC){
   return 'good';
 }
 function analyzeGame(rec, gid){
-  setVariant(rec.variant || '32');
-  const line = rec.mv, an = [], per = (rec.variant === '64') ? 160 : 110;
-  let b = initBoard(), k = 0;
   game.anProgress = 0;
-  (function step(){
-    if(!game || game.id !== gid) return;
-    if(k >= line.length){
-      rec.an = an; if(!game.owner) cloudUpdateGame(rec);
-      renderReviewExtras(); renderMoves(); renderPieces();
-      return;
-    }
-    const side = k % 2 ? -1 : 1, pn = notation(line[k]);
-    const list = rootScores(b, side, per);
-    const pl = list.find(x => notation(x.m) === pn) || list[0];
-    an.push({ c: classify(list, pl, an[k-1] && an[k-1].c), b: notation(list[0].m) });
-    b = applyMove(b, line[k]); k++;
-    game.anProgress = k; renderReviewExtras();
-    setTimeout(step, 0);
-  })();
+  runAnalysis(rec, k => { game.anProgress = k; renderReviewExtras(); },
+    () => { if(!game.owner) cloudUpdateGame(rec); setVariant(game.variant); renderReviewExtras(); renderMoves(); renderPieces(); },
+    () => game && game.id === gid);
 }
 function renderReviewExtras(){
   const rv = game.rv, rec = game.rec, an = rec.an;
@@ -3314,9 +3526,9 @@ function profileCheckSame(){
 }
 function renderNickLine(acc, isMe){
   const u = me(), box = $('#nickLine');
-  if(isMe === false){ box.innerHTML = `<span class="nick">${esc(acc.nick)}</span>`; return; }
+  if(isMe === false){ box.innerHTML = `<span class="nick" translate="no">${esc(acc.nick)}</span>${adminBadge(profView)}`; return; }
   if(!editingNick){
-    box.innerHTML = `<span class="nick">${esc(u.nick)}</span><button class="icon-btn" id="nickEdit" title="Сменить ник">${PENCIL}</button>`;
+    box.innerHTML = `<span class="nick" translate="no">${esc(u.nick)}</span>${adminBadge(db.current)}<button class="icon-btn" id="nickEdit" title="Сменить ник">${PENCIL}</button>`;
     $('#nickEdit').onclick = () => { editingNick = true; renderNickLine(); };
     return;
   }
@@ -3461,14 +3673,14 @@ function renderStats(u, key, isMe){
         <div class="fav">${donutRing(parts.map(p => [p[0], p[1]]), u.history.length, 'партий')}
           <div class="fav-leg">${parts.length ? parts.map(p => `<div><i style="background:${p[1]}"></i><span>${p[2]}</span><b>${pct(p[0], u.history.length)}%</b></div>`).join('') : '<span class="muted small">Пока нет партий</span>'}</div></div></div>
       <div class="card"><div class="sc-head"><h2>${ICON.clock} Последние игры</h2><button class="link" data-goTab="history">Все игры ${ICON.arrow}</button></div>
-        ${recent.length ? recent.map(g => `<div class="rg-row" data-rv="${u.history.indexOf(g)}"><span class="ava round">${oppAvaHTML(g)}</span><span class="nm">${esc(g.opp)}</span><span class="pill ${g.result}">${RES_NAME[g.result]}</span><span class="muted small">${new Date(g.date).toLocaleDateString('ru-RU')}</span></div>`).join('')
+        ${recent.length ? recent.map(g => `<div class="rg-row" data-rv="${u.history.indexOf(g)}"><span class="ava round">${oppAvaHTML(g)}</span><span class="nm">${esc(g.opp)}</span><span class="pill ${g.result}">${RES_NAME[g.result]}</span><span class="muted small">${new Date(g.date).toLocaleDateString(LOC())}</span></div>`).join('')
           : '<p class="muted small">Партий пока нет</p>'}</div>
       <div class="card about-card"><div class="sc-head"><h2>${ICON.user} О себе</h2>${isMe && !editingAbout ? `<button class="icon-btn" id="aboutEdit" title="Редактировать">${ICON.pen}</button>` : ''}</div>
         ${editingAbout && isMe
           ? `<textarea id="aboutIn" maxlength="300" rows="5" placeholder="Например: играю с 2025 года, люблю быстрые партии…">${esc(u.about || '')}</textarea>
              <div class="about-btns"><span class="muted small" id="aboutCnt">${(u.about || '').length}/300</span><button class="btn sm" id="aboutNo">Отмена</button><button class="btn sm primary" id="aboutOk">Готово</button></div>`
           : `<p class="about-text">${u.about ? esc(u.about) : `<span class="muted">${isMe ? 'Пока пусто. Нажми на карандаш и напиши пару слов о себе.' : 'Игрок пока ничего не написал.'}</span>`}</p>`}
-        <div class="about-meta"><span>${ICON.cal} С нами с ${new Date(u.created || Date.now()).toLocaleDateString('ru-RU', { month:'long', year:'numeric' })}</span></div>
+        <div class="about-meta"><span>${ICON.cal} С нами с ${new Date(u.created || Date.now()).toLocaleDateString(LOC(), { month:'long', year:'numeric' })}</span></div>
       </div>
     </div>`;
   const box = $('#profTab');
@@ -3519,7 +3731,7 @@ function renderHistory(u, key){
   $('#profTab').innerHTML = `<div class="card"><h2>${ICON.clock} История игр <small class="muted">${hist.length}</small></h2><div class="tbl-wrap"><table><thead><tr><th>Игра</th><th>Соперник</th><th>Цвет</th><th>Результат</th><th>Ходов</th><th>Рейтинг</th><th>Дата</th><th></th></tr></thead><tbody>
     ${hist.map(({ g, i }) => {
       const v = g.variant || '32';
-      const ds = new Date(g.date).toLocaleDateString('ru-RU', { day:'numeric', month:'short', year:'numeric' });
+      const ds = new Date(g.date).toLocaleDateString(LOC(), { day:'numeric', month:'short', year:'numeric' });
       const opp = g.friend ? `👥 ${esc(g.opp)}` : g.online ? `🌐 ${esc(g.opp)} <span class="muted">(${g.oppElo})</span>` : `${esc(g.opp)} <span class="muted">(${g.oppElo})</span>`;
       const rt = g.friend ? '<span class="muted">—</span>' : g.unrated ? '<span class="tag-unr" title="Был включён возврат ходов">без рейтинга</span>' : `${g.rating} <span class="delta ${g.delta >= 0 ? 'up':'down'}">${g.delta >= 0 ? '+':''}${g.delta}</span>`;
       return `<tr class="click" data-i="${i}" title="Открыть разбор партии">
@@ -3562,7 +3774,7 @@ function renderPlayerList(){
       : rel === 'incoming' ? `<button class="btn sm primary" data-fa="${esc(k)}">${ICON.addUser} Принять</button>`
       : `<button class="btn sm" data-fadd="${esc(k)}">${ICON.addUser} В друзья</button>`;
     return `<div class="pl-row" data-open="${esc(k)}"><span class="ava round">${avatarHTML(a.avatar)}</span>
-      <div class="pl-nm"><b>${esc(a.nick)}</b>${statusDot(k)}</div>
+      <div class="pl-nm"><b>${nickH(k)}</b>${statusDot(k)}</div>
       <div class="pl-r"><b>${ratingOf(a, m.variant, m.tc)}</b><small>${VAR_NAMES[m.variant]} · ${tcById(m.tc).short}</small></div>
       <div class="pl-r"><b>${a.gamesN || 0}</b><small>партий</small></div>
       <div class="pl-btns">${fb}<button class="btn sm" data-inv="${esc(k)}" ${statusOf(k)==='offline'?'disabled':''}>${ICON.swords} На партию</button></div></div>`;
@@ -3576,6 +3788,7 @@ function renderPlayerList(){
    12. ПРАВИЛА
    ========================================================= */
 function renderRules(){
+  if(LANG() === 'en'){ $('#rulesBox').innerHTML = rulesEN(); $('#rulesBox').setAttribute('translate', 'no'); return; }
   $('#rulesBox').innerHTML = `<h1>Правила игры</h1>
   <h2>Общие правила (оба варианта)</h2>
   <ul>
@@ -3612,7 +3825,8 @@ function renderRules(){
   <ul>
     <li>Ход: кликни шашку, потом клетку, или перетащи шашку.</li>
     <li>Стрелки: зажми правую кнопку мыши на клетке и тяни. Правый клик по клетке — кружок. Левый клик — стереть.</li>
-    <li>Премувы: пока думает бот, можно заранее задать несколько ходов подряд (красные, с номерами). Правый клик — отменить все.</li>
+    <li>Премувы: пока думает бот, можно заранее задать несколько ходов подряд (красные, с номерами). Правый клик — отменить все; на телефоне — тап по пустой клетке или кнопка ✕ возле своих часов.</li>
+    <li>Чат: в онлайн-партии можно писать сопернику. Кнопка 🔊 скрывает его сообщения.</li>
   </ul>`;
 }
 
@@ -3630,7 +3844,7 @@ function draftStart(){
   if(pending) return;
   settingsBackup = clone(db.settings);
   markDirty('settings', () => { settingsBackup = null; save(); }, () => {
-    db.settings = settingsBackup; settingsBackup = null; applyTheme();
+    db.settings = settingsBackup; settingsBackup = null; applyTheme(); applyLayout();
     if(current === 'settings') renderSettings();
   });
 }
@@ -3641,6 +3855,7 @@ function setDraft(k, v){
   draftStart();
   db.settings[k] = v;
   if(k === 'theme') applyTheme();
+  if(k === 'topbar') applyLayout();
   checkDraftSame();
   renderSettings();
 }
@@ -3649,9 +3864,13 @@ function renderSettings(){
   $('#setList').innerHTML = `
     <div class="set"><div><b>Тема оформления</b><p>Светлая или тёмная. Ещё её можно менять кликом по двум шашкам вверху слева.</p></div>
       <div class="chips" style="margin:0"><button class="chip ${s.theme==='light'?'on':''}" data-theme="light">☀ Светлая</button><button class="chip ${s.theme==='dark'?'on':''}" data-theme="dark">☾ Тёмная</button></div></div>
+    <div class="set"><div><b>Язык</b><p>Язык сайта. Ники и сообщения игроков не переводятся.</p></div>
+      <div class="chips" style="margin:0"><button class="chip ${LANG()==='ru'?'on':''}" data-lang="ru" translate="no">Русский</button><button class="chip ${LANG()==='en'?'on':''}" data-lang="en" translate="no">English</button></div></div>
+    <div class="set"><div><b>Вид меню</b><p>Боковая панель — профиль и уведомления слева внизу. Верхняя панель — как было раньше.</p></div>
+      <div class="chips" style="margin:0"><button class="chip ${!s.topbar?'on':''}" data-top="0">Боковая панель</button><button class="chip ${s.topbar?'on':''}" data-top="1">Верхняя панель</button></div></div>
     <div class="set"><div><b>Доска</b><p>Цвет и текстура клеток.</p></div>
       <div class="theme-grid">${BOARD_THEMES.map(([id,l]) => `<button class="tcard ${s.boardTheme===id?'on':''}" data-bt="${id}">${themePreview(id, s.pieceTheme)}${l}</button>`).join('')}</div></div>
-    <div class="set"><div><b>Шашки</b><p>Внешний вид фигур.</p></div>
+    <div class="set"><div><b>Вид шашек</b><p>Внешний вид фигур.</p></div>
       <div class="theme-grid">${PIECE_THEMES.map(([id,l]) => `<button class="tcard ${s.pieceTheme===id?'on':''}" data-pt="${id}">${themePreview(s.boardTheme, id)}${l}</button>`).join('')}</div></div>
     <div class="set"><div><b>Премувы</b><p>Ходы заранее, пока думает бот. Можно несколько подряд.</p></div><button class="switch ${s.premove?'on':''}" data-k="premove"></button></div>
     <div class="set"><div><b>Подсказки ходов</b><p>Точки на клетках, куда можно пойти.</p></div><button class="switch ${s.hints?'on':''}" data-k="hints"></button></div>
@@ -3666,6 +3885,13 @@ function renderSettings(){
       <div class="vol"><input type="range" min="0" max="100" step="5" value="${s.uiVol}" data-vol="uiVol"><b>${s.uiVol}%</b></div></div>
     <div class="set"><div><b>Сбросить мою историю и рейтинг</b><p>Удалит все партии этого аккаунта. Отменить нельзя.</p></div><button class="btn danger" id="resetHist">Сбросить</button></div>`;
   $('#setList').querySelectorAll('[data-theme]').forEach(b => b.onclick = () => setDraft('theme', b.dataset.theme));
+  $('#setList').querySelectorAll('[data-lang]').forEach(b => b.onclick = () => {
+    if(b.dataset.lang === LANG()) return;
+    if(pending) commitPending();
+    db.settings.lang = b.dataset.lang; save();
+    setTimeout(() => location.reload(), 150);          // язык применяется после перезагрузки страницы
+  });
+  $('#setList').querySelectorAll('[data-top]').forEach(b => b.onclick = () => setDraft('topbar', b.dataset.top === '1'));
   $('#setList').querySelectorAll('[data-bt]').forEach(b => b.onclick = () => setDraft('boardTheme', b.dataset.bt));
   $('#setList').querySelectorAll('[data-pt]').forEach(b => b.onclick = () => setDraft('pieceTheme', b.dataset.pt));
   $('#setList').querySelectorAll('[data-sp]').forEach(b => b.onclick = () => {
@@ -3683,10 +3909,662 @@ function renderSettings(){
   ]);
 }
 
+
+/* =========================================================
+   13a. v9: АНГЛИЙСКИЙ ЯЗЫК
+   Сайт пишется по-русски, а при выборе English каждый текст на странице
+   заменяется по словарю (следит MutationObserver — «наблюдатель за изменениями страницы»).
+   Ники, «о себе» и сообщения чата не переводятся (translate="no").
+   ========================================================= */
+const LANG = () => db.settings.lang === 'en' ? 'en' : 'ru';
+const LOC = () => LANG() === 'en' ? 'en-GB' : 'ru-RU';        // формат дат
+const EN = {
+  '8 ботов от 100 до 2000 Эло. Тренируйся и расти.':'8 bots from 100 to 2000 Elo. Train and grow.','Выбрать бота':'Choose a bot','Одно устройство — ходите по очереди.':'One device — take turns.',
+  'Позови друга по сети или найди соперника.':'Invite a friend online or find an opponent.','Играть онлайн':'Play online','Статистика':'Stats','Вид шашек':'Pieces',
+  'Пока пусто. Нажми на карандаш и напиши пару слов о себе.':'Empty for now. Press the pencil and write a few words about yourself.','Открыть разбор партии':'Open game review',
+  'Друзей пока нет.':'No friends yet.','Игрок пока ничего не написал.':'The player hasn’t written anything yet.','Новых уведомлений нет':'No new notifications',
+  'Шашки':'Checkers','Играть':'Play','Игроки':'Players','Профиль':'Profile','Правила':'Rules','Настройки':'Settings','Админ':'Admin','Выйти':'Log out',
+  '½ Ничья':'½ Draw','⚑ Сдаться':'⚑ Resign','Чат':'Chat','↶ Вернуть ход':'↶ Take back','💡 Лучший ход':'💡 Best move','↺ Вернуть партию':'↺ Back to game',
+  'Как играть':'How to play','Под себя':'Make it yours','Есть несохранённые изменения':'You have unsaved changes','Отменить':'Cancel','Подтвердить изменения':'Save changes',
+  'Такой ник уже занят':'This nickname is taken','Не удалось сохранить на сервер':'Could not save to the server','Сервер недоступен':'Server unavailable',
+  'Не удалось загрузить историю':'Could not load history','Партия не сохранилась на сервере':'The game was not saved on the server','Не удалось очистить историю':'Could not clear history',
+  '1 минута':'1 minute','1 мин':'1 min','3 минуты':'3 minutes','3 мин':'3 min','5 минут':'5 minutes','5 мин':'5 min','10 минут':'10 minutes','10 мин':'10 min','30 минут':'30 minutes','30 мин':'30 min','Без времени':'No clock',
+  'Шашки 32':'Checkers 32','доска 4×8, по 4 шашки':'4×8 board, 4 pieces each','Шашки 64':'Checkers 64','доска 8×8, по 12 шашек':'8×8 board, 12 pieces each',
+  'Малыш Тёма':'Little Tim','Только учится ходить':'Just learning to move','Соня Сплюшкина':'Sleepy Sonya','Играет сквозь сон':'Plays half asleep','Дядя Петя':'Uncle Pete','Любит рискнуть':'Loves to take risks',
+  'Студент Макс':'Student Max','Считает на 2–3 хода':'Thinks 2–3 moves ahead','Тренер Олег':'Coach Oleg','Крепкий любитель':'Strong amateur','Мастер Вера':'Master Vera','Редко ошибается':'Rarely makes mistakes',
+  'Кандидат Лев':'Candidate Leo','Глубокий расчёт':'Deep calculation','Профессор Шашкин':'Professor Checkers','Почти не ошибается':'Almost never wrong',
+  'Классика':'Classic','Луг':'Meadow','Лёд':'Ice','Дерево':'Wood','Мрамор':'Marble','Неон':'Neon','Глянец':'Gloss','Металл':'Metal','Стекло':'Glass','Камень':'Stone','8-бит':'8-bit',
+  'Бриллиантовый':'Brilliant','Единственный сильный ход, который всё решает':'The only strong move, and it decides the game','Лучший':'Best','Первый выбор движка':'The engine’s first choice',
+  'Хороший':'Good','Надёжный ход, оценка почти не изменилась':'Solid move, the evaluation barely changed','Оплошность':'Inaccuracy','Мелкий промах, позиция немного ухудшилась':'Small slip, the position got a bit worse',
+  'Зевок':'Blunder','Грубая ошибка: потеря шашек или проигрыш':'Big mistake: losing pieces or the game','Вынужденный':'Forced','Другого хода нет или всё уже проиграно':'No other move, or the game is already lost',
+  'Изменения сохранены':'Changes saved','Изменения отменены':'Changes discarded','Сохранить изменения?':'Save changes?','Ты что-то поменял, но не подтвердил.':'You changed something but didn’t save it.',
+  'Не сохранять':'Don’t save','Сохранить':'Save','Рейтинг':'Rating','Выйти из партии?':'Leave the game?','Партия ещё идёт. Если выйдешь — это засчитается как поражение.':'The game is still on. If you leave, it counts as a loss.',
+  'Остаться':'Stay','Сдаться и выйти':'Resign and leave','Главная':'Home','Против бота':'Vs bot','С другом рядом':'Friend nearby','Онлайн':'Online','Профиль игрока':'Player profile','Мой профиль':'My profile',
+  'Разбор партии':'Game review','Партия':'Game','Неверная почта или пароль':'Wrong email or password','Эта почта уже зарегистрирована':'This email is already registered',
+  'Почта не подтверждена — открой письмо от Supabase':'Email not confirmed — open the email from Supabase','Почта указана с ошибкой':'The email has a typo','Слишком много попыток, подожди минуту':'Too many attempts, wait a minute',
+  'Пароль — минимум 6 символов':'Password must be at least 6 characters','Вход':'Log in','Регистрация':'Sign up','показать пароль':'show password','Введи почту и пароль':'Enter your email and password',
+  'Подключаемся…':'Connecting…','Победа':'Win','Ничья':'Draw','Поражение':'Loss','⚪ Белые':'⚪ White','⚫ Чёрные':'⚫ Black','🎲 Случайно':'🎲 Random',
+  'Вариант':'Variant','Контроль времени':'Time control','Добавка за ход':'Increment per move','Вы':'You','Пока нет сыгранных партий':'No games played yet','Привет':'Hi',
+  'Быстрая игра':'Quick game','Режим игры':'Game mode','Найти соперника':'Find an opponent','или':'or','Сыграть с ботом':'Play a bot','Ваши показатели':'Your stats','Победы':'Wins',
+  'Игр сыграно':'Games played','Последняя игра':'Last game','Друзья онлайн':'Friends online','Друзей пока нет. Найди игроков и добавь их.':'No friends yet. Find players and add them.',
+  'Найти игроков':'Find players','Топ игроков':'Top players','Тренировка':'Training','Боты':'Bots','Выбери соперника':'Choose an opponent','Эло':'Elo','Играть с ботом':'Play the bot',
+  'Одно устройство':'One device','С другом':'With a friend','Кто играет':'Who plays','второй игрок':'second player','Поворачивать доску':'Rotate the board','Доска разворачивается к тому, чей ход.':'The board turns to whoever moves next.',
+  'Начать партию':'Start the game','Живые люди':'Real people','Случайный соперник':'Random opponent','Подберём игрока, который тоже ищет партию с такими же настройками.':'We’ll match you with a player looking for a game with the same settings.',
+  'Позвать друга':'Invite a friend','Найти друзей':'Find friends','Позвать':'Invite','Друзей пока нет. Открой «Игроки», найди человека и отправь заявку в друзья.':'No friends yet. Open “Players”, find someone and send a friend request.',
+  'В игре':'Playing','Ищет игру':'Looking for a game','Оффлайн':'Offline','Не получилось':'Didn’t work','Заявка в друзья отправлена':'Friend request sent','теперь твой друг':'is now your friend',
+  'Удалить из друзей?':'Remove from friends?','пропадёт из списка друзей.':'will disappear from your friends list.','Отмена':'Cancel','Удалить':'Remove','Сначала закончи онлайн-партию':'Finish your online game first',
+  'Нет связи с сервером':'No connection to the server','Ищем соперника':'Looking for an opponent','Отменить поиск':'Stop searching','Поиск отменён':'Search cancelled','Игрок не в сети':'The player is offline',
+  'Игрок сейчас в партии':'The player is in a game','Вызов на партию':'Game challenge','Соперник':'Opponent','Отправить вызов':'Send challenge','Ждём ответа':'Waiting for an answer','Отменить вызов':'Cancel challenge',
+  'Ответа нет — вызов отменён':'No answer — challenge cancelled','Отклонить':'Decline','Заявка в друзья':'Friend request','хочет добавить тебя в друзья':'wants to add you as a friend','Принять':'Accept',
+  'Заявка отклонена':'Request declined','Вызов отклонён':'Challenge declined','Сначала закончи текущую партию':'Finish the current game first','Игрок уже не в сети':'The player has gone offline',
+  'Вызов принят, начинаем…':'Challenge accepted, starting…','Уведомления':'Notifications','вызывает на партию':'challenges you to a game','Отказ':'Decline','Партия против':'Game against',
+  'Ошибка синхронизации хода':'Move sync error','отклоняет ничью':'declines the draw','не в сети… ждём':'is offline… waiting','Друг':'Friend','белые':'white','чёрные':'black','онлайн':'online','думает…':'is thinking…',
+  '✕ Премувы':'✕ Premoves','Открыть профиль':'Open profile','Партия с':'Game with','Вернуться':'Back','твой ход':'your move','ход соперника':'opponent’s move','Разбор':'Review','ход':'move','из':'of',
+  'ходов больше нет':'no more moves','ходят':'to move:','свой вариант':'your own line','Партия окончена':'Game over','Ходит':'To move:','Твой ход':'Your move','бить обязательно!':'you must capture!',
+  'премувы':'premoves','В этой партии нет ходов.':'There are no moves in this game.','Ходов пока нет. Белые начинают.':'No moves yet. White starts.','предлагает ничью':'offers a draw',
+  'Взятие обязательно — бей другой шашкой':'Capturing is mandatory — capture with another piece','Сюда можно прийти разными путями — кликай по шагам':'There are several ways to get here — click step by step',
+  'Не больше 10 премувов':'No more than 10 premoves','Премув отменён — так ходить нельзя':'Premove cancelled — that move is not allowed','Подожди, пока закончится ход':'Wait until the move is finished',
+  'Ничья?':'Draw?','предлагает ничью.':'offers a draw.','согласен?':'do you agree?','Нет, играем':'No, keep playing','Да, ничья':'Yes, draw','Сдаться?':'Resign?','Партия будет засчитана как поражение.':'The game will count as a loss.',
+  'Играть дальше':'Keep playing','Сдаться':'Resign','у соперника кончилось время':'the opponent ran out of time','соперник заперт — ходов нет':'the opponent is blocked — no moves left','все шашки соперника взяты':'all the opponent’s pieces are captured',
+  'соперник сдался':'the opponent resigned','соперник покинул игру':'the opponent left the game','у тебя кончилось время':'you ran out of time','твои шашки заперты — ходов нет':'your pieces are blocked — no moves left',
+  'все твои шашки взяты':'all your pieces are captured','ты сдался':'you resigned','по взаимному согласию':'by mutual agreement','позиция повторилась 5 раз':'the position repeated 5 times',
+  'Победа!':'Victory!','Посмотреть доску':'Look at the board','В меню':'To menu','Реванш':'Rematch','Премувы отменены':'Premoves cancelled','К профилю':'To profile','Выйти из партии':'Leave the game',
+  'Для этой партии запись ходов не сохранилась (сыграна в старой версии)':'The moves of this game were not saved (played in an old version)','Ты и так смотришь сыгранную партию':'You are already viewing the played game',
+  'В этой позиции ходов нет':'There are no moves in this position','Движок советует':'The engine suggests','Начальная позиция. Жми ▶ или стрелку →':'Starting position. Press ▶ or the → key','Свой вариант — без оценки':'Your own line — no evaluation',
+  'Лучше':'Better','Оценка хода появится после анализа':'The move rating will appear after the analysis','Анализ партии…':'Analysing the game…','Белые':'White','Чёрные':'Black','победили':'won','выигрывают':'are winning',
+  'у соперника нет ходов':'the opponent has no moves','при точной игре — за':'with exact play — for','оценка':'evaluation','(1.0 ≈ одна лишняя шашка)':'(1.0 ≈ one extra piece)','В друзьях':'Friends',
+  'Заявка отправлена · отменить':'Request sent · cancel','Принять заявку':'Accept request','Пригласить в друзья':'Add friend','Редактировать «о себе»':'Edit “About me”','Отправить запрос на партию':'Challenge to a game',
+  'Побед':'Wins','Игр':'Games','Аватарка':'Avatar','Предложенные':'Suggested','Выбрать из галереи':'Choose from gallery','Закрыть':'Close','Назад':'Back','Не получилось открыть картинку':'Could not open the picture',
+  '0 игр':'0 games','Сыграй рейтинговую партию':'Play a rated game','здесь появится график':'the chart will appear here','Партий':'Games','Сейчас':'Now','Первая партия':'First game','Сыграй 1 партию':'Play 1 game',
+  'Первая победа':'First win','Выиграй любую партию':'Win any game','10 партий':'10 games','Сыграй 10 партий':'Play 10 games','Первые 100 игр':'First 100 games','Сыграй 100 партий':'Play 100 games',
+  'Серия из 5 побед':'5-win streak','Выиграй 5 партий подряд':'Win 5 games in a row','Рейтинг 1200+':'Rating 1200+','Набери 1200 в любом контроле':'Reach 1200 in any time control','Рейтинг 1500+':'Rating 1500+',
+  'Набери 1500 в любом контроле':'Reach 1500 in any time control','Укротитель ботов':'Bot tamer','Победи бота 1400+ Эло':'Beat a 1400+ Elo bot','Гроссмейстер':'Grandmaster','Победи бота 2000 Эло':'Beat the 2000 Elo bot',
+  'Первая онлайн-победа':'First online win','Выиграй у живого игрока':'Beat a real player','Большая доска':'Big board','Сыграй партию в Шашки 64':'Play a game of Checkers 64','Не один':'Not alone','Добавь первого друга':'Add your first friend',
+  'Другие':'Others','Основная статистика':'Main stats','Всего игр':'Total games','Поражений':'Losses','Ничьих':'Draws','Процент побед':'Win rate','Динамика рейтинга':'Rating history','Достижения':'Achievements',
+  'Все':'All','Любимые режимы':'Favourite modes','Пока нет партий':'No games yet','Последние игры':'Recent games','Все игры':'All games','Партий пока нет':'No games yet','О себе':'About me','Готово':'Done',
+  'С нами с':'With us since','Друзья':'Friends','Заявки':'Requests','Нет':'No','Входящих заявок нет':'No incoming requests','Партий с такими настройками нет.':'No games with these settings.',
+  'История игр':'Game history','Игра':'Game','Цвет':'Colour','Результат':'Result','Ходов':'Moves','Дата':'Date','без рейтинга':'unrated','Сообщество':'Community','Всего игроков на сайте':'Players on the site',
+  'Заявка отправлена':'Request sent','В друзья':'Add friend','партий':'games','На партию':'Challenge','Тема оформления':'Theme','Светлая или тёмная. Ещё её можно менять кликом по двум шашкам вверху слева.':'Light or dark. You can also switch it by clicking the two pieces in the top left.',
+  '☀ Светлая':'☀ Light','☾ Тёмная':'☾ Dark','Доска':'Board','Цвет и текстура клеток.':'Square colour and texture.','Шашки ':'Pieces','Внешний вид фигур.':'How the pieces look.','Премувы':'Premoves',
+  'Ходы заранее, пока думает бот. Можно несколько подряд.':'Moves in advance while the bot thinks. You can queue several.','Подсказки ходов':'Move hints','Точки на клетках, куда можно пойти.':'Dots on the squares you can move to.',
+  'Звуки шашек':'Piece sounds','«Под тему» — звук сам подбирается к теме шашек. Нажми на набор, чтобы послушать.':'“Match theme” picks the sound for your piece theme. Click a set to listen.','✨ Под тему':'✨ Match theme',
+  'Звук ходов':'Move sounds','Стук шашек, взятия, дамка, конец партии.':'Piece clicks, captures, kings, end of game.','Звук интерфейса':'Interface sound','Щелчок при нажатии на кнопки.':'A click when you press buttons.',
+  'Сбросить мою историю и рейтинг':'Reset my history and rating','Удалит все партии этого аккаунта. Отменить нельзя.':'Deletes all games of this account. This cannot be undone.','Сбросить':'Reset','Сбросить историю?':'Reset history?',
+  'Все партии и рейтинги этого аккаунта удалятся. Это нельзя отменить.':'All games and ratings of this account will be deleted. This cannot be undone.','Да, сбросить':'Yes, reset','История очищена':'History cleared',
+  'навсегда':'forever','до':'until','Аккаунт заблокирован':'Account blocked','Если это ошибка — напиши администратору.':'If this is a mistake, contact an administrator.','Понятно':'OK','Игра временно запрещена':'Playing is temporarily banned',
+  'Блокировка':'Blocked','Причина':'Reason','Администратор запретил тебе играть':'An administrator banned you from playing',
+  'Удачи!':'Good luck!','Хорошая партия!':'Good game!','Спасибо!':'Thanks!','Ой!':'Oops!','Ещё одну?':'One more?','Показать сообщения соперника':'Show opponent’s messages','Скрыть сообщения соперника':'Hide opponent’s messages',
+  'Чат запрещён':'Chat banned','Сообщение…':'Message…','Напиши сопернику — например, «Удачи!»':'Say something to your opponent — like “Good luck!”','Не так быстро':'Not so fast',
+  'Вы выиграли партию':'You won the game','Вы проиграли партию':'You lost the game','Партия закончилась вничью':'The game ended in a draw','Победил':'Winner:','Без рейтинга (был возврат ходов)':'Unrated (take-backs were on)',
+  'Отчёт о партии':'Game report','Следующая партия':'Next game','Партия слишком короткая для отчёта.':'The game is too short for a report.','Считаем ходы…':'Checking the moves…','Хорошие ходы':'Good moves','Ошибки':'Mistakes',
+  'Плохие ходы':'Bad moves','Точность':'Accuracy','Лучших ходов':'Best moves','Ходов сделано':'Moves made','Следующий соперник':'Next opponent',
+  'Админ-панель':'Admin panel','Нет доступа':'No access','Эта страница только для администраторов.':'This page is for administrators only.','В базе ещё не запущен файл schema_v9.sql.':'The schema_v9.sql file has not been run in the database yet.',
+  'Всего игроков':'Total players','Сейчас онлайн':'Online now','Партий в базе':'Games stored','Заблокированы':'Blocked','Администраторов':'Administrators','Только для администраторов':'Administrators only','Обновить':'Refresh',
+  'Журнал действий':'Action log','Загрузка…':'Loading…','Обновлено':'Updated','Найти по нику':'Search by nickname','С ограничениями':'Restricted','Админы':'Admins','Бан':'Banned','Без игры':'No play','Без чата':'No chat',
+  'Никого не нашли.':'Nobody found.','Пока пусто.':'Nothing yet.','Журнал недоступен':'Log unavailable','Нет прав. Проверь, что в базе запущен schema_v9.sql':'No permission. Check that schema_v9.sql was run in the database',
+  'с':'since','Сменить ник':'Change nickname','Очистить «о себе»':'Clear “About me”','Сбросить аватарку':'Reset avatar','Поставить':'Set','Сбросить все':'Reset all','Блокировка аккаунта':'Account block',
+  'Заблокирован':'Blocked','Не заблокирован':'Not blocked','Причина (её увидит игрок)':'Reason (the player will see it)','Заблокировать':'Block','Снять блокировку':'Unblock','Запрет на игру':'Play ban','Играть нельзя':'Cannot play',
+  'Ограничений нет':'No restrictions','Запретить играть':'Ban from playing','Снять':'Remove','Запрет чата':'Chat ban','Писать в чат нельзя':'Cannot chat','Запретить чат':'Ban chat','Опасные действия':'Dangerous actions',
+  'Удалить историю партий':'Delete game history','Забрать права администратора':'Remove admin rights','Сделать администратором':'Make administrator','Да':'Yes','на 1 час':'for 1 hour','на 1 день':'for 1 day',
+  'на 7 дней':'for 7 days','на 30 дней':'for 30 days','Сменил ник':'changed the nickname','Очистил «о себе»':'cleared “About me”','Сбросил аватарку':'reset the avatar','Изменил рейтинг':'changed the rating',
+  'Сбросить рейтинг?':'Reset the rating?','Все рейтинги игрока станут 1000.':'All the player’s ratings will become 1000.','Сбросил рейтинг':'reset the rating','Заблокировать игрока?':'Block the player?',
+  'Игрок не сможет зайти на сайт.':'The player won’t be able to log in.','Заблокировал':'blocked','Снял блокировку':'unblocked','Запретил играть':'banned from playing','Снял запрет на игру':'lifted the play ban',
+  'Запретил чат':'banned from chat','Снял запрет чата':'lifted the chat ban','Удалить историю?':'Delete history?','Все партии игрока удалятся навсегда. Это нельзя отменить.':'All the player’s games will be deleted forever. This cannot be undone.',
+  'Удалил историю партий':'deleted the game history','История удалена':'History deleted','Забрать права?':'Remove rights?','Сделать администратором?':'Make administrator?',
+  'Игрок потеряет доступ к админ-панели.':'The player will lose access to the admin panel.','Игрок получит галочку и полный доступ к админ-панели.':'The player will get the check mark and full access to the admin panel.',
+  'Забрал права администратора':'removed admin rights','Выдал права администратора':'gave admin rights','Рейтинг — число от 0 до 4000':'Rating must be a number from 0 to 4000','Ник — минимум 2 символа':'Nickname must be at least 2 characters',
+  'Язык':'Language','Язык сайта. Ники и сообщения игроков не переводятся.':'Site language. Nicknames and players’ messages are not translated.',
+  'Вид меню':'Menu layout','Боковая панель — профиль и уведомления слева внизу. Верхняя панель — как было раньше.':'Side panel — profile and notifications at the bottom left. Top bar — the old layout.',
+  'Боковая панель':'Side panel','Верхняя панель':'Top bar','Администратор':'Administrator','Сменить тему':'Change theme','Шкала перевеса':'Advantage bar','В начало (Home)':'To start (Home)','Назад (←)':'Back (←)',
+  'Вперёд (→)':'Forward (→)','В конец (End)':'To end (End)','Отправить':'Send','Скрыть сообщения':'Hide messages','Отменить все премувы':'Cancel all premoves','Сменить аватарку':'Change avatar',
+  'Никнейм (виден другим)':'Nickname (visible to others)','Почта':'Email','Пароль':'Password','Повтори пароль':'Repeat password','Создать аккаунт':'Create account','Войти':'Log in',
+  'Найти игрока по нику':'Find a player by nickname','Имя друга':'Friend’s name','Все друзья':'All friends','Все игроки':'All players','Позвать на партию':'Invite to a game','Сохранить ник':'Save nickname',
+  'Расскажи о себе — блок «О себе» ниже':'Tell about yourself — the “About me” block below','Нет связи с сервером. Проверь интернет и обнови страницу.':'No connection to the server. Check your internet and reload the page.',
+  'Ник — минимум 2 символа ':'Nickname must be at least 2 characters','Пароли не совпадают':'Passwords don’t match','Аккаунт создан. Подтверди почту по ссылке из письма и войди.':'Account created. Confirm your email via the link and log in.',
+  'Добро пожаловать':'Welcome','Ничья предложена — ждём ответа':'Draw offered — waiting for an answer','Ничья предложена…':'Draw offered…','Предлагать ничью можно не чаще раза в 3 хода':'You can offer a draw at most once every 3 moves',
+  'Сначала закончи онлайн-партию ':'Finish your online game first','Это засчитается как поражение.':'It counts as a loss.','Возврат ходов':'Take-backs','↶ Возврат ходов':'↶ Take-backs','Можно отменять ходы.':'You can take back moves.',
+  'Можно отменять ходы, но партия будет без рейтинга.':'You can take back moves, but the game will be unrated.','Играю за':'I play','Без добавки':'No increment','Цвет случайно':'Random colour','цвет случайно':'random colour',
+  'Здесь появятся другие игроки, когда они зарегистрируются.':'Other players will appear here when they sign up.','Никого не нашли. Проверь ник.':'Nobody found. Check the nickname.',
+  'Других игроков пока нет. Зарегистрируй второй аккаунт в другой вкладке, чтобы попробовать.':'No other players yet.','Разбор партии ':'Game review','Взятие':'Capture',
+  'Ход возвращён':'Move taken back','Возвращать нечего':'Nothing to take back','Пока думает бот — подожди':'Wait while the bot is thinking','Партия без рейтинга':'Unrated game',
+  'Аватарка обновлена':'Avatar updated','Картинка слишком большая':'The picture is too big','Профиль сохранён':'Profile saved','Ник изменён':'Nickname changed',
+  'Пароль скрыт':'Password hidden','Своё фото':'Your photo','Загрузить фото':'Upload photo','Выбери аватарку':'Choose an avatar','Отлично!':'Great!','Сохранено':'Saved',
+  'Расскажи о себе: как давно играешь, любимый вариант, откуда ты…':'Tell about yourself: how long you’ve played, favourite variant, where you’re from…','символов':'characters',
+  'Редактировать':'Edit','Пусто. Нажми «Редактировать «о себе»» вверху.':'Empty. Press “Edit “About me”” above.','Игрок пока ничего не рассказал о себе.':'The player hasn’t written anything yet.',
+  'В этой версии нет':'Not in this version','Удалить из друзей':'Remove from friends','Друзей нет':'No friends','У игрока пока нет друзей.':'The player has no friends yet.'
+};
+// фразы с числами и вставками
+const EN_RX = [
+  [/^Привет, (.+)$/, 'Hi, $1'],
+  [/^✨ Под тему \((.+)\)$/, (m, a) => '✨ Match theme (' + (trAny(a) || a) + ')'],
+  [/^Добро пожаловать, (.+)!$/, 'Welcome, $1!'],
+  [/^Партия против (.+)!$/, 'Game against $1!'],
+  [/^Ходит (.+)…$/, (m, a) => (trName(a)) + ' to move…'],
+  [/^Ходит (.+) \((белые|чёрные)\)$/, (m, a, c) => `${trName(a)} to move (${EN[c]})`],
+  [/^(.+) думает…$/, (m, a) => trName(a) + ' is thinking…'],
+  [/^(.+) отклоняет ничью$/, (m, a) => trName(a) + ' declines the draw'],
+  [/^(.+) предлагает ничью$/, (m, a) => trName(a) + ' offers a draw'],
+  [/^(.+) теперь твой друг$/, (m, a) => trName(a) + ' is now your friend'],
+  [/^(.+) не в сети… ждём$/, (m, a) => trName(a) + ' is offline… waiting'],
+  [/^Победа: (.+)!$/, (m, a) => 'Victory: ' + trName(a) + '!'],
+  [/^Рейтинг \((.+), (.+)\): (\d+)$/, (m, a, b, c) => `Rating (${trAny(a) || a}, ${trAny(b) || b}): ${c}`],
+  [/^Сыграй рейтинговую партию \((.+)\) — здесь появится график$/, (m, a) => `Play a rated game (${trAny(a) || a}) — the chart will appear here`],
+  [/^(\d+) Эло$/, '$1 Elo'],
+  [/^Друзья онлайн \((\d+)\)$/, 'Friends online ($1)'],
+  [/^Друзья \((\d+)\)$/, 'Friends ($1)'],
+  [/^Заявки \((\d+)\)$/, 'Requests ($1)'],
+  [/^Всего игроков на сайте: (\d+)\.$/, 'Players on the site: $1.'],
+  [/^Анализ партии… (\d+) \/ (\d+)$/, 'Analysing the game… $1 / $2'],
+  [/^\+(\d+) с$/, '+$1 s'],
+  [/^(.+) \+(\d+)с$/, null],
+  [/^(\d+) партий$/, '$1 games'],
+  [/^с (\d.*)$/, 'since $1']
+];
+const trName = a => EN[a] || a;          // имя бота переводится, ник игрока — нет
+function trCore(c){
+  if(EN[c] != null) return EN[c];
+  for(const [rx, to] of EN_RX){
+    if(!to) continue;
+    const m = c.match(rx);
+    if(m){ const r = typeof to === 'function' ? to(...m) : c.replace(rx, to); if(r != null) return r; }
+  }
+  return null;
+}
+// перевод одной строки: целиком, по кускам « · », без знаков по краям, по известным фразам внутри
+function tr(s){
+  if(LANG() !== 'en' || s == null) return s;
+  s = String(s);
+  if(!/[А-яЁё]/.test(s)) return s;
+  return trAny(s) ?? s;
+}
+function trAny(s){
+  let r = trCore(s); if(r != null) return r;
+  const m = s.match(/^([^А-яЁё]*)([\s\S]*?[А-яЁё])([^А-яЁё]*)$/);
+  if(m && (m[1] || m[3])){ r = trCore(m[2]); if(r != null) return m[1] + r + m[3]; }
+  for(const sep of [' · ', ' — ', ': ', ', ']){
+    if(s.includes(sep)){
+      const parts = s.split(sep).map(p => /[А-яЁё]/.test(p) ? trAny(p) : p);
+      if(parts.every(p => p != null)) return parts.join(sep);
+    }
+  }
+  return null;
+}
+// перевод текста узла с сохранением пробелов по краям
+function trText(t){
+  const m = t.match(/^(\s*)([\s\S]*?)(\s*)$/);
+  if(!/[А-яЁё]/.test(m[2])) return t;
+  const r = trAny(m[2]);
+  return r == null ? t : m[1] + r + m[3];
+}
+const NO_TR = 'script,style,[translate="no"]';   // поля ввода не трогаем: у них нет текста, а подсказки (placeholder) переводим
+function trNode(n){
+  if(n.nodeType === 3){
+    const p = n.parentElement; if(!p || p.closest(NO_TR)) return;
+    const v = trText(n.data); if(v !== n.data) n.data = v;
+    return;
+  }
+  if(n.nodeType !== 1 || n.closest(NO_TR)) return;
+  for(const a of ['placeholder', 'title']){ const v = n.getAttribute(a); if(v && /[А-яЁё]/.test(v)){ const t = trText(v); if(t !== v) n.setAttribute(a, t); } }
+  const w = document.createTreeWalker(n, NodeFilter.SHOW_TEXT | NodeFilter.SHOW_ELEMENT, {
+    acceptNode: x => x.nodeType === 1 && x.matches(NO_TR) ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT });
+  let x; while((x = w.nextNode())){
+    if(x.nodeType === 3){ if(/[А-яЁё]/.test(x.data)){ const v = trText(x.data); if(v !== x.data) x.data = v; } }
+    else for(const a of ['placeholder', 'title']){ const v = x.getAttribute(a); if(v && /[А-яЁё]/.test(v)){ const t = trText(v); if(t !== v) x.setAttribute(a, t); } }
+  }
+}
+function startI18n(){
+  document.documentElement.lang = LANG();
+  if(LANG() !== 'en') return;
+  document.title = 'Checkers';
+  trNode(document.body);
+  new MutationObserver(ms => {
+    for(const m of ms){
+      if(m.type === 'characterData') trNode(m.target);
+      else if(m.type === 'attributes') trNode(m.target);
+      else m.addedNodes.forEach(trNode);
+    }
+  }).observe(document.body, { childList:true, subtree:true, characterData:true, attributes:true, attributeFilter:['placeholder','title'] });
+}
+// правила по-английски — отдельным текстом
+function rulesEN(){
+  return `<h1>Rules</h1>
+  <h2>General rules (both variants)</h2>
+  <ul>
+    <li>White moves first, then the players take turns.</li>
+    <li>Pieces stand and move only on the dark squares.</li>
+    <li>A regular piece moves forward diagonally to a neighbouring square.</li>
+    <li><b>Capturing is mandatory.</b> You can capture forwards and backwards — diagonally over an opponent’s piece to the empty square behind it.</li>
+    <li>If you can keep capturing after a capture, you must continue in the same move. So one move can take several pieces.</li>
+    <li>If there are several ways to capture, you can choose any of them, not necessarily the one that takes more pieces.</li>
+    <li>Captured pieces are removed after the move ends. A piece cannot be jumped twice.</li>
+    <li><b>A king</b> is a piece that reached the last row. It moves and captures diagonally any distance. After a capture it can land on any empty square behind the captured piece; if it can keep capturing from one of them, it must land there.</li>
+  </ul>
+  <h2>Win and draw</h2>
+  <ul>
+    <li>Win: all the opponent’s pieces are captured, or they are blocked and cannot move, or the opponent ran out of time, or resigned.</li>
+    <li>Draw: by agreement, or when the same position repeats 5 times.</li>
+  </ul>
+  <h2><span class="tag">${variantIcon('32', 30)} Checkers 32</span></h2>
+  <ul>
+    <li>The board is 4 squares wide and 8 long. Each side has 4 pieces: White — a1, c1, b2, d2; Black — a7, c7, b8, d8.</li>
+    <li>If a piece becomes a king during a capture, it keeps capturing, but only pieces right next to it (like a regular piece). Distant pieces — from the next move.</li>
+  </ul>
+  <h2><span class="tag">${variantIcon('64', 30)} Checkers 64</span></h2>
+  <ul>
+    <li>Classic Russian checkers: 8×8 board, 12 pieces each on the three nearest rows.</li>
+    <li>If a piece becomes a king during a capture, it immediately keeps capturing as a king — any distance.</li>
+  </ul>
+  <h2>Time</h2>
+  <ul>
+    <li>Time control: 1, 3, 5, 10, 30 minutes or no clock. Out of time — you lose.</li>
+    <li>Increment (+1, +3, +5, +15, +30 s): after each of your moves that many seconds are added to your clock.</li>
+  </ul>
+  <h2>Handy things</h2>
+  <ul>
+    <li>Move: click a piece, then a square, or drag the piece.</li>
+    <li>Arrows: hold the right mouse button on a square and drag. Right-click a square — a circle. Left-click — erase.</li>
+    <li>Premoves: while the bot thinks, you can queue several moves in advance (red, numbered). Right-click cancels them all; on a phone — tap an empty square or the ✕ button next to your clock.</li>
+    <li>Chat: in online games you can write to your opponent. The 🔊 button hides their messages.</li>
+  </ul>`;
+}
+
+/* =========================================================
+   13b. v9: ИКОНКИ, АДМИНЫ И БАНЫ, ВИД ПАНЕЛЕЙ, ЧАТ, ОКНО КОНЦА ПАРТИИ, АДМИН-ПАНЕЛЬ
+   ========================================================= */
+// пиксельные иконки (PNG в папке icons рядом с сайтом)
+const PIX = n => `<img class="pix" src="icons/${n}.png" alt="">`;
+Object.assign(ICON, { robot: PIX('bot'), duo: PIX('friend'), globe: PIX('online'), user: PIX('profile'), trophy: PIX('trophy'), clock: PIX('clock') });
+[['players','friend'], ['profile','profile']].forEach(([g, n]) => { const sv = document.querySelector(`.sidebar nav [data-go="${g}"] svg`); if(sv) sv.outerHTML = PIX(n); });
+
+/* ---------- галочка администратора ---------- */
+const BADGE = `<span class="adm" title="Администратор"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 1.6l2.7 2 3.3-.3 1 3.2 2.7 2-1.1 3.2 1.1 3.2-2.7 2-1 3.2-3.3-.3-2.7 2-2.7-2-3.3.3-1-3.2-2.7-2 1.1-3.2L1.2 8.5l2.7-2 1-3.2 3.3.3z"/><path d="M7.8 12.4l2.8 2.8 5.6-5.9" fill="none" stroke="#fff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>`;
+const isAdm = k => !!(k && db.accounts[k] && db.accounts[k].isAdmin);
+const adminBadge = k => isAdm(k) ? BADGE : '';
+const nickH = k => `<span translate="no">${esc(db.accounts[k] ? db.accounts[k].nick : '')}</span>` + adminBadge(k);
+function updateAdminNav(){ const b = $('#navAdmin'); if(b) b.hidden = !(me() && me().isAdmin); }
+
+/* ---------- баны и запреты ---------- */
+const FOREVER = Date.parse('2999-01-01T00:00:00Z');
+const isBanned = u => !!(u && u.bannedUntil > Date.now());
+function untilTxt(t){
+  if(t >= FOREVER - 1e11) return tr('навсегда');
+  return tr('до') + ' ' + new Date(t).toLocaleString(LOC(), { day:'numeric', month:'long', hour:'2-digit', minute:'2-digit' });
+}
+// флаги своего профиля пришли с сервера (вход, обновление, действие админа)
+function applyMyFlags(r){
+  const u = me(); if(!u) return;
+  const f = rowToAcc(r, null);
+  ['isAdmin','bannedUntil','banReason','playBanUntil','chatBanUntil'].forEach(k => u[k] = f[k]);
+  if(isBanned(u)){ showBan(u); return; }
+  updateAdminNav(); renderMeMini(); renderChat();
+  if(current === 'admin') renderAdmin();
+}
+async function showBan(u){
+  const until = u.bannedUntil, reason = u.banReason;
+  await logout(true);
+  modal(`<div class="ban-screen"><div class="big-ico">⛔</div><h2>Аккаунт заблокирован</h2>
+    <p>${esc(tr('Блокировка') + ' ' + untilTxt(until))}.</p>${reason ? `<p class="muted">${tr('Причина')}: <span translate="no">${esc(reason)}</span></p>` : ''}
+    <p class="muted small">Если это ошибка — напиши администратору.</p></div>`, [{ label:'Понятно', onClick: () => showAuth('login') }]);
+}
+// запрет играть (выдаёт админ): не даём начать партию
+function playBlocked(){
+  const u = me(); if(!u || !(u.playBanUntil > Date.now())) return false;
+  modal(`<div class="big-ico">⏳</div><h2>Игра временно запрещена</h2><p class="muted">${esc(tr('Администратор запретил тебе играть') + ' ' + untilTxt(u.playBanUntil))}.</p>`, [{ label:'Понятно' }]);
+  return true;
+}
+// админ что-то поменял в моём профиле — перечитываем его с сервера (подделать данные из базы нельзя)
+netHandlers.admin = async () => {
+  if(!db.current || !sb) return;
+  const { data } = await selProfiles(q => q.eq('id', db.current).maybeSingle());
+  const u = me(); if(!data || !u) return;
+  const f = rowToAcc(data, null);
+  ['nick','avatar','about','ratings','customAva'].forEach(k => u[k] = f[k]);      // админ поменял профиль — берём серверную версию
+  lastSync = JSON.stringify(profData(u));
+  u.history = await fetchHistory(db.current); u.gamesN = u.history.length;         // историю могли удалить
+  applyMyFlags(data);
+  if(isBanned(u)) return;
+  if(current === 'profile' && !pending) renderProfile();
+  if(current === 'home') renderHome();
+};
+// изменения профилей в реальном времени (если таблица profiles добавлена в Realtime — это делает schema_v9.sql)
+let profWatch = null;
+function watchProfiles(){
+  if(!sb || !ADMIN_DB) return;
+  if(profWatch) sb.removeChannel(profWatch);
+  profWatch = sb.channel('profiles-watch').on('postgres_changes', { event:'UPDATE', schema:'public', table:'profiles' }, p => {
+    const r = p.new; if(!r || !r.id || !db.current) return;
+    if(r.id === db.current) applyMyFlags(r);
+    else { upsertAcc(r); if(current === 'admin') renderAdminList(); }
+  }).subscribe();
+}
+
+/* ---------- вид: боковая панель (по умолчанию) или верхняя, как раньше ---------- */
+const LAY = { tsep: $('.tsep'), row: Object.assign(document.createElement('div'), { className:'side-row' }) };
+function applyLayout(){
+  const top = !!db.settings.topbar;
+  document.body.classList.toggle('layout-side', !top);
+  if(top){
+    $('.top-right').append($('#bellBtn'), LAY.tsep, $('#meMini'));
+    $('.topbar').insertBefore($('#gameBanner'), $('.top-right'));
+    $('.topbar').prepend($('#crumb'));
+    $('.topbar').append($('#notifPop'));
+    LAY.row.remove();
+  } else {
+    LAY.row.append($('#meMini'), $('#bellBtn'));
+    $('#sideMe').append($('#gameBanner'), LAY.row);
+    $('#crumbSlot').append($('#crumb'));
+    document.body.append($('#notifPop'));
+  }
+}
+
+/* ---------- чат в онлайн-партии ---------- */
+const CHAT_QUICK = ['Удачи!', 'Хорошая партия!', 'Спасибо!', 'Ой!', 'Ещё одну?', '👍', '😅', '🔥'];
+const MUTE_ON = SVGI('<path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M16 9.5l5 5M21 9.5l-5 5"/>');
+const MUTE_OFF = SVGI('<path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/>');
+let chatLastSend = 0;
+const chatOn = () => !!(game && game.online && !game.review);
+function renderChat(){
+  const box = $('#chatBox'); if(!box) return;
+  box.hidden = !chatOn(); if(box.hidden) return;
+  const u = me(), banned = !!(u && u.chatBanUntil > Date.now());
+  const list = (game.chat || []).filter(m => m.mine || m.sys || !game.chatMuted);
+  $('#chatList').innerHTML = list.map(m => `<div class="chat-msg ${m.sys ? 'sys' : m.mine ? 'mine' : ''}">${esc(m.sys ? tr(m.text) : m.text)}</div>`).join('')
+    || `<div class="chat-msg sys">${esc(tr('Напиши сопернику — например, «Удачи!»'))}</div>`;
+  $('#chatList').scrollTop = $('#chatList').scrollHeight;
+  if(!$('#chatQuick').children.length) $('#chatQuick').innerHTML = CHAT_QUICK.map(q => `<button type="button" translate="no">${esc(tr(q))}</button>`).join('');
+  const mb = $('#chatMute'); setHTML(mb, game.chatMuted ? MUTE_ON : MUTE_OFF);
+  mb.title = tr(game.chatMuted ? 'Показать сообщения соперника' : 'Скрыть сообщения соперника');
+  box.classList.toggle('off', banned);
+  const inp = $('#chatIn'); inp.disabled = banned;
+  inp.placeholder = banned ? tr('Чат запрещён') + ' ' + untilTxt(u.chatBanUntil) : tr('Сообщение…');
+  $('#chatSend').disabled = banned;
+  $('#chatQuick').querySelectorAll('button').forEach(b => b.disabled = banned);
+}
+function pushChat(m){ (game.chat = game.chat || []).push(m); if(game.chat.length > 100) game.chat.shift(); if(current === 'game') renderChat(); }
+function sendChat(text){
+  text = String(text || '').replace(/\s+/g, ' ').trim().slice(0, 200);
+  if(!text || !chatOn()) return;
+  const u = me();
+  if(u.chatBanUntil > Date.now()){ toast(tr('Чат запрещён') + ' ' + untilTxt(u.chatBanUntil)); return; }
+  if(Date.now() - chatLastSend < 800){ toast('Не так быстро'); return; }
+  chatLastSend = Date.now();
+  netSend(game.online.key, 'chat', { gid: game.online.gid, text });
+  pushChat({ text, mine: true });
+}
+netHandlers.chat = msg => {
+  if(!game || !game.online || game.review || game.online.gid !== (msg.data || {}).gid) return;
+  const text = String(msg.data.text || '').slice(0, 200).trim(); if(!text) return;
+  (game.chat = game.chat || []).push({ text });
+  if(game.chatMuted) return;
+  if(current === 'game') renderChat();
+  else toast(`💬 ${game.online.nick}: ${text.slice(0, 60)}`);
+  tone(volUi() * .3, 880, 0, .06, 'sine'); tone(volUi() * .3, 1320, .07, .08, 'sine');
+};
+$('#chatForm').onsubmit = e => { e.preventDefault(); sendChat($('#chatIn').value); $('#chatIn').value = ''; };
+$('#chatQuick').onclick = e => { const b = e.target.closest('button'); if(b) sendChat(b.textContent); };
+$('#chatMute').onclick = () => { if(!game) return; game.chatMuted = !game.chatMuted; renderChat(); };
+
+/* ---------- анализ партии (общий для разбора и окна конца партии) ---------- */
+function runAnalysis(rec, onProg, onDone, alive){
+  const line = rec.mv, an = [], per = (rec.variant === '64') ? 160 : 110;
+  let b = null, k = 0;
+  (function step(){
+    if(alive && !alive()) return;
+    setVariant(rec.variant || '32');               // вариант мог смениться (мини-доска на главной)
+    if(!b) b = initBoard();
+    if(k >= line.length){ rec.an = an; if(onDone) onDone(an); return; }
+    const side = k % 2 ? -1 : 1, pn = notation(line[k]);
+    const list = rootScores(b, side, per);
+    const pl = list.find(x => notation(x.m) === pn) || list[0];
+    an.push({ c: classify(list, pl, an[k-1] && an[k-1].c), b: notation(list[0].m) });
+    b = applyMove(b, line[k]); k++;
+    if(onProg) onProg(k, line.length);
+    setTimeout(step, 0);
+  })();
+}
+// итог по своим ходам: хорошие / ошибки / плохие / точность
+function reportOf(rec, side){
+  const c = { good:0, inacc:0, blunder:0, best:0, forced:0, all:0 };
+  (rec.an || []).forEach((a, i) => {
+    if((i % 2 ? -1 : 1) !== side) return;
+    c.all++;
+    if(a.c === 'brilliant' || a.c === 'best'){ c.good++; c.best++; }
+    else if(a.c === 'good') c.good++;
+    else if(a.c === 'inacc') c.inacc++;
+    else if(a.c === 'blunder') c.blunder++;
+    else c.forced++;
+  });
+  c.acc = c.all ? Math.round((c.good + c.forced) / c.all * 100) : 0;
+  return c;
+}
+
+/* ---------- окно конца партии (макет «Победа!») ---------- */
+const LAUREL = cls => `<svg class="laurel ${cls}" viewBox="0 0 34 64"><path d="M25 62C11 52 7 34 13 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+  ${[[8,12,-35],[6,23,-15],[6,34,0],[8,45,18],[13,54,40],[19,9,30],[18,20,28],[17,31,25],[18,42,22],[21,51,30]].map(([x,y,r]) => `<ellipse cx="${x}" cy="${y}" rx="3.4" ry="7" transform="rotate(${r} ${x} ${y})" fill="currentColor"/>`).join('')}</svg>`;
+function showResult(o){
+  const g = game, gid = g.id, rec = o.rec, side = g.me;
+  const meI = sideInfo(side), opI = sideInfo(-side);
+  const myKey = db.current, opKey = g.online ? g.online.key : null;
+  const res = o.result;
+  const sub = g.friend
+    ? (res === 'draw' ? tr('Ничья') : `${tr('Победил')} ${res === 'win' ? me().nick : g.friendName}`) + ' · ' + tr(REASONS[res][o.reason])
+    : tr({ win:'Вы выиграли партию', loss:'Вы проиграли партию', draw:'Партия закончилась вничью' }[res]) + ' · ' + tr(REASONS[res][o.reason]);
+  const score = { win:'1 – 0', loss:'0 – 1', draw:'½ – ½' }[res];
+  const myRt = g.friend ? `<small>${tr(g.me === 1 ? 'белые' : 'чёрные')}</small>` : g.undo
+    ? `<small>${tr('Без рейтинга (был возврат ходов)')}</small>`
+    : `<small>${tr('Рейтинг')}: ${o.newR} <span class="delta res-rt ${o.delta >= 0 ? 'up' : 'down'}">${o.delta >= 0 ? '+' : ''}${o.delta}</span></small>`;
+  const opRt = g.friend ? `<small>${tr(g.me === 1 ? 'чёрные' : 'белые')}</small>` : g.online ? `<small>${tr('Рейтинг')}: ${g.online.rating || 1000}</small>` : `<small>${tr('Рейтинг')}: ${g.bot.elo}</small>`;
+  const title = g.friend && res !== 'draw' ? tr('Победа!') : tr({ win:'Победа!', loss:'Поражение', draw:'Ничья' }[res]);
+  const canNext = !g.friend;
+  const root = $('#modalRoot');
+  root.innerHTML = `<div class="overlay res-ov"><div class="modal resm rs-${g.friend ? "win" : res}" role="dialog">
+    <button class="res-x" id="resX" title="${tr('Посмотреть доску')}">${ICON.x}</button>
+    <div class="res-cup">${LAUREL('l')}<img class="cup" src="icons/trophy.png" alt="">${LAUREL('r')}</div>
+    <h2 class="res-title">${esc(title)}</h2>
+    <p class="res-sub">${esc(sub)}</p>
+    <div class="res-players">
+      <div class="rp"><span class="ava">${meI.ava}</span><div><b><span translate="no">${esc(me().nick)}</span>${adminBadge(myKey)}</b>${myRt}</div></div>
+      <div class="res-score">${score}</div>
+      <div class="rp r"><div style="text-align:right"><b><span translate="no">${opI.name}</span>${adminBadge(opKey)}</b>${opRt}</div><span class="ava">${opI.ava}</span></div>
+    </div>
+    <div class="res-report">
+      <div class="rr-head">${ICON.chart}<span>${tr('Отчёт о партии')}</span></div>
+      <div id="rrBody"></div>
+    </div>
+    <div class="res-btns ${canNext ? '' : 'two'}">
+      <button class="btn" id="resRv">${SVGI('<path d="M7 3.5h7l4 4V20a.5.5 0 0 1-.5.5h-10A.5.5 0 0 1 7 20z"/><path d="M14 3.5V8h4M9.5 12h6M9.5 15h6M9.5 18h4"/>')} ${tr('Отчёт о партии')}</button>
+      <button class="btn" id="resRe">${SVGI('<path d="M19 12a7 7 0 0 1-12.2 4.7M5 12a7 7 0 0 1 12.2-4.7"/><path d="M17.5 3.5v4h-4M6.5 20.5v-4h4"/>')} ${tr('Реванш')}</button>
+      ${canNext ? `<button class="btn" id="resNext">${ICON.playFill} ${tr('Следующая партия')}</button>` : ''}
+    </div>
+  </div></div>`;
+  const body = $('#rrBody');
+  const close = () => { root.innerHTML = ''; };
+  function drawReport(k, n){
+    if(!document.body.contains(body)) return;
+    if(!rec.mv || rec.mv.length < 2){ body.innerHTML = `<p class="rr-wait">${tr('Партия слишком короткая для отчёта.')}</p>`; return; }
+    if(!rec.an){
+      body.innerHTML = `<p class="rr-wait">${tr('Считаем ходы…')} ${k || 0} / ${n || rec.mv.length}</p><div class="an-prog"><span style="width:${n ? k/n*100 : 0}%"></span></div>`;
+      return;
+    }
+    const c = reportOf(rec, side);
+    body.innerHTML = `<div class="rr-body"><div>
+        <div class="rr-line"><span class="rr-dot" style="background:${MC.good.color}">✓</span><span>${tr('Хорошие ходы')}</span><b>${c.good}</b></div>
+        <div class="rr-line"><span class="rr-dot" style="background:${MC.inacc.color}">?!</span><span>${tr('Ошибки')}</span><b>${c.inacc}</b></div>
+        <div class="rr-line"><span class="rr-dot" style="background:${MC.blunder.color}">??</span><span>${tr('Плохие ходы')}</span><b>${c.blunder}</b></div>
+      </div><div class="rr-side">
+        <div><span>${tr('Точность')}:</span><span class="rr-pill">${c.acc}%</span></div>
+        <div><span>${tr('Лучших ходов')}:</span><span class="rr-pill">${c.best}</span></div>
+        <div><span>${tr('Ходов сделано')}:</span><span class="rr-pill">${c.all}</span></div>
+      </div></div>`;
+  }
+  drawReport(0, rec.mv ? rec.mv.length : 0);
+  if(rec.mv && rec.mv.length >= 2 && !rec.an)
+    runAnalysis(rec, drawReport, () => { cloudUpdateGame(rec); drawReport(); }, () => game && game.id === gid);
+  $('#resX').onclick = close;
+  root.querySelector('.overlay').onclick = e => { if(e.target === e.currentTarget) close(); };
+  $('#resRv').onclick = () => { close(); openReview(me().history.indexOf(rec)); };
+  $('#resRe').onclick = () => {
+    close();
+    if(g.online){ const ok = g.online; sendInvite(ok.key, { variant: g.variant, tc: g.tc.id, inc: g.inc, color: g.me === 1 ? 'black' : 'white' }); return; }
+    startGame(g.friend ? 'friend' : 'bot');
+  };
+  if(canNext) $('#resNext').onclick = () => {
+    close();
+    const m = db.menu;
+    if(g.online){ m.variant = g.variant; m.tc = g.tc.id; m.inc = g.inc; save(); go('home', true); startSearch(); return; }
+    const i = BOTS.indexOf(g.bot);
+    if(res === 'win' && i >= 0 && i < BOTS.length - 1){ m.bot = i + 1; toast(`${tr('Следующий соперник')}: ${BOTS[i + 1].name}`); }
+    save(); startGame('bot');
+  };
+}
+
+/* ---------- админ-панель ---------- */
+let admQuery = '', admFilter = 'all';
+const DUR = [['1h', 'на 1 час', 3600e3], ['1d', 'на 1 день', 864e5], ['7d', 'на 7 дней', 7 * 864e5], ['30d', 'на 30 дней', 30 * 864e5], ['inf', 'навсегда', 0]];
+const durTo = id => { const d = DUR.find(x => x[0] === id); return new Date(d && d[2] ? Date.now() + d[2] : FOREVER).toISOString(); };
+const durLabel = id => (DUR.find(x => x[0] === id) || DUR[0])[1];
+function renderAdmin(){
+  const u = me();
+  if(!u || !u.isAdmin){
+    $('#adminBox').innerHTML = `<div class="page-head"><div><div class="eyebrow">Админ-панель</div><h1 class="display">Нет доступа</h1></div></div>
+      <div class="card"><p class="muted">Эта страница только для администраторов.</p>${ADMIN_DB ? '' : '<p class="note">В базе ещё не запущен файл schema_v9.sql.</p>'}</div>`;
+    return;
+  }
+  const accs = Object.entries(db.accounts), now = Date.now();
+  const st = [
+    [accs.length, 'Всего игроков'],
+    [accs.filter(([k]) => statusOf(k) !== 'offline').length, 'Сейчас онлайн'],
+    [accs.reduce((s, [, a]) => s + (a.gamesN || 0), 0), 'Партий в базе'],
+    [accs.filter(([, a]) => a.bannedUntil > now).length, 'Заблокированы'],
+    [accs.filter(([, a]) => a.isAdmin).length, 'Администраторов']
+  ];
+  $('#adminBox').innerHTML = `
+    <div class="page-head"><div><div class="eyebrow">Только для администраторов</div><h1 class="display">Админ-панель</h1></div>
+      <button class="btn" id="admRefresh">${SVGI('<path d="M19 12a7 7 0 1 1-2-4.9M19 4v4h-4"/>')} Обновить</button></div>
+    <div class="adm-stats">${st.map(([n, l]) => `<div class="card"><b>${n}</b><small>${l}</small></div>`).join('')}</div>
+    <div class="adm-grid">
+      <div class="card"><h2>${ICON.users} Игроки</h2>
+        <label class="search-in">${ICON.search}<input id="admQ" placeholder="Найти по нику" value="${esc(admQuery)}" autocomplete="off"></label>
+        <div class="chips" id="admF">${[['all','Все'],['online','Онлайн'],['banned','С ограничениями'],['admins','Админы']].map(([id, l]) => `<button class="chip ${admFilter === id ? 'on' : ''}" data-f="${id}">${l}</button>`).join('')}</div>
+        <div id="admList" class="pl-list" style="margin-top:12px"></div></div>
+      <div class="card"><h2>${ICON.cal} Журнал действий</h2><div class="adm-log" id="admLog"><p class="muted small">Загрузка…</p></div></div>
+    </div>`;
+  $('#admQ').oninput = e => { admQuery = e.target.value; renderAdminList(); };
+  $('#admF').querySelectorAll('[data-f]').forEach(b => b.onclick = () => { admFilter = b.dataset.f; renderAdmin(); });
+  $('#admRefresh').onclick = async () => { await fetchProfiles(); renderAdmin(); toast('Обновлено'); };
+  renderAdminList(); loadAdminLog();
+}
+function admTags(a){
+  const now = Date.now(), t = [];
+  if(a.isAdmin) t.push('<span class="atag blue">Админ</span>');
+  if(a.bannedUntil > now) t.push('<span class="atag red">Бан</span>');
+  if(a.playBanUntil > now) t.push('<span class="atag amber">Без игры</span>');
+  if(a.chatBanUntil > now) t.push('<span class="atag amber">Без чата</span>');
+  return t.join('');
+}
+function renderAdminList(){
+  const box = $('#admList'); if(!box) return;
+  const q = admQuery.trim().toLowerCase(), now = Date.now(), m = db.menu;
+  const list = Object.entries(db.accounts).filter(([k, a]) => (!q || a.nick.toLowerCase().includes(q)) && (
+      admFilter === 'all' || (admFilter === 'online' && statusOf(k) !== 'offline') || (admFilter === 'admins' && a.isAdmin) ||
+      (admFilter === 'banned' && (a.bannedUntil > now || a.playBanUntil > now || a.chatBanUntil > now))))
+    .sort((x, y) => (y[1].created || 0) - (x[1].created || 0));
+  box.innerHTML = list.length ? list.slice(0, 200).map(([k, a]) => `<div class="adm-row" data-am="${esc(k)}"><span class="ava round">${avatarHTML(a.avatar)}</span>
+      <div><b>${nickH(k)}</b>${statusDot(k)} <span class="muted small">· ${ratingOf(a, m.variant, m.tc)} · ${a.gamesN || 0} ${tr('партий')}</span></div>
+      <div class="adm-tags">${admTags(a)}</div></div>`).join('') : '<p class="muted">Никого не нашли.</p>';
+  box.querySelectorAll('[data-am]').forEach(el => el.onclick = () => openAdminUser(el.dataset.am));
+}
+async function loadAdminLog(){
+  const box = $('#admLog'); if(!box || !sb) return;
+  const { data, error } = await sb.from('admin_log').select('admin_id,target_id,action,details,created_at').order('created_at', { ascending:false }).limit(60);
+  if(!$('#admLog')) return;
+  if(error){ box.innerHTML = `<p class="muted small">${tr('Журнал недоступен')}: ${esc(error.message)}</p>`; return; }
+  const nk = k => k && db.accounts[k] ? `<b translate="no">${esc(db.accounts[k].nick)}</b>` : '<b>—</b>';
+  box.innerHTML = data.length ? data.map(r => `<div>${nk(r.admin_id)} → ${nk(r.target_id)}: ${esc(tr(r.action))}${r.details ? ` <span class="muted" translate="no">(${esc(r.details)})</span>` : ''}
+      <small>${new Date(r.created_at).toLocaleString(LOC())}</small></div>`).join('') : '<p class="muted small">Пока пусто.</p>';
+}
+// изменить чужой профиль (права проверяет база: только админ)
+async function admUpdate(k, patch, action, details){
+  const { data, error } = await sb.from('profiles').update(patch).eq('id', k).select('id');
+  if(error){ toast(error.code === '23505' ? 'Такой ник уже занят' : tr('Не получилось') + ': ' + error.message); return false; }
+  if(!data || !data.length){ toast('Нет прав. Проверь, что в базе запущен schema_v9.sql'); return false; }
+  await admLog(k, action, details);
+  await fetchProfile(k);
+  netSend(k, 'admin', {});
+  toast('Готово');
+  return true;
+}
+async function admLog(k, action, details){ await sb.from('admin_log').insert({ admin_id: db.current, target_id: k, action, details: details || '' }); }
+function openAdminUser(k){
+  const a = db.accounts[k]; if(!a) return;
+  const now = Date.now(), self = k === db.current;
+  const rkOpts = Object.values(VARIANTS).flatMap(v => TCS.map(t => `<option value="${v.id}:${t.id}">${v.label} · ${t.short}</option>`)).join('');
+  const durOpts = DUR.map(([id, l]) => `<option value="${id}">${l}</option>`).join('');
+  const nowTxt = (t, on, off) => t > now ? `<p class="am-now red">${esc(tr(on) + ' ' + untilTxt(t))}</p>` : `<p class="am-now">${off}</p>`;
+  const root = modal(`
+    <div class="am-head"><span class="ava round">${avatarHTML(a.avatar)}</span><div><h2 style="margin:0">${nickH(k)}</h2>
+      <div class="muted small">${tr('Партий')}: ${a.gamesN || 0}${a.created ? ' · ' + tr('с') + ' ' + new Date(a.created).toLocaleDateString(LOC()) : ''}</div>${statusDot(k)}</div></div>
+    <div class="am-sec"><div class="lbl">Профиль</div>
+      <div class="am-line"><input id="amNick" maxlength="16" value="${esc(a.nick)}"><button class="btn sm" data-a="nick">Сменить ник</button></div>
+      <div class="am-line" style="margin-top:8px"><button class="btn sm" data-a="about">Очистить «о себе»</button><button class="btn sm" data-a="ava">Сбросить аватарку</button><button class="btn sm" data-a="open">Открыть профиль</button></div></div>
+    <div class="am-sec"><div class="lbl">Рейтинг</div>
+      <div class="am-line"><select id="amRk">${rkOpts}</select><input id="amRv" type="number" min="0" max="4000" step="1" placeholder="1000"><button class="btn sm" data-a="rating">Поставить</button><button class="btn sm" data-a="rreset">Сбросить все</button></div></div>
+    <div class="am-sec"><div class="lbl">Блокировка аккаунта</div>${nowTxt(a.bannedUntil, 'Заблокирован', 'Не заблокирован')}
+      ${a.bannedUntil > now && a.banReason ? `<p class="am-now">${tr('Причина')}: <span translate="no">${esc(a.banReason)}</span></p>` : ''}
+      <div class="am-line"><select id="amBanT">${durOpts}</select><input id="amBanR" maxlength="120" placeholder="Причина (её увидит игрок)"></div>
+      <div class="am-line" style="margin-top:8px"><button class="btn sm danger" data-a="ban" ${self ? 'disabled' : ''}>Заблокировать</button><button class="btn sm" data-a="unban">Снять блокировку</button></div></div>
+    <div class="am-sec"><div class="lbl">Запрет на игру</div>${nowTxt(a.playBanUntil, 'Играть нельзя', 'Ограничений нет')}
+      <div class="am-line"><select id="amPlayT">${durOpts}</select><button class="btn sm danger" data-a="pban">Запретить играть</button><button class="btn sm" data-a="unpban">Снять</button></div></div>
+    <div class="am-sec"><div class="lbl">Запрет чата</div>${nowTxt(a.chatBanUntil, 'Писать в чат нельзя', 'Ограничений нет')}
+      <div class="am-line"><select id="amChatT">${durOpts}</select><button class="btn sm danger" data-a="cban">Запретить чат</button><button class="btn sm" data-a="uncban">Снять</button></div></div>
+    <div class="am-sec"><div class="lbl">Опасные действия</div>
+      <div class="am-line"><button class="btn sm danger" data-a="hist">Удалить историю партий</button>
+      <button class="btn sm" data-a="admin" ${self ? 'disabled' : ''}>${a.isAdmin ? 'Забрать права администратора' : 'Сделать администратором'}</button></div></div>`,
+    [{ label:'Закрыть' }], 'adm-m wide');
+  const val = id => root.querySelector(id).value;
+  const reopen = ok => { if(ok){ openAdminUser(k); if(current === 'admin'){ renderAdminList(); loadAdminLog(); } } };
+  const confirmDo = (title, text, fn) => modal(`<h2>${title}</h2><p class="muted">${text}</p>`, [{ label:'Отмена', onClick: () => openAdminUser(k) }, { label:'Да', cls:'danger', onClick: fn }]);
+  const acts = {
+    nick: async () => { const v = val('#amNick').trim(); if(v.length < 2){ toast('Ник — минимум 2 символа'); return; } reopen(await admUpdate(k, { nick: v }, 'Сменил ник', a.nick + ' → ' + v)); },
+    about: async () => reopen(await admUpdate(k, { about: '' }, 'Очистил «о себе»')),
+    ava: async () => reopen(await admUpdate(k, { avatar: { type:'preset', id:'cat' } }, 'Сбросил аватарку')),
+    open: () => { closeModal(); openPlayer(k); },
+    rating: async () => {
+      const raw = val('#amRv'), v = Math.round(+raw);
+      if(raw === '' || !(v >= 0 && v <= 4000)){ toast('Рейтинг — число от 0 до 4000'); return; }
+      const r = clone(a.ratings || {}); r[val('#amRk')] = v;
+      reopen(await admUpdate(k, { ratings: r }, 'Изменил рейтинг', val('#amRk') + ' = ' + v));
+    },
+    rreset: () => confirmDo(tr('Сбросить рейтинг?'), tr('Все рейтинги игрока станут 1000.'), async () => reopen(await admUpdate(k, { ratings: {} }, 'Сбросил рейтинг'))),
+    ban: () => { const t = val('#amBanT'), r = val('#amBanR').trim();
+      confirmDo(tr('Заблокировать игрока?'), `<span translate="no">${esc(a.nick)}</span> — ${esc(tr(durLabel(t)))}. ${tr('Игрок не сможет зайти на сайт.')}`,
+        async () => reopen(await admUpdate(k, { banned_until: durTo(t), ban_reason: r || null }, 'Заблокировал', tr(durLabel(t)) + (r ? ' · ' + r : '')))); },
+    unban: async () => reopen(await admUpdate(k, { banned_until: null, ban_reason: null }, 'Снял блокировку')),
+    pban: async () => { const t = val('#amPlayT'); reopen(await admUpdate(k, { play_ban_until: durTo(t) }, 'Запретил играть', tr(durLabel(t)))); },
+    unpban: async () => reopen(await admUpdate(k, { play_ban_until: null }, 'Снял запрет на игру')),
+    cban: async () => { const t = val('#amChatT'); reopen(await admUpdate(k, { chat_ban_until: durTo(t) }, 'Запретил чат', tr(durLabel(t)))); },
+    uncban: async () => reopen(await admUpdate(k, { chat_ban_until: null }, 'Снял запрет чата')),
+    hist: () => confirmDo(tr('Удалить историю?'), `${tr('Все партии игрока удалятся навсегда. Это нельзя отменить.')} (<span translate="no">${esc(a.nick)}</span>)`, async () => {
+      const { data, error } = await sb.from('games').delete().eq('user_id', k).select('id');
+      if(error){ toast(tr('Не получилось') + ': ' + error.message); openAdminUser(k); return; }
+      await admLog(k, 'Удалил историю партий', (data ? data.length : 0) + '');
+      if(k === db.current){ me().history = []; } else a.history = null;
+      a.gamesN = 0;
+      netSend(k, 'admin', {}); toast('История удалена'); reopen(true);
+    }),
+    admin: () => confirmDo(tr(a.isAdmin ? 'Забрать права?' : 'Сделать администратором?'),
+      tr(a.isAdmin ? 'Игрок потеряет доступ к админ-панели.' : 'Игрок получит галочку и полный доступ к админ-панели.'),
+      async () => reopen(await admUpdate(k, { is_admin: !a.isAdmin }, a.isAdmin ? 'Забрал права администратора' : 'Выдал права администратора')))
+  };
+  root.querySelectorAll('[data-a]').forEach(b => b.onclick = () => { const f = acts[b.dataset.a]; if(f) f(); });
+}
+
 /* =========================================================
    14. СТАРТ
    ========================================================= */
 applyTheme();
+applyLayout();
+startI18n();
 renderMeMini();
 boot();
 </script>
