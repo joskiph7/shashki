@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Шашки</title>
+<title>Шашки и Шахматы</title>
 <link rel="icon" type="image/png" href="icons/sA_wN.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Oswald:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -1119,6 +1119,414 @@ h2 .pix{width:26px;height:26px}
 .an-table td:first-child{white-space:normal;overflow:visible;text-overflow:clip;font-size:12.5px;line-height:1.15}
 .an-table th:not(:first-child),.an-table td:not(:first-child){width:44px}
 .an-table td:first-child{padding-left:2px}
+
+/* =====================================================================
+   v17: новый дизайн — тёмный с золотом, меню по разделам, «Играть», шахматный клуб, профиль
+   ===================================================================== */
+:root[data-theme="dark"]{--bg:#0e0d0b;--side:#0a0908;--panel:#16140f;--panel2:#1f1c16;--text:#f1eadc;--muted:#9c9384;--line:#27231c;--line2:#4a4337;--gold:#e5b34e;--gold-ink:#1a1204}
+:root{--line:#dcd6cc}
+:root[data-theme="dark"] body{background:radial-gradient(1200px 600px at 75% -10%,rgba(229,179,78,.07),transparent 60%),repeating-conic-gradient(rgba(255,255,255,.018) 0 25%,transparent 0 50%) 0 0/120px 120px,var(--bg)}
+.card{border-color:var(--line);border-radius:18px}
+:root[data-theme="dark"] .card{background:linear-gradient(180deg,rgba(255,255,255,.018),transparent 40%),var(--panel);box-shadow:0 1px 0 rgba(255,255,255,.03) inset}
+.pix{object-fit:contain}
+/* главная кнопка: золото и свечение */
+.btn.primary{transition:box-shadow .2s,transform .15s,filter .2s}
+.btn.primary:hover:not(:disabled){background:var(--gold);color:var(--gold-ink);border-color:var(--gold);box-shadow:0 0 0 1px rgba(229,179,78,.5),0 6px 26px rgba(229,179,78,.38);filter:brightness(1.06)}
+.btn.glow{box-shadow:0 6px 22px rgba(229,179,78,.18)}
+.btn.primary:active:not(:disabled){transform:translateY(1px)}
+
+/* ---------- боковое меню ---------- */
+.logo-t{display:flex;flex-direction:column;line-height:1}
+.logo-t small{font-size:12px;letter-spacing:.12em;color:var(--gold);margin-top:3px;font-family:inherit}
+.nav-cat{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);padding:12px 12px 4px;opacity:.8}
+.sidebar nav{gap:2px}
+.sidebar nav button .pix{width:22px;height:22px}
+.sidebar nav button.active{background:linear-gradient(90deg,rgba(229,179,78,.22),rgba(229,179,78,.06));border-color:rgba(229,179,78,.45);color:var(--gold)}
+#meMini{cursor:pointer}
+.me-menu{position:fixed;z-index:200;min-width:230px;background:var(--panel);border:1px solid var(--line2);border-radius:14px;padding:6px;box-shadow:0 18px 50px rgba(0,0,0,.45);display:grid;gap:2px;animation:mmIn .16s ease-out}
+@keyframes mmIn{from{opacity:0;transform:translateY(6px)}}
+.me-menu .mm-head{display:flex;gap:10px;align-items:center;padding:8px 8px 10px;border-bottom:1px solid var(--line);margin-bottom:4px}
+.me-menu .mm-head .ava{width:38px;height:38px}
+.me-menu .mm-head small{display:block;color:var(--muted);font-size:12px}
+.me-menu button{display:flex;align-items:center;gap:10px;border:0;background:none;color:var(--text);font:inherit;font-weight:600;padding:9px 10px;border-radius:10px;cursor:pointer;text-align:left}
+.me-menu button:hover{background:var(--panel2)}
+.me-menu .pix{width:20px;height:20px}
+.me-menu .mm-out{color:#e0695a}
+
+/* ---------- шапка страницы ---------- */
+.hero-head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin:0 0 18px}
+.hh-hi{color:var(--muted);font-weight:600;font-size:15px}
+.hero-head h1.display{margin:2px 0 2px;font-size:clamp(38px,5vw,64px);line-height:.95}
+.hh-sub{margin:0;color:var(--muted);font-size:16px}
+.hh-right{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.on-pill{display:flex;align-items:center;gap:7px;border:1px solid var(--line2);border-radius:999px;padding:9px 16px;background:var(--panel);font-size:14px;color:var(--muted)}
+.on-pill b{color:var(--text);font-size:15px}
+.on-pill i{width:1px;height:18px;background:var(--line2);margin:0 6px}
+.on-pill .pix{width:18px;height:18px}
+.on-dot{width:9px;height:9px;border-radius:50%;background:#39b25a;box-shadow:0 0 0 0 rgba(57,178,90,.5);animation:onP 2s infinite}
+@keyframes onP{60%{box-shadow:0 0 0 6px rgba(57,178,90,0)}}
+
+/* ---------- главная (шашки) ---------- */
+.h17{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:18px;align-items:start}
+.h17-main,.h17-side{display:grid;gap:18px;min-width:0}
+.qhero{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:10px;border:1px solid rgba(229,179,78,.55) !important;box-shadow:0 0 0 1px rgba(229,179,78,.12),0 18px 60px rgba(229,179,78,.08);overflow:hidden;position:relative;padding:24px}
+.qhero::after{content:"";position:absolute;right:-80px;top:-80px;width:360px;height:360px;background:radial-gradient(circle,rgba(229,179,78,.18),transparent 65%);pointer-events:none}
+.qh-badge{display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(229,179,78,.5);background:rgba(229,179,78,.1);color:var(--gold);border-radius:999px;padding:5px 12px;font-weight:700;font-size:14px}
+.qh-badge .pix{width:18px;height:18px}
+.qh-t{font-size:clamp(26px,3vw,38px);margin:12px 0 4px;letter-spacing:-.01em}
+.qh-sub{color:var(--muted);margin:0 0 14px}
+.qhero .lbl{margin-top:12px}
+.qh-var{display:flex;gap:8px;flex-wrap:wrap}
+.qh-var button{display:flex;align-items:center;gap:8px;border:1px solid var(--line2);background:var(--panel2);color:var(--text);border-radius:12px;padding:8px 14px;font:inherit;font-weight:700;cursor:pointer}
+.qh-var button.on{border-color:var(--gold);color:var(--gold);background:rgba(229,179,78,.1)}
+.qhero #qSearch{margin-top:16px}
+.qh-art{display:grid;place-items:center;perspective:900px;min-height:260px;position:relative;z-index:1}
+.qh-tilt{transform:rotateX(38deg) rotateZ(-24deg);filter:drop-shadow(0 30px 30px rgba(0,0,0,.55));transition:transform .6s}
+.qhero:hover .qh-tilt{transform:rotateX(30deg) rotateZ(-18deg)}
+.qh-tilt .mini-board{width:auto;max-width:none}
+.qh-tilt .mini-board[style*="--mc:4"]{width:150px}
+.qh-tilt .mini-board[style*="--mc:8"]{width:260px}
+/* пресеты времени */
+.tcp{display:grid;gap:8px}
+.tcp-g{display:grid;grid-template-columns:92px 1fr;gap:8px;align-items:center}
+.tcp-name{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--muted)}
+.tcp-name .pix{width:16px;height:16px}
+.tcp-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.tcp-b{border:1px solid var(--line2);background:var(--panel2);color:var(--text);border-radius:11px;padding:10px 6px;font:inherit;font-weight:800;font-size:16px;cursor:pointer;transition:border-color .15s,background .15s,transform .1s}
+.tcp-b:hover{border-color:var(--gold)}
+.tcp-b.on{border-color:var(--gold);color:var(--gold);background:rgba(229,179,78,.13);box-shadow:inset 0 0 0 1px var(--gold)}
+.tcp-inf{font-size:15px}.tcp-inf span{font-weight:600}
+.tcp.compact .tcp-g{grid-template-columns:1fr;gap:4px}
+.tcp.compact .tcp-b{padding:8px 4px;font-size:15px}
+/* три режима */
+.mode3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.m3{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;text-align:left;color:var(--text);font:inherit;cursor:pointer;padding:16px;transition:border-color .15s,transform .15s}
+.m3:hover{border-color:rgba(229,179,78,.55);transform:translateY(-2px)}
+.m3-ico .pix{width:46px;height:46px}
+.m3-t b{display:block;font-size:17px;margin-bottom:3px}
+.m3-t small{color:var(--muted);font-size:13px;line-height:1.35;display:block}
+.m3-arr{align-self:end;color:var(--muted)}.m3-arr svg{width:18px;height:18px}
+/* последние партии */
+.rg2{display:grid;grid-template-columns:36px minmax(0,1.2fr) minmax(0,1fr) 70px 50px 40px;gap:12px;align-items:center;padding:10px 4px;border-top:1px solid var(--line);cursor:pointer}
+.rg2:first-of-type{border-top:0}
+.rg2:hover{background:rgba(229,179,78,.04)}
+.rg2 .ava.sm{width:34px;height:34px}
+.rg-n{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rg-m{color:var(--muted);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rg-s{font-weight:800;text-align:center;white-space:nowrap}
+.rg-s.win{color:#4fc06a}.rg-s.loss{color:#e5614f}.rg-s.draw{color:var(--muted)}
+.rg-d{font-weight:700;font-size:14px;text-align:right}.rg-d.up{color:#4fc06a}.rg-d.down{color:#e5614f}
+.rg-play{width:36px;height:30px;border-radius:9px;border:1px solid rgba(229,179,78,.6);background:transparent;color:var(--gold);display:grid;place-items:center;cursor:pointer}
+.rg-play svg{width:14px;height:14px}
+.rg-play:disabled{opacity:.3}
+/* карточка рейтинга */
+.rcard{padding:18px 18px 14px}
+.rc-head{display:flex;justify-content:space-between;align-items:flex-start}
+.rc-lbl{color:var(--muted);font-weight:700;font-size:14px}
+.rc-num{display:flex;align-items:baseline;gap:10px;margin-top:4px;flex-wrap:wrap}
+.rc-num b{font-size:40px;line-height:1;font-weight:900;letter-spacing:-.01em}
+.rc-num span{color:var(--muted);font-size:13px}
+.rc-right{display:grid;justify-items:end;gap:6px}
+.rc-right .pix{width:34px;height:34px}
+.rc-d{font-size:13px;font-weight:800;padding:2px 8px;border-radius:999px}
+.rc-d.up{color:#4fc06a;background:rgba(79,192,106,.12)}.rc-d.down{color:#e5614f;background:rgba(229,97,79,.12)}
+.rc-chart{margin:12px -6px 6px;height:110px}
+.spark{width:100%;height:100%;display:block;overflow:visible}
+.sp-grid{stroke:var(--line2);stroke-dasharray:5 6;stroke-width:1;opacity:.6;vector-effect:non-scaling-stroke}
+.sp-dot{fill:var(--panel);stroke:var(--gold);stroke-width:2;vector-effect:non-scaling-stroke}
+.sp-end{fill:var(--gold);stroke:var(--panel);stroke-width:2}
+.sp-lab{fill:var(--muted);font-size:11px;font-weight:700}
+.rc-empty{height:100%;display:grid;place-items:center;text-align:center;color:var(--muted);font-size:13px;border:1px dashed var(--line2);border-radius:12px;padding:10px}
+.rc-empty.tall{height:170px}
+.rc-stats{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--line);padding-top:12px}
+.rc-stats div{display:grid;grid-template-columns:auto 1fr;column-gap:8px;align-items:center;padding:0 8px;border-left:1px solid var(--line)}
+.rc-stats div:first-child{border-left:0;padding-left:0}
+.rc-stats .pix{grid-row:span 2;width:24px;height:24px}
+.rc-stats b{font-size:20px}.rc-stats b.g{color:#4fc06a}
+.rc-stats small{color:var(--muted);font-size:12px}
+.top-row .n{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:8px;background:var(--panel2);font-weight:800;font-size:13px}
+.top-row .n1,.lb-n.n1{background:linear-gradient(135deg,#f6d27a,#c8912b);color:#1a1204}
+.top-row .n2,.lb-n.n2{background:linear-gradient(135deg,#e3e6ea,#9ea4ad);color:#16181b}
+.top-row .n3,.lb-n.n3{background:linear-gradient(135deg,#e7a66e,#9c5a2c);color:#1a0c04}
+
+/* ---------- рейтинг (таблица лидеров) ---------- */
+.lb-filter{display:grid;gap:12px;margin-bottom:18px}
+.seg{display:inline-flex;flex-wrap:wrap;gap:4px;padding:4px;border:1px solid var(--line2);border-radius:14px;background:var(--panel2)}
+.seg button{display:inline-flex;align-items:center;gap:7px;border:0;background:transparent;color:var(--muted);font:inherit;font-weight:700;padding:8px 14px;border-radius:10px;cursor:pointer}
+.seg button.on{background:var(--gold);color:var(--gold-ink)}
+.seg button .pix{width:20px;height:20px}
+.seg.sm button{padding:6px 12px;font-size:14px}
+.seg.xs button{padding:4px 10px;font-size:13px}
+.lb-grid{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:18px;align-items:start}
+.lb-head,.lb-row{display:grid;grid-template-columns:46px 1fr 80px 80px;gap:10px;align-items:center;padding:10px 6px}
+.lb-head{color:var(--muted);font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--line)}
+.lb-row{border-bottom:1px solid var(--line);cursor:pointer}
+.lb-row:hover,.lb-row.me{background:rgba(229,179,78,.06)}
+.lb-n{display:grid;place-items:center;width:30px;height:30px;border-radius:9px;background:var(--panel2);font-weight:800}
+.lb-p{display:flex;align-items:center;gap:10px;min-width:0}
+.lb-r{text-align:right;font-size:17px}
+.lb-big{font-size:64px;font-weight:900;line-height:1;margin:8px 0}
+.lb-big small{font-size:16px;color:var(--muted);font-weight:600;margin-left:6px}
+
+/* ---------- шахматный клуб ---------- */
+.ctabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:18px;overflow-x:auto}
+.ctabs button{display:flex;align-items:center;gap:8px;border:0;background:none;color:var(--muted);font:inherit;font-weight:800;font-size:16px;padding:12px 18px;border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap}
+.ctabs button.on{color:var(--text);border-bottom-color:var(--gold)}
+.ctabs .pix{width:22px;height:22px}
+.ct-body{animation:scrIn .25s ease-out}
+.hall{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:18px;align-items:start}
+.hall3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin-top:18px}
+.lb-wrap{display:grid;gap:10px}
+.lb-top{display:flex;justify-content:space-between;align-items:center;border:1px solid var(--line);border-radius:12px;padding:8px 12px}
+.lb-ttl{display:flex;align-items:center;gap:8px;font-weight:800}.lb-ttl .pix{width:20px;height:20px}
+.mini-board.lb{width:100%;max-width:520px;margin:0 auto;border-width:8px}
+.mini-board.lb .sq{cursor:pointer;position:relative}
+.mini-board.lb .pcw{transition:transform .12s}
+.mini-board.lb .sq:hover .pcw{transform:translateY(-2px)}
+.lb .lb-sel{box-shadow:inset 0 0 0 999px rgba(110,200,80,.5)}
+.lb .lb-last{box-shadow:inset 0 0 0 999px rgba(255,214,64,.35)}
+.lb .lb-dot{position:absolute;width:30%;height:30%;border-radius:50%;background:rgba(20,20,20,.32);pointer-events:none}
+.lb .lb-cap{position:absolute;inset:4%;border-radius:50%;border:5px solid rgba(20,20,20,.3);pointer-events:none}
+.lb .lb-rk,.lb .lb-fl{position:absolute;font-style:normal;font-size:10px;font-weight:800;opacity:.65;pointer-events:none}
+.lb .lb-rk{left:3px;top:2px}.lb .lb-fl{right:3px;bottom:1px}
+.lb .light .lb-rk,.lb .light .lb-fl{color:var(--dark)}.lb .dark .lb-rk,.lb .dark .lb-fl{color:var(--light)}
+.lb-pal{display:grid;grid-template-columns:repeat(13,1fr);gap:3px}
+.lb-pal button{aspect-ratio:1;border:1px solid var(--line2);border-radius:8px;background:var(--panel2);padding:2px;cursor:pointer;display:grid;place-items:center;color:var(--text)}
+.lb-pal button.on{border-color:var(--gold);box-shadow:inset 0 0 0 1px var(--gold)}
+.lb-pal .pcw{width:100%;height:100%;display:grid;place-items:center}
+.lb-pal .cp{width:100%;height:100%}
+.lb-info{display:flex;gap:10px;align-items:flex-start;min-height:24px;font-size:14px}
+.lb-turn{display:flex;align-items:center;gap:6px;font-weight:700;white-space:nowrap}
+.lb-turn i{width:12px;height:12px;border-radius:50%;border:1px solid var(--line2)}.lb-turn i.w{background:#f2efe8}.lb-turn i.b{background:#222}
+.lb-moves{color:var(--muted);max-height:44px;overflow:auto}
+.lb-btns{display:flex;gap:8px;flex-wrap:wrap}
+.lb-btns > .btn{flex:1}
+.lb-btns.two .btn{flex:1}
+.ctor{display:grid;gap:10px}
+.ct-h{margin:0 0 4px}
+.ct-mode{display:grid;grid-template-columns:repeat(3,1fr)}
+.ct-mode button{justify-content:center}
+.ct-bots{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px}
+.ct-bot{display:grid;justify-items:center;gap:2px;border:1px solid var(--line2);background:var(--panel2);border-radius:12px;padding:6px;cursor:pointer;color:var(--text);flex:none}
+.ct-bot .ava{width:44px;height:44px;border-radius:10px;overflow:hidden}
+.ct-bot small{font-weight:800;font-size:11px;color:var(--muted)}
+.ct-bot.on{border-color:var(--gold);box-shadow:inset 0 0 0 1px var(--gold)}
+.ct-bname{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+.ct-friend{display:grid;gap:8px}
+.ct-friend input{margin:0}
+.ct-flip{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--muted)}
+.ct-note{margin:0}
+.ct-color{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.ct-color .lbl{margin:0}
+.ct-cols{display:flex;gap:6px}
+.ct-cols button{width:42px;height:38px;border-radius:10px;border:1px solid var(--line2);background:var(--panel2);color:var(--text);font-size:20px;cursor:pointer}
+.ct-cols button.on{border-color:var(--gold);color:var(--gold);box-shadow:inset 0 0 0 1px var(--gold)}
+.ct-sec{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ct-sec .pix{width:18px;height:18px}
+.resume{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;margin-bottom:16px}
+.rs-item{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:12px 14px;border-color:rgba(229,179,78,.4) !important}
+.rs-ico .pix{width:34px;height:34px}
+.rs-item small{display:block;color:var(--gold);font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em}
+.rs-item b{display:block}
+.mini-rg{display:grid;grid-template-columns:30px 1fr auto 12px;gap:10px;align-items:center;padding:8px 0;border-top:1px solid var(--line);cursor:pointer}
+.mini-rg:first-of-type{border-top:0}.mini-rg .ava.sm{width:28px;height:28px}.mini-rg i{color:var(--muted)}
+.prog-n{display:flex;align-items:baseline;gap:8px}.prog-n b{font-size:34px;font-weight:900}
+.prog-ch{height:56px;margin:6px 0}
+.hall3 .card{display:flex;flex-direction:column;gap:6px}
+.hall3 .link{margin-top:auto;align-self:flex-start}
+.st-prog{height:8px;border-radius:99px;background:var(--panel2);overflow:hidden;border:1px solid var(--line)}
+.st-prog i{display:block;height:100%;background:linear-gradient(90deg,#c8912b,var(--gold));border-radius:99px;transition:width .4s}
+.st-line{margin-top:12px;line-height:1.9;font-size:14px;color:var(--muted)}
+.st-line span.done{color:var(--text)}.st-line span.cur{background:rgba(229,179,78,.2);color:var(--gold);border-radius:6px;padding:1px 4px}
+.op-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;margin-top:10px}
+.op-item{display:grid;gap:2px;text-align:left;border:1px solid var(--line);background:var(--panel2);border-radius:12px;padding:12px;color:var(--text);font:inherit;cursor:pointer}
+.op-item:hover{border-color:var(--gold)}.op-item small{color:var(--muted)}
+.eg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin-top:10px}
+.eg-item{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:center;border:1px solid var(--line);border-radius:14px;padding:10px;background:var(--panel2)}
+.eg-b .mini-board.puz-board[style*="--mc:8"]{width:120px}
+.eg-item p{margin:2px 0 8px}
+.tc-head{display:grid;gap:12px;margin-bottom:18px}
+.tc-head h2{margin:0}.tc-head p{margin:2px 0 0}
+.tc-prog{display:grid;gap:6px;font-size:14px}
+.tc-tasks{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px}
+.tc-task{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:12px;padding:9px 10px;font-size:14px}
+.tc-task .pix,.tc-task svg{width:22px;height:22px;flex:none}
+.tc-task b{font-weight:600}.tc-task small{margin-left:auto;color:var(--muted);font-weight:800}
+.tc-task.ok{border-color:rgba(79,192,106,.45);background:rgba(79,192,106,.07)}.tc-task.ok b{text-decoration:line-through;opacity:.7}
+.tc-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.tc-card{display:grid;gap:4px;text-align:left;color:var(--text);font:inherit;cursor:pointer;transition:border-color .15s,transform .15s}
+.tc-card:hover{border-color:rgba(229,179,78,.55);transform:translateY(-2px)}
+.tc-card .tc-ico .pix{width:40px;height:40px}.tc-card b{font-size:19px}.tc-card small{color:var(--muted)}.tc-card .link{margin-top:6px}
+.an-eval{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:10px}
+.an-rep{display:grid;gap:10px}
+.an-r1{display:flex;justify-content:space-between;gap:10px;align-items:center;border-bottom:1px solid var(--line);padding-bottom:10px}
+.an-r1 b{display:block;font-size:19px}
+.an-acc{font-size:34px;font-weight:900;color:var(--gold);text-align:right;line-height:1}.an-acc small{display:block;font-size:11px;color:var(--muted);font-weight:700}
+.an-k{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding:8px 0}
+.an-k span{display:flex;align-items:center;gap:8px}.an-k .pix{width:20px;height:20px}
+.an-k.col{display:grid;gap:6px}
+.an-san{font-size:13px;color:var(--muted);max-height:110px;overflow:auto;line-height:1.7}
+.an-pick{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:18px}
+.an-pick > span{display:flex;align-items:center;gap:8px;font-weight:700}
+.an-pick select{flex:1;min-width:200px;margin:0}
+.tour-main{display:grid;gap:12px;margin-bottom:18px}
+.tour-main h2{margin:4px 0}
+.soon{display:inline-block;background:rgba(229,179,78,.15);color:var(--gold);border:1px solid rgba(229,179,78,.5);border-radius:999px;padding:2px 10px;font-size:12px;font-weight:800;margin-bottom:6px}
+
+/* ---------- профиль ---------- */
+.pf-hero{padding:0;overflow:hidden}
+.pf-cover{height:170px;position:relative;background-size:cover}
+.pf-cover::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 40%,rgba(0,0,0,.35))}
+.pf-cov-btn{position:absolute;right:14px;top:14px;z-index:1;display:flex;align-items:center;gap:6px;border:1px solid rgba(255,255,255,.35);background:rgba(0,0,0,.45);color:#fff;border-radius:10px;padding:7px 12px;font:inherit;font-weight:700;font-size:13px;cursor:pointer;backdrop-filter:blur(4px)}
+.pf-cov-btn .pix{width:16px;height:16px}
+.pf-row{display:grid;grid-template-columns:auto 1fr minmax(200px,300px);gap:20px;padding:0 24px 20px;align-items:end}
+.pf-ava{width:132px;height:132px;border-radius:50%;margin-top:-66px;position:relative;z-index:2;border:5px solid var(--panel);background:var(--panel2);padding:0;overflow:visible;cursor:pointer}
+.pf-ava > img,.pf-ava > svg{width:100%;height:100%;border-radius:50%;object-fit:cover;display:block}
+.pf-ava:disabled{cursor:default}
+.pf-ava .ava-edit{position:absolute;right:4px;bottom:4px;width:30px;height:30px;border-radius:50%;background:var(--gold);color:var(--gold-ink);display:grid;place-items:center}
+.pf-ava .ava-edit svg{width:16px;height:16px}
+.fr-gold{box-shadow:0 0 0 4px #e5b34e,0 0 24px rgba(229,179,78,.5)}
+.fr-silver{box-shadow:0 0 0 4px #c9ced6,0 0 18px rgba(201,206,214,.4)}
+.fr-neon{box-shadow:0 0 0 3px #39e6ff,0 0 22px #39e6ff,0 0 40px rgba(57,230,255,.4)}
+.fr-fire{box-shadow:0 0 0 4px #ff7a1a,0 0 26px rgba(255,90,20,.7)}
+.fr-royal{box-shadow:0 0 0 3px #e5b34e,0 0 0 7px #6a2fa0,0 0 26px rgba(106,47,160,.6)}
+.pf-main{display:grid;gap:6px;padding-top:14px;min-width:0}
+.pf-main .nick-line{font-size:30px}
+.pf-title{display:inline-flex;align-items:center;gap:6px;color:var(--gold);font-weight:800;font-size:14px}.pf-title .pix{width:18px;height:18px}
+.pf-meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.pf-acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.pf-acts .pix{width:18px;height:18px}
+.pf-status{display:grid;gap:6px;justify-items:start;border-left:1px solid var(--line);padding-left:20px;align-self:stretch;padding-top:16px}
+.pf-status small{color:var(--muted);font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase}
+.pf-status p{margin:0;font-size:17px;font-weight:600}
+.pf-ach{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:14px}.pf-ach .pix{width:18px;height:18px}
+.ptabs2{display:flex;justify-content:space-between;align-items:center;gap:10px;border-bottom:1px solid var(--line);margin:18px 0;flex-wrap:wrap}
+.pt-l{display:flex;gap:4px;overflow-x:auto}
+.pt-l button{border:0;background:none;color:var(--muted);font:inherit;font-weight:800;font-size:16px;padding:12px 16px;border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap}
+.pt-l button.on{color:var(--text);border-bottom-color:var(--gold)}
+.pt-sel{width:auto;margin:0 0 6px;padding:7px 10px}
+.r4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));padding:0;margin-bottom:18px}
+.r4-i{display:grid;gap:4px;text-align:left;background:none;border:0;border-left:1px solid var(--line);color:var(--text);font:inherit;padding:16px 18px;cursor:pointer}
+.r4-i:first-child{border-left:0}
+.r4-i:hover{background:rgba(229,179,78,.05)}
+.r4-t{display:flex;align-items:center;gap:6px;color:var(--muted);font-weight:700;font-size:14px}
+.r4-i b{font-size:32px;font-weight:900;line-height:1.1}
+.r4-i small{color:var(--muted);font-size:12px}
+.ov-grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:18px;align-items:start}
+.ov-rec{grid-column:1 / -1}.ov-rec.half{grid-column:auto}
+.ov-about{grid-column:1 / -1}
+.pg-ch{height:180px;margin:6px 0 0}
+.pg-x{display:flex;justify-content:space-between;color:var(--muted);font-size:12px;margin-top:4px}
+.cal-wrap{display:grid;gap:4px;margin-top:8px}
+.cal-m,.cal{display:grid;gap:3px}
+.cal-m span{font-size:10px;color:var(--muted);white-space:nowrap}
+.cal{grid-template-rows:repeat(7,1fr);grid-auto-flow:column}
+.cal i,.cal-leg i{display:block;aspect-ratio:1;border-radius:3px;background:var(--panel2);border:1px solid var(--line)}
+.cal i[data-day]{cursor:pointer}
+.cal i:hover{outline:2px solid var(--gold);outline-offset:1px}
+.cal i.fut{visibility:hidden}
+.cal i.l1,.cal-leg i.l1{background:rgba(229,179,78,.3)}.cal i.l2,.cal-leg i.l2{background:rgba(229,179,78,.5)}
+.cal i.l3,.cal-leg i.l3{background:rgba(229,179,78,.75)}.cal i.l4,.cal-leg i.l4{background:var(--gold)}
+.cal-leg{display:flex;justify-content:space-between;align-items:center;margin-top:10px;flex-wrap:wrap;gap:6px}
+.cal-leg span{display:flex;align-items:center;gap:3px}.cal-leg i{width:11px}
+.cal-tip{position:absolute;z-index:300;background:var(--panel);border:1px solid var(--line2);border-radius:10px;padding:8px 11px;font-size:13px;box-shadow:0 10px 30px rgba(0,0,0,.4);pointer-events:none;opacity:0;transition:opacity .12s;display:grid;gap:2px;width:220px}
+.cal-tip.show{opacity:1}.cal-tip .g{color:#4fc06a}.cal-tip .r{color:#e5614f}.cal-tip small{color:var(--muted)}
+.showcase{display:flex;gap:14px;justify-content:space-around;flex-wrap:wrap;padding:8px 0}
+.hexa{display:grid;justify-items:center;gap:6px;text-align:center;width:96px;font-size:13px;background:none;border:0;color:var(--text);font-family:inherit;padding:0}
+.hexa .hx{width:72px;height:80px;display:grid;place-items:center;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);background:var(--panel2);font-size:30px;color:var(--muted)}
+.hexa.on .hx{background:linear-gradient(160deg,rgba(229,179,78,.45),rgba(229,179,78,.1))}
+.hexa .hx .pix{width:40px;height:40px}
+.hexa:not(.on) .hx .pix{opacity:.45}
+.hexa small{color:var(--muted);font-size:11px;font-weight:500}
+.hexa.add{cursor:pointer}.hexa.add .hx{border:0;background:repeating-linear-gradient(45deg,var(--panel2) 0 6px,transparent 6px 12px)}
+.sc-foot{display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--line);padding-top:10px;margin-top:6px}
+.recs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.ov-rec.half .recs{grid-template-columns:repeat(2,minmax(0,1fr))}
+.rec{display:flex;gap:10px;align-items:center;border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--panel2)}
+.rec .pix{width:30px;height:30px;flex:none}
+.rec div{display:grid;min-width:0}.rec small{color:var(--muted);font-size:12px}.rec b{font-size:20px}
+.rec .muted{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ach-pick{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px}
+.ach-pick button{background:none;border:1px solid var(--line);border-radius:14px;padding:8px 0;cursor:pointer}
+.ach-pick button.on{border-color:var(--gold);background:rgba(229,179,78,.08)}
+.ach-grid2{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+.ach-grid2 > button{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:12px 6px;cursor:pointer;display:grid;justify-items:center}
+.ach-grid2 > button:disabled{cursor:default}
+.ach-grid2 > button.pinned{border-color:var(--gold);box-shadow:inset 0 0 0 1px var(--gold)}
+.ach-grid2 .hexa{width:auto}
+.col-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.col-i{display:grid;justify-items:center;gap:6px;color:var(--text);font:inherit;cursor:pointer;padding:26px 14px;transition:border-color .15s,transform .15s}
+.col-i:hover{border-color:rgba(229,179,78,.55);transform:translateY(-2px)}
+.col-i .pix{width:46px;height:46px}.col-i b{font-size:17px}
+.cov-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
+.cov,.frm{display:grid;gap:6px;border:1px solid var(--line);background:var(--panel2);border-radius:14px;padding:8px;color:var(--text);font:inherit;cursor:pointer;text-align:left}
+.cov span{height:70px;border-radius:10px;display:block}
+.cov.on,.frm.on,.tit.on{border-color:var(--gold);box-shadow:inset 0 0 0 1px var(--gold)}
+.cov:disabled,.frm:disabled,.tit:disabled{opacity:.55;cursor:not-allowed}
+.cov small,.frm small,.tit small{color:var(--muted);font-size:11px;display:flex;gap:4px;align-items:center}
+.cov small .pix,.frm small .pix,.tit small .pix{width:14px;height:14px}
+.frm{justify-items:center;text-align:center;padding:16px 8px}
+.frm .pf-ava{width:70px;height:70px;margin:0;border-width:3px;cursor:inherit}
+.tit-list{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px}
+.tit{display:grid;gap:2px;border:1px solid var(--line);background:var(--panel2);border-radius:12px;padding:9px 14px;color:var(--text);font:inherit;cursor:pointer;text-align:left}
+.hf{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.hf select{width:auto;margin:0;padding:8px 10px}
+.hf-n{margin-left:auto}
+.ht-opp{display:flex;align-items:center;gap:8px}.ht-opp .ava.sm{width:28px;height:28px}
+.fr-card{display:grid;gap:12px}
+.fr-search{display:flex;align-items:center;gap:8px;border:1px solid var(--line2);border-radius:12px;padding:0 12px;background:var(--panel2)}
+.fr-search .pix{width:18px;height:18px}.fr-search input{border:0;background:none;margin:0;padding:11px 0;flex:1;outline:none}
+.fr-list{display:grid}
+.fr-row2{display:grid;grid-template-columns:44px 1fr auto;gap:12px;align-items:center;padding:10px 4px;border-bottom:1px solid var(--line);cursor:pointer}
+.fr-row2 .ava{width:42px;height:42px}.fr-row2 > div:nth-child(2){display:grid}
+.fr-acts{display:flex;gap:6px}
+.cmp-top{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;justify-items:center;gap:10px;margin:10px 0}
+.cmp-top > div{display:grid;justify-items:center;gap:6px}
+.cmp-vs{font-size:28px;font-weight:900;color:var(--gold)}
+.cmp{display:grid;border-top:1px solid var(--line)}
+.cmp-r{display:grid;grid-template-columns:1fr 1.3fr 1fr;align-items:center;text-align:center;padding:12px 0;border-bottom:1px solid var(--line)}
+.cmp-r span{color:var(--muted);font-size:14px}.cmp-r b{font-size:19px}.cmp-r b.best{color:var(--gold)}
+.ep-links{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.ep-links .pix{width:18px;height:18px}
+
+/* ---------- адаптив ---------- */
+@media (max-width:1250px){
+  .h17{grid-template-columns:minmax(0,1fr) 320px}
+  .qhero{grid-template-columns:1fr}.qh-art{display:none}
+  .hall{grid-template-columns:1fr}.hall .mini-board.lb{max-width:480px}
+}
+@media (max-width:1100px){
+  .h17,.lb-grid,.ov-grid{grid-template-columns:1fr}
+  .h17-side{grid-template-columns:1fr 1fr}
+  .hall3{grid-template-columns:1fr 1fr}
+  .pf-row{grid-template-columns:auto 1fr}
+  .pf-status{grid-column:1 / -1;border-left:0;padding-left:0;border-top:1px solid var(--line);padding-top:12px}
+  .ov-rec.half{grid-column:1 / -1}
+}
+@media (max-width:900px){
+  .nav-cat{display:none}
+  .logo-t{display:none}
+  .mode3,.h17-side,.hall3,.tc-grid,.col-grid{grid-template-columns:1fr}
+  .r4{grid-template-columns:1fr 1fr}.r4-i:nth-child(3){border-left:0}.r4-i:nth-child(n+3){border-top:1px solid var(--line)}
+  .recs,.ov-rec.half .recs{grid-template-columns:1fr 1fr}
+  .rg2{grid-template-columns:32px minmax(0,1fr) auto auto 34px}.rg2 .rg-m{display:none}
+  .hero-head{align-items:flex-start}
+  .pf-row{grid-template-columns:1fr;justify-items:center;text-align:center;padding:0 14px 16px}
+  .pf-main{justify-items:center;padding-top:0}.pf-acts,.pf-meta{justify-content:center}
+  .pf-status{justify-items:center}
+  .pf-cover{height:120px}
+  .pf-ava{width:110px;height:110px;margin-top:-55px}
+  .tcp-g{grid-template-columns:1fr;gap:4px}
+}
+@media (max-width:560px){
+  .on-pill{padding:7px 12px;font-size:13px}
+  .recs,.ov-rec.half .recs{grid-template-columns:1fr}
+  .ct-sec{grid-template-columns:1fr}
+  .lb-pal{grid-template-columns:repeat(7,1fr)}
+  .hf select{flex:1}
+  .ctabs button{padding:10px 12px;font-size:15px}
+  .resume{grid-template-columns:1fr}.resume .rs-item:nth-child(2){display:none}
+  .rs-item{grid-template-columns:auto 1fr}.rs-item .btn{grid-column:1 / -1}
+}
 </style>
 </head>
 <body>
@@ -1159,6 +1567,7 @@ h2 .pix{width:26px;height:26px}
   <section id="scr-online" class="screen" hidden><div id="onlineBox"></div></section>
   <section id="scr-players" class="screen" hidden><div id="playersBox"></div></section>
   <section id="scr-profile" class="screen" hidden><div id="profBox"></div></section>
+  <section id="scr-rating" class="screen" hidden><div id="ratingBox"></div></section>
   <!-- ПАРТИЯ -->
   <section id="scr-game" class="screen" hidden>
     <div class="game-wrap">
@@ -1285,7 +1694,7 @@ function save(){
 
 /* ---------- сервер: профили и история ---------- */
 let syncT = null, lastSync = '';
-const profData = u => ({ nick: u.nick, avatar: u.avatar, about: u.about || '', ratings: u.ratings || {} });
+const profData = u => ({ nick: u.nick, avatar: Object.assign({}, u.avatar, { pf: u.pf || {} }), about: u.about || '', ratings: u.ratings || {} });
 function syncProfile(){
   clearTimeout(syncT);
   syncT = setTimeout(async () => {
@@ -1304,7 +1713,7 @@ function syncProfile(){
     lastSync = js;
   }, 250);
 }
-const rowToAcc = (r, old) => fixAcc({ nick: r.nick, avatar: r.avatar || { type:'preset', id:'cat' }, about: r.about || '', ratings: r.ratings || {},
+const rowToAcc = (r, old) => fixAcc({ nick: r.nick, avatar: r.avatar || { type:'preset', id:'cat' }, about: r.about || '', pf: (r.avatar && r.avatar.pf) || {}, ratings: r.ratings || {},
   customAva: r.avatar && r.avatar.type === 'img' ? r.avatar.data : null,
   created: Date.parse(r.created_at), history: old ? old.history : null, gamesN: old ? old.gamesN : 0,
   isAdmin: !!r.is_admin, bannedUntil: r.banned_until ? Date.parse(r.banned_until) : 0, banReason: r.ban_reason || '',
@@ -2317,7 +2726,7 @@ function go(name, force){
   $('#crumb').innerHTML = CRUMBS[name] ? CRUMBS[name]() : '';
   closeNotif();
   const R = { puzzles: renderPuzzles, admin: renderAdmin, home: renderHome, bots: renderBots, friend: renderFriendSetup, online: renderOnline, players: renderPlayers,
-              profile: renderProfile, settings: renderSettings, rules: renderRules };
+              profile: renderProfile, settings: renderSettings, rules: renderRules, rating: renderRating };
   if(R[name]) R[name]();
   if(name === 'game' && game){ setVariant(game.variant); renderAll(); }
   updateGameBanner();
@@ -2351,7 +2760,7 @@ function showAuth(tab){
   tab = tab || 'login';
   const reg = tab === 'reg';
   $('#modalRoot').innerHTML = `<div class="overlay"><div class="modal">
-    <img class="auth-logo" src="${CHECKER_IMG}" alt=""><h2>Шашки</h2>
+    <img class="auth-logo" src="${CHECKER_IMG}" alt=""><h2>Шашки и Шахматы</h2>
     ${(() => { try{ return sessionStorage.getItem('pendingLink'); }catch(e){ return null; } })() ? '<p class="auth-inv">Тебя пригласили на партию! Войди или создай аккаунт — и игра сразу начнётся.</p>' : ''}
     <div class="tabs"><button data-t="login" class="${!reg?'on':''}">Вход</button><button data-t="reg" class="${reg?'on':''}">Регистрация</button></div>
     <form id="authForm">
@@ -3672,7 +4081,7 @@ function endGame(result, reason, silent){
   const R = u.ratings[key] ?? 1000;
   let delta = 0;
   const oppElo = game.friend ? null : game.online ? (game.online.rating || 1000) : game.bot.elo;
-  if(!game.friend && !game.undo){
+  if(!game.friend && !game.undo && !game.casual){
     const exp = 1 / (1 + Math.pow(10, (oppElo - R)/400));
     const score = result === 'win' ? 1 : result === 'draw' ? .5 : 0;
     delta = Math.round(32 * (score - exp));
@@ -3680,7 +4089,7 @@ function endGame(result, reason, silent){
   }
   const rec = { date: Date.now(), variant: game.variant, friend: game.friend,
     opp: oppName(), oppElo, color: game.me === 1 ? 'white' : 'black', tc: game.tc.id, inc: game.inc, result, reason,
-    moves: game.moves.length, rating: Math.round(R + delta), delta, mv: game.mvs.slice(), unrated: !game.friend && game.undo };
+    moves: game.moves.length, rating: Math.round(R + delta), delta, mv: game.mvs.slice(), unrated: !game.friend && (game.undo || !!game.casual) };
   if(game.online){ rec.online = true; rec.oppKey = game.online.key; rec.oppAva = game.online.avatar; }
   if(game.start){ rec.start = game.start.slice(); rec.seed = game.seed; }
   u.history.unshift(rec); cloudAddGame(rec);
@@ -4560,6 +4969,270 @@ function renderSettings(){
 const LANG = () => db.settings.lang === 'en' ? 'en' : 'ru';
 const LOC = () => LANG() === 'en' ? 'en-GB' : 'ru-RU';        // формат дат
 const EN = {
+  "Игра":"Play",
+  "Сообщество":"Community",
+  "Аккаунт":"Account",
+  "Обучение":"Learn",
+  "Рейтинг":"Rating",
+  "и шахматы":"& chess",
+  "Шашки и Шахматы":"Checkers & Chess",
+  "Мой профиль":"My profile",
+  "Коллекция":"Collection",
+  "Админ-панель":"Admin panel",
+  "Выбери режим и начни партию":"Pick a mode and start a game",
+  "онлайн":"online",
+  "в игре":"playing",
+  "Быстрая игра":"Quick game",
+  "Найти соперника":"Find opponent",
+  "Сыграй онлайн с игроком твоего уровня":"Play online against someone at your level",
+  "Режим игры":"Game mode",
+  "Контроль времени":"Time control",
+  "Буллет":"Bullet",
+  "Блиц":"Blitz",
+  "Рапид":"Rapid",
+  "Без времени":"No clock",
+  "Против бота":"Vs bot",
+  "Тренируйся, пробуй стратегии и улучшай игру":"Practise, try ideas and improve",
+  "С другом рядом":"Friend nearby",
+  "Одна доска — два игрока":"One board, two players",
+  "Игра онлайн":"Play online",
+  "Позови друга, создай ссылку или найди соперника":"Invite a friend, create a link or find an opponent",
+  "Последние партии":"Recent games",
+  "Все партии":"All games",
+  "Пока нет сыгранных партий — начни первую!":"No games yet — start your first!",
+  "Ваш рейтинг":"Your rating",
+  "Партий":"Games",
+  "Процент побед":"Win rate",
+  "Побед":"Wins",
+  "Сыграй рейтинговую партию — здесь появится график":"Play a rated game and a chart will appear here",
+  "Топ игроков":"Top players",
+  "Лучшие игроки по каждой дисциплине и контролю времени":"Top players for each discipline and time control",
+  "Игрок":"Player",
+  "Ваше место":"Your place",
+  "Сыграть партию":"Play a game",
+  "Шахматный клуб":"Chess club",
+  "Играй, тренируйся и разбирай партии":"Play, train and review your games",
+  "Игровой зал":"Game hall",
+  "Тренировка":"Training",
+  "Анализ":"Analysis",
+  "Турниры":"Tournaments",
+  "Свободная доска":"Free board",
+  "Редактор позиции":"Position editor",
+  "Редактор позиции ↗":"Position editor ↗",
+  "Готово":"Done",
+  "Очистить":"Clear",
+  "Начальная":"Start position",
+  "↺ Начальная позиция":"↺ Start position",
+  "◀ Ход назад":"◀ Undo",
+  "Играть с этой позиции":"Play from here",
+  "Анализировать":"Analyse",
+  "Ход белых":"White to move",
+  "Ход чёрных":"Black to move",
+  "Сделай ход на доске или выбери позицию":"Make a move on the board or set up a position",
+  "Выбери фигуру сверху и нажимай на клетки. Первыми ходят белые.":"Pick a piece above and click squares. White moves first.",
+  "Создать партию":"Create a game",
+  "Онлайн":"Online",
+  "Бот":"Bot",
+  "Друг":"Friend",
+  "Рейтинговая":"Rated",
+  "Обычная":"Casual",
+  "Вариант":"Variant",
+  "Цвет фигур":"Piece colour",
+  "Играть с ботом":"Play the bot",
+  "Начать партию":"Start game",
+  "Пригласить друга":"Invite a friend",
+  "Открыть PGN":"Open PGN",
+  "Поворачивать доску":"Rotate board",
+  "Имя друга":"Friend’s name",
+  "Онлайн-партии всегда рейтинговые. Подберём соперника с такими же настройками.":"Online games are always rated. We’ll match you with someone using the same settings.",
+  "Продолжить с места остановки":"Continue where you left off",
+  "Вернуться к партии":"Back to the game",
+  "Партия ещё идёт":"Game in progress",
+  "Разбор партии":"Game review",
+  "Продолжить разбор":"Continue review",
+  "Изучение дебюта":"Opening study",
+  "Продолжить изучение":"Continue studying",
+  "Ежедневная тренировка":"Daily training",
+  "Продолжить тренировку":"Continue training",
+  "Вся история":"Full history",
+  "Ваш прогресс":"Your progress",
+  "Подробная статистика":"Detailed stats",
+  "Перейти к тренировкам":"Go to training",
+  "Тренировочный центр":"Training centre",
+  "Персональный план развития игрока на сегодня":"Your personal plan for today",
+  "Реши задачу дня":"Solve the daily puzzle",
+  "Реши 3 задачи по тактике":"Solve 3 tactics puzzles",
+  "Сыграй партию с ботом":"Play a game against a bot",
+  "Изучи один дебют":"Study one opening",
+  "Разбери свою партию":"Review one of your games",
+  "Дебюты":"Openings",
+  "Тактика":"Tactics",
+  "Эндшпили":"Endgames",
+  "Задачи":"Puzzles",
+  "Пройди популярные начала партии ход за ходом":"Go through popular openings move by move",
+  "Вилки, связки и маты — задачи с рейтингом":"Forks, pins and mates — rated puzzles",
+  "Базовые окончания против бота":"Basic endgames against a bot",
+  "Задача дня и все задачи по темам":"Daily puzzle and all themed puzzles",
+  "Открыть раздел":"Open section",
+  "Следующий ход ▶":"Next move ▶",
+  "← Дебюты":"← Openings",
+  "← Назад":"← Back",
+  "Отчёт о партии":"Game report",
+  "точность":"accuracy",
+  "Лучшие ходы":"Best moves",
+  "Неточности":"Inaccuracies",
+  "Ошибки и зевки":"Mistakes & blunders",
+  "История ходов":"Move history",
+  "Полный разбор":"Full review",
+  "На доску":"To the board",
+  "Оценить позицию":"Evaluate position",
+  "Импорт PGN / выбрать свою партию":"Import PGN / pick your game",
+  "Скоро":"Soon",
+  "Ближайшее событие":"Next event",
+  "Еженедельный турнир":"Weekly tournament",
+  "Активные турниры":"Active tournaments",
+  "Зал славы":"Hall of fame",
+  "В игровой зал":"To the game hall",
+  "Изменить обложку":"Change cover",
+  "Редактировать":"Edit",
+  "Поделиться":"Share",
+  "Статус":"Status",
+  "Статус не задан":"No status",
+  "Настроить профиль":"Customise profile",
+  "Вызвать на партию":"Challenge",
+  "Сравнить статистику":"Compare stats",
+  "В друзья":"Add friend",
+  "Обзор":"Overview",
+  "История игр":"Game history",
+  "Друзья":"Friends",
+  "Все режимы":"All modes",
+  "Подробнее →":"Details →",
+  "Игровой прогресс":"Progress",
+  "Неделя":"Week",
+  "Месяц":"Month",
+  "Всё время":"All time",
+  "Игровая активность":"Activity",
+  "Календарь сыгранных партий":"Calendar of games played",
+  "Меньше":"Less",
+  "Больше":"More",
+  "Витрина достижений":"Achievement showcase",
+  "Добавить":"Add",
+  "Общие партии":"Games together",
+  "Личные рекорды":"Personal records",
+  "Лучший рейтинг":"Best rating",
+  "Серия побед":"Win streak",
+  "Партий за день":"Games in a day",
+  "Сильнейший соперник":"Strongest opponent",
+  "Быстрая победа":"Fastest win",
+  "Лучшая точность":"Best accuracy",
+  "О себе":"About me",
+  "Соперник":"Opponent",
+  "Дисциплина":"Discipline",
+  "Результат":"Result",
+  "Дата":"Date",
+  "Действие":"Action",
+  "Достижения":"Achievements",
+  "Аватарки":"Avatars",
+  "Обложки":"Covers",
+  "Рамки":"Frames",
+  "Титулы":"Titles",
+  "Игровые оформления":"Game themes",
+  "Готовые или своё фото":"Presets or your photo",
+  "Доски и фигуры":"Boards and pieces",
+  "Поиск среди друзей":"Search friends",
+  "Все друзья":"All friends",
+  "Заявки":"Requests",
+  "Найти новых игроков":"Find new players",
+  "Сравнение игроков":"Player comparison",
+  "Всего партий":"Total games",
+  "Общие победы":"Total wins",
+  "Очные встречи":"Head-to-head",
+  "Лучшая серия":"Best streak",
+  "Витрина":"Showcase",
+  "Сохранить":"Save",
+  "Отмена":"Cancel",
+  "Статус (виден всем)":"Status (visible to everyone)",
+  "Обложка":"Cover",
+  "Рамка":"Frame",
+  "Титул":"Title",
+  "Аватарка":"Avatar",
+  "Рамки аватарки":"Avatar frames",
+  "Без рамки":"No frame",
+  "Золотая":"Gold",
+  "Серебряная":"Silver",
+  "Неоновая":"Neon",
+  "Огненная":"Fiery",
+  "Королевская":"Royal",
+  "Без титула":"No title",
+  "Новичок":"Rookie",
+  "Победитель":"Winner",
+  "Душа компании":"Life of the party",
+  "Ветеран":"Veteran",
+  "Укротитель ботов":"Bot tamer",
+  "Гроссмейстер":"Grandmaster",
+  "Боец онлайна":"Online fighter",
+  "Золото":"Gold",
+  "Ночь":"Night",
+  "Доска":"Board",
+  "Лес":"Forest",
+  "Закат":"Sunset",
+  "Океан":"Ocean",
+  "Огонь":"Fire",
+  "Мат ферзём":"Queen mate",
+  "Мат ладьёй":"Rook mate",
+  "Мат двумя ладьями":"Two-rook mate",
+  "Проведи пешку в ферзи":"Promote the pawn",
+  "Ферзь против ладьи":"Queen vs rook",
+  "Играть":"Play",
+  "Выбери дебют — он откроется на доске, и ты пройдёшь его ход за ходом.":"Pick an opening — it opens on the board and you go through it move by move.",
+  "Дебют пройден!":"Opening completed!",
+  "Ссылка на профиль скопирована":"Profile link copied",
+  "Профиль обновлён":"Profile updated",
+  "Витрина обновлена":"Showcase updated",
+  "Сохранено":"Saved",
+  "Оформление применено":"Theme applied",
+  "против":"vs",
+  "ход":"move",
+  "из":"of",
+  "заданий":"tasks",
+  "ходов":"moves",
+  "партий":"games",
+  "побед":"wins",
+  "получено":"earned",
+  "достижений":"achievements",
+  "подряд":"in a row",
+  "рекорд":"record",
+  "Нажми — партии за этот день":"Click to see that day’s games",
+  "Партий не было":"No games",
+  "Победы":"Wins",
+  "Поражения":"Losses",
+  "Ничьи":"Draws",
+  "Время":"Time",
+  "любое":"any",
+  "любой":"any",
+  "все":"all",
+  "Все шахматы":"All chess",
+  "С нами с":"Member since",
+  "ещё нет партий":"no games yet",
+  "После разбора партии":"after a game review",
+  "после разбора партии":"after a game review",
+  "партий за всё время":"games in total",
+  "За этот период рейтинговых партий нет":"No rated games in this period",
+  "Игрок не найден":"Player not found",
+  "Оценка":"Evaluation",
+  "плюс — лучше белым":"plus means White is better",
+  "Считаю…":"Thinking…",
+  "Белые ставят мат":"White mates",
+  "Чёрные ставят мат":"Black mates",
+  "Партия против":"Game vs",
+  "белые начинают и выигрывают":"White to play and win",
+  "Очные встречи — победы, поражения и ничьи в онлайн-партиях друг с другом.":"Head-to-head — wins, losses and draws in online games against each other.",
+  "С позиции можно играть с ботом или с другом рядом":"From a position you can play a bot or a friend nearby",
+  "Сначала сделай пару ходов или расставь позицию":"Make a couple of moves or set up a position first",
+  "Нужно ровно по одному королю каждого цвета":"You need exactly one king of each colour",
+  "У белых нет ходов в этой позиции":"White has no moves in this position",
+  "Чёрный король под шахом, а ходят белые — так не бывает":"Black’s king is in check while White is to move — that’s impossible",
+  "Максимум 3 награды":"Up to 3 awards",
   'Ссылка на партию':'Game link','Копировать':'Copy','Отправить в мессенджер':'Send via messenger','Отменить ссылку':'Cancel link','Свернуть':'Minimize',
   'Отправь ссылку другу. Он откроет её, войдёт или создаст аккаунт — и партия сразу начнётся. Ссылка работает, пока ты на сайте.':'Send the link to a friend. They open it, log in or sign up — and the game starts right away. The link works while you are on the site.',
   'Играть по ссылке':'Play by link','Для тех, кто не у тебя в друзьях или ещё без аккаунта: отправь ссылку — по ней сразу начнётся партия с настройками справа.':'For people who aren’t your friends or don’t have an account yet: send a link and the game with the settings on the right starts right away.',
@@ -4906,7 +5579,7 @@ netHandlers.admin = async () => {
   const { data } = await selProfiles(q => q.eq('id', db.current).maybeSingle());
   const u = me(); if(!data || !u) return;
   const f = rowToAcc(data, null);
-  ['nick','avatar','about','ratings','customAva'].forEach(k => u[k] = f[k]);      // админ поменял профиль — берём серверную версию
+  ['nick','avatar','about','ratings','customAva','pf'].forEach(k => u[k] = f[k]);      // админ поменял профиль — берём серверную версию
   lastSync = JSON.stringify(profData(u));
   u.history = await fetchHistory(db.current); u.gamesN = u.history.length;         // историю могли удалить
   applyMyFlags(data);
@@ -6215,6 +6888,936 @@ async function tryJoinLink(){
   }
   modal(`<div class="big-ico">${PIX('chat')}</div><h2>Партия не найдена</h2><p class="muted">Создатель ссылки сейчас не на сайте или уже начал другую партию. Попроси его прислать новую ссылку.</p>`, [{ label:'Понятно' }]);
 }
+
+
+/* =========================================================
+   13j. v17: НОВАЯ СТРУКТУРА — меню по разделам, «Играть», шахматный клуб, профиль
+   ========================================================= */
+Object.assign(VAR_NAMES, { chess:'Шахматы', c960:'Шахматы 960' });
+const vLabel = v => (VARIANTS[v] || VARIANTS['32']).label;
+const fmtN = n => Number(n).toLocaleString('ru-RU').replace(/\s/g, ' ');
+const dayKey = t => { const d = new Date(t); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
+const LS = { get(k, d){ try{ const v = JSON.parse(localStorage.getItem(k)); return v == null ? d : v; }catch(e){ return d; } }, set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} } };
+
+/* ---------- контроль времени: пресеты как на больших шахматных сайтах ---------- */
+TCS.splice(1, 0, { id:'120', label:'2 минуты', short:'2 мин', sec:120 });
+TCS.splice(TCS.findIndex(t => t.id === '1800'), 0, { id:'900', label:'15 минут', short:'15 мин', sec:900 });
+INCS.splice(0, INCS.length, 0, 1, 2, 3, 5, 10, 15, 30);
+const TC_PRESETS = [
+  ['Буллет', 'bolt', [['60', 0], ['60', 1], ['120', 1]]],
+  ['Блиц', 'clock', [['180', 0], ['180', 2], ['300', 3]]],
+  ['Рапид', 'cal', [['600', 0], ['600', 5], ['900', 10]]]
+];
+const tcTxt = (tc, inc) => tc === '0' ? '∞' : (tcById(tc).sec / 60) + '+' + (+inc || 0);
+function tcPresetsHTML(compact){
+  const m = db.menu, on = (tc, inc) => m.tc === tc && (tc === '0' || +m.inc === inc);
+  return `<div class="tcp ${compact ? 'compact' : ''}">${TC_PRESETS.map(([name, ic, list]) => `
+    <div class="tcp-g"><div class="tcp-name">${PIX(ic)}${name}</div>
+      <div class="tcp-row">${list.map(([tc, inc]) => `<button class="tcp-b ${on(tc, inc) ? 'on' : ''}" data-tp="${tc}:${inc}">${tcTxt(tc, inc)}</button>`).join('')}</div></div>`).join('')}
+    <button class="tcp-b tcp-inf ${on('0', 0) ? 'on' : ''}" data-tp="0:0">∞ <span>Без времени</span></button></div>`;
+}
+function bindPresets(box, rerender){
+  box.querySelectorAll('[data-tp]').forEach(b => b.onclick = () => {
+    const [tc, inc] = b.dataset.tp.split(':'); db.menu.tc = tc; db.menu.inc = +inc; save(); renderMeMini(); rerender();
+  });
+}
+
+/* ---------- счётчик «онлайн / в игре» (из «присутствия» на сервере) ---------- */
+function onlineCounts(){
+  const st = typeof lobby !== 'undefined' && lobby ? lobby.presenceState() : {};
+  let on = 0, pl = 0;
+  for(const metas of Object.values(st)){ on++; if(metas.some(x => x.s === 'playing')) pl++; }
+  return { on: Math.max(on, db.current ? 1 : 0), pl };
+}
+const onlinePill = () => { const c = onlineCounts(); return `<div class="on-pill" id="onPill"><span class="on-dot"></span><b id="onN">${c.on}</b><span>онлайн</span><i></i>${PIX('swords')}<b id="onP">${c.pl}</b><span>в игре</span></div>`; };
+setInterval(() => { const a = $('#onN'), b = $('#onP'); if(!a) return; const c = onlineCounts(); a.textContent = c.on; b.textContent = c.pl; }, 2000);
+
+/* ---------- маленький график рейтинга (золотая линия с заливкой) ---------- */
+function ratedGames(u, variant, tc){ return (u.history || []).filter(g => (g.variant || '32') === variant && (!tc || g.tc === tc) && !g.friend && !g.unrated && g.rating); }
+function sparkSVG(pts, W, H, labels){
+  W = W || 320; H = H || 110;
+  if(!pts.length) pts = [1000, 1000]; if(pts.length === 1) pts = [pts[0], pts[0]];
+  let lo = Math.min(...pts), hi = Math.max(...pts); if(hi - lo < 30){ lo -= 15; hi += 15; }
+  const P = 8, x = i => P + i * (W - 2 * P) / (pts.length - 1), y = v => P + (hi - v) * (H - 2 * P) / (hi - lo);
+  const line = pts.map((v, i) => `${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(' ');
+  const grid = [1, 2, 3].map(k => `<line x1="0" x2="${W}" y1="${(H * k / 4).toFixed(1)}" y2="${(H * k / 4).toFixed(1)}" class="sp-grid"/>`).join('');
+  const lab = labels ? [0, .5, 1].map(f => { const v = Math.round(hi - (hi - lo) * f); return `<text x="${W - 2}" y="${Math.max(10, Math.min(H - 3, y(v) - 3))}" text-anchor="end" class="sp-lab">${v}</text>`; }).join('') : '';
+  const dots = pts.length <= 14 ? pts.map((v, i) => `<circle cx="${x(i)}" cy="${y(v)}" r="3" class="sp-dot"/>`).join('') : '';
+  return `<svg viewBox="0 0 ${W} ${H}" class="spark" preserveAspectRatio="none"><defs><linearGradient id="spg" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="var(--gold)" stop-opacity=".38"/><stop offset="1" stop-color="var(--gold)" stop-opacity="0"/></linearGradient></defs>
+    ${grid}<polygon points="${x(0)},${H} ${line} ${x(pts.length - 1)},${H}" fill="url(#spg)"/><polyline points="${line}" fill="none" stroke="var(--gold)" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>${dots}
+    <circle cx="${x(pts.length - 1)}" cy="${y(pts[pts.length - 1])}" r="4.5" class="sp-end"/>${lab}</svg>`;
+}
+// карточка «Ваш рейтинг»
+function ratingCardHTML(u, variant, tc){
+  const games = ratedGames(u, variant, tc).slice().reverse();
+  const pts = games.length ? [games[0].rating - (games[0].delta || 0), ...games.map(g => g.rating)].slice(-14) : [];
+  const all = (u.history || []).filter(g => (g.variant || '32') === variant), c = countRes(all);
+  const r = ratingOf(u, variant, tc), last = games[games.length - 1], d = last ? last.delta : 0;
+  return `<div class="rc-head"><div><div class="rc-lbl">Ваш рейтинг</div><div class="rc-num"><b>${fmtN(r)}</b><span>${vLabel(variant)} · ${tcById(tc).short}</span></div></div>
+      <div class="rc-right">${PIX('trophy')}${last ? `<span class="rc-d ${d >= 0 ? 'up' : 'down'}">${d >= 0 ? '▲ +' : '▼ '}${d}</span>` : ''}</div></div>
+    <div class="rc-chart">${pts.length ? sparkSVG(pts, 320, 104) : `<div class="rc-empty">Сыграй рейтинговую партию — здесь появится график</div>`}</div>
+    <div class="rc-stats"><div>${PIX('dice')}<b>${all.length}</b><small>Партий</small></div><div>${PIX('check')}<b class="g">${pct(c.win, all.length)}%</b><small>Процент побед</small></div><div>${PIX('chart')}<b>${c.win}</b><small>Побед</small></div></div>`;
+}
+// строка «последней партии»
+function recentRowHTML(g, i){
+  const my = g.result === 'win' ? 1 : g.result === 'draw' ? '½' : 0, op = g.result === 'loss' ? 1 : g.result === 'draw' ? '½' : 0;
+  const d = g.friend || g.unrated ? '' : `<span class="rg-d ${g.delta >= 0 ? 'up' : 'down'}">${g.delta >= 0 ? '+' : ''}${g.delta}</span>`;
+  return `<div class="rg2" data-rv="${i}"><span class="ava round sm">${oppAvaHTML(g)}</span><b class="rg-n" translate="no">${esc(g.opp)}</b>
+    <span class="rg-m">${vLabel(g.variant || '32')} • ${tcTxt(g.tc, g.inc)}</span><span class="rg-s ${g.result}">${my} — ${op}</span>${d || '<span class="rg-d"></span>'}
+    <button class="rg-play" title="Разбор партии" ${g.mv ? '' : 'disabled'}>${ICON.playFill}</button></div>`;
+}
+function bindRecent(box, key){ box.querySelectorAll('[data-rv]').forEach(r => r.onclick = () => openReview(+r.dataset.rv, key)); }
+
+/* ---------- боковое меню: разделы и меню профиля ---------- */
+function buildNav(){
+  const nav = $('.sidebar nav'); if(!nav) return;
+  const btn = (go, ic, label) => `<button data-go="${go}">${PIX(ic)}<span>${label}</span></button>`;
+  nav.innerHTML = `<div class="nav-cat">Игра</div>${btn('home', 'play', 'Играть')}${btn('puzzles', 'target', 'Задачи')}${btn('rules', 'rules', 'Обучение')}
+    <div class="nav-cat">Сообщество</div>${btn('players', 'friend', 'Игроки')}${btn('rating', 'trophy', 'Рейтинг')}
+    <div class="nav-cat">Аккаунт</div>${btn('profile', 'profile', 'Профиль')}${btn('settings', 'settings', 'Настройки')}
+    <button data-go="admin" id="navAdmin" hidden></button>`;
+  nav.querySelectorAll('[data-go]').forEach(b => b.addEventListener('click', () => go(b.dataset.go)));
+  const lt = $('.logo-t'); if(lt) lt.innerHTML = 'Шашки<small>и шахматы</small>';
+  const mm = $('#meMini'); if(mm){ mm.removeAttribute('data-go'); const c = mm.cloneNode(false); mm.replaceWith(c); c.onclick = e => { e.stopPropagation(); toggleMeMenu(c); }; }
+  document.title = 'Шашки и Шахматы';
+}
+function toggleMeMenu(anchor){
+  let pop = $('#meMenu');
+  if(pop){ pop.remove(); return; }
+  const u = me(); if(!u) return;
+  pop = document.createElement('div'); pop.id = 'meMenu'; pop.className = 'me-menu';
+  pop.innerHTML = `<div class="mm-head"><span class="ava round">${avatarHTML(u.avatar)}</span><div><b translate="no">${esc(u.nick)}</b>${adminBadge(db.current)}<small>${statusLine(db.current)}</small></div></div>
+    <button data-mm="profile">${PIX('profile')}Мой профиль</button>
+    <button data-mm="collection">${PIX('medal')}Коллекция</button>
+    <button data-mm="settings">${PIX('settings')}Настройки</button>
+    ${u.isAdmin ? `<button data-mm="admin">${PIX('admin')}Админ-панель</button>` : ''}
+    <button data-mm="logout" class="mm-out">${PIX('door')}Выйти</button>`;
+  document.body.append(pop);
+  const r = anchor.getBoundingClientRect(), side = !db.settings.topbar && innerWidth > 900;
+  if(side){ pop.style.left = (r.left) + 'px'; pop.style.bottom = (innerHeight - r.top + 8) + 'px'; }
+  else { pop.style.right = Math.max(8, innerWidth - r.right) + 'px'; pop.style.top = (r.bottom + 8) + 'px'; }
+  pop.querySelectorAll('[data-mm]').forEach(b => b.onclick = () => {
+    pop.remove(); const a = b.dataset.mm;
+    if(a === 'logout') logout(); else if(a === 'collection'){ profTab = 'collection'; collView = null; go('profile'); } else go(a);
+  });
+  setTimeout(() => document.addEventListener('click', function cl(e){ if(!pop.contains(e.target)){ pop.remove(); document.removeEventListener('click', cl); } }), 0);
+}
+function statusLine(k){ const s = statusOf(k); return tr(STATUS_TXT[s] || ''); }
+function updateAdminNav(){ /* админка теперь в меню профиля (клик по своей карточке внизу панели) */ }
+CRUMBS.rating = () => '<span class="eyebrow">Рейтинг</span>';
+CRUMBS.rules = () => '<span class="eyebrow">Обучение</span>';
+
+/* ---------- экран «Рейтинг»: таблица лидеров ---------- */
+let lbVar = null, lbTc = null;
+function renderRating(){
+  lbVar = lbVar || db.menu.variant; lbTc = lbTc || db.menu.tc;
+  const list = Object.entries(db.accounts).map(([k, a]) => ({ k, a, r: ratingOf(a, lbVar, lbTc), n: a.gamesN || 0 }))
+    .sort((x, y) => y.r - x.r || y.n - x.n).slice(0, 100);
+  const meI = list.findIndex(x => x.k === db.current);
+  $('#ratingBox').innerHTML = `
+    <div class="hero-head"><div><div class="hh-hi">Сообщество</div><h1 class="display">Рейтинг</h1><p class="hh-sub">Лучшие игроки по каждой дисциплине и контролю времени</p></div>${onlinePill()}</div>
+    <div class="card lb-filter">
+      <div class="seg">${Object.values(VARIANTS).map(v => `<button class="${v.id === lbVar ? 'on' : ''}" data-lv="${v.id}">${variantIcon(v.id, 20)}${v.label}</button>`).join('')}</div>
+      <div class="chips">${TCS.map(t => `<button class="chip ${t.id === lbTc ? 'on' : ''}" data-lt="${t.id}">${t.short}</button>`).join('')}</div>
+    </div>
+    <div class="lb-grid">
+      <div class="card"><div class="lb-head"><span>#</span><span>Игрок</span><span>Партий</span><span>Рейтинг</span></div>
+        ${list.map((x, i) => `<div class="lb-row ${x.k === db.current ? 'me' : ''}" data-open="${esc(x.k)}"><span class="lb-n n${i + 1}">${i + 1}</span>
+          <span class="lb-p"><span class="ava round sm">${avatarHTML(x.a.avatar)}</span><b>${nickH(x.k)}</b></span><span class="muted">${x.n}</span><b class="lb-r">${x.r}</b></div>`).join('')}
+        ${list.length < 2 ? '<p class="muted small">Пока здесь мало игроков. Позови друзей — рейтинг оживёт.</p>' : ''}</div>
+      <div class="card lb-me"><h2>${PIX('medal')} Ваше место</h2><div class="lb-big">${meI >= 0 ? meI + 1 : '—'}<small>из ${list.length}</small></div>
+        <p class="muted small">${vLabel(lbVar)} · ${tcById(lbTc).label}. Рейтинг считается только за партии с ботами и живыми игроками (не с другом рядом).</p>
+        <button class="btn primary wide" onclick="go('home')">${ICON.playFill} Сыграть партию</button></div>
+    </div>`;
+  const box = $('#ratingBox');
+  box.querySelectorAll('[data-lv]').forEach(b => b.onclick = () => { lbVar = b.dataset.lv; renderRating(); });
+  box.querySelectorAll('[data-lt]').forEach(b => b.onclick = () => { lbTc = b.dataset.lt; renderRating(); });
+  bindPeople(box);
+}
+
+/* ---------- главная «Играть» (шашки) — как на макете ---------- */
+function renderHome(){
+  if(isChessMenu()){ renderChessClub(); return; }
+  const u = me(), m = db.menu;
+  const recent = u.history.map((g, i) => ({ g, i })).filter(x => !(VARIANTS[x.g.variant || '32'] || {}).chess).slice(0, 4);
+  $('#homeBox').innerHTML = `
+    <div class="hero-head"><div><div class="hh-hi">Привет, <span translate="no">${esc(u.nick)}</span></div><h1 class="display">Играть</h1><p class="hh-sub">Выбери режим и начни партию</p></div>
+      <div class="hh-right">${onlinePill()}${discSwitch()}</div></div>
+    <div class="h17">
+      <div class="h17-main">
+        <div class="card qhero">
+          <div class="qh-l">
+            <span class="qh-badge">${PIX('bolt')} Быстрая игра</span>
+            <h2 class="qh-t">Найти соперника</h2>
+            <p class="qh-sub">Сыграй онлайн с игроком твоего уровня</p>
+            <div class="lbl">Режим игры</div>
+            <div class="qh-var">${discVariants().map(v => `<button class="${v.id === m.variant ? 'on' : ''}" data-v="${v.id}">${variantIcon(v.id, 22)}<span>${v.label}</span></button>`).join('')}</div>
+            <div class="lbl">Контроль времени</div>
+            ${tcPresetsHTML()}
+            <button class="btn primary big wide glow" id="qSearch">${ICON.playFill} Найти соперника · ${tcTxt(m.tc, m.inc)}</button>
+          </div>
+          <div class="qh-art"><div class="qh-tilt">${miniBoard(m.variant)}</div></div>
+        </div>
+        <div class="mode3">
+          ${[['bots', 'bot', 'Против бота', 'Тренируйся, пробуй стратегии и улучшай игру'], ['friend', 'friend', 'С другом рядом', 'Одна доска — два игрока'], ['online', 'online', 'Игра онлайн', 'Позови друга, создай ссылку или найди соперника']]
+            .map(([to, ic, t, p]) => `<button class="card m3" onclick="go('${to}')"><span class="m3-ico">${PIX(ic)}</span><span class="m3-t"><b>${t}</b><small>${p}</small></span><span class="m3-arr">${ICON.arrow}</span></button>`).join('')}
+        </div>
+        <div class="card">
+          <div class="sc-head"><h2>${PIX('clock')} Последние партии</h2><button class="link" id="hAll">Все партии ${ICON.arrow}</button></div>
+          ${recent.length ? recent.map(x => recentRowHTML(x.g, x.i)).join('') : '<p class="muted small">Пока нет сыгранных партий — начни первую!</p>'}
+        </div>
+      </div>
+      <div class="h17-side">
+        <div class="card rcard">${ratingCardHTML(u, m.variant, m.tc)}</div>
+        <div class="card side-card puz-card" id="puzCard"></div>
+        <div class="card side-card" id="friendsCard"></div>
+        <div class="card side-card" id="topCard"></div>
+      </div>
+    </div>`;
+  const box = $('#homeBox');
+  box.querySelectorAll('.qh-var [data-v]').forEach(b => b.onclick = () => { m.variant = b.dataset.v; save(); renderMeMini(); renderHome(); });
+  bindPresets(box.querySelector('.qhero'), renderHome);
+  $('#qSearch').onclick = startSearch;
+  $('#hAll').onclick = () => { profTab = 'history'; go('profile'); };
+  $('#discSw').querySelectorAll('[data-d]').forEach(b => b.onclick = () => setDiscipline(b.dataset.d));
+  bindRecent(box);
+  renderFriendsCard(); renderTopCard(); renderPuzzleCard();
+}
+function renderTopCard(){
+  const box = $('#topCard'); if(!box) return;
+  const m = db.menu;
+  const list = Object.entries(db.accounts).map(([k, a]) => ({ k, a, r: ratingOf(a, m.variant, m.tc), n: a.gamesN || 0 }))
+    .sort((x, y) => y.r - x.r || y.n - x.n).slice(0, 5);
+  box.innerHTML = `<div class="sc-head"><h2>${PIX('trophy')} Топ игроков</h2><button class="icon-btn" title="Весь рейтинг" onclick="go('rating')">${ICON.arrow}</button></div>
+    ${list.map((x, i) => `<div class="top-row ${x.k === db.current ? 'me' : ''}" data-open="${esc(x.k)}"><span class="n n${i + 1}">${i + 1}</span><span class="nm">${nickH(x.k)}</span><b>${x.r}</b></div>`).join('')}
+    ${list.length < 2 ? '<p class="muted small">Здесь появятся другие игроки, когда они зарегистрируются.</p>' : ''}`;
+  bindPeople(box);
+}
+
+
+/* ---------- ШАХМАТНЫЙ КЛУБ: «Игровой зал», «Тренировка», «Анализ», «Турниры» ---------- */
+let chessTab = 'hall', trainView = null;
+const userKey = p => 'shashki_' + p + '_' + (db.current || 'guest');
+const sqIdx = s => (8 - +s[1]) * 8 + 'abcdefgh'.indexOf(s[0]);
+function posFrom(o){                    // { wK:'e1', wQ:['d1'], bK:'e5' } → доска движка
+  const b = new Array(69).fill(0), T = { P:1, N:2, B:3, R:4, Q:5, K:6 };
+  for(const [k, v] of Object.entries(o)) [].concat(v).forEach(s => b[sqIdx(s)] = (k[0] === 'w' ? 1 : -1) * T[k[1]]);
+  b[64] = 0; b[67] = 7; b[68] = 0; return b;
+}
+const withChess = fn => { const keep = V.id; setVariant('chess'); try{ return fn(); } finally { setVariant(keep); } };
+
+/* ---------- живая доска: ходы, редактор позиции, игра и анализ с позиции ---------- */
+const LB = { start: null, moves: [], sel: null, edit: false, tool: 6, flip: false, name: '' };
+function lbReset(start, name){ LB.start = (start || cInit()).slice(); LB.moves = []; LB.sel = null; LB.name = name || ''; }
+function lbBoard(upto){ return withChess(() => { let b = LB.start.slice(); LB.moves.slice(0, upto == null ? LB.moves.length : upto).forEach(m => b = applyMove(b, m)); return b; }); }
+const lbTurn = () => LB.moves.length % 2 ? -1 : 1;
+const isInitial = b => withChess(() => cInit().slice(0, 64).join() === b.slice(0, 64).join());
+function lbSan(){ return withChess(() => { let b = LB.start.slice(), out = []; LB.moves.forEach((m, k) => { out.push((k % 2 ? '' : (k / 2 + 1) + '. ') + cSan(b, m)); b = applyMove(b, m); }); return out.join(' '); }); }
+function lbHTML(id){
+  if(!LB.start) lbReset();
+  const b = lbBoard(), turn = lbTurn(), last = LB.moves[LB.moves.length - 1];
+  const legal = LB.edit || LB.sel == null ? [] : withChess(() => genMoves(b, turn).filter(m => m.from === LB.sel));
+  const cells = [];
+  for(let y = 0; y < 8; y++) for(let x = 0; x < 8; x++){
+    const r = LB.flip ? 7 - y : y, c = LB.flip ? 7 - x : x, s = r * 8 + c, v = b[s];
+    const cls = ['sq', (r + c) % 2 ? 'dark' : 'light'];
+    if(last && (s === last.from || s === last.to)) cls.push('lb-last');
+    if(s === LB.sel) cls.push('lb-sel');
+    const tgt = legal.some(m => m.to === s);
+    cells.push(`<div class="${cls.join(' ')}" data-s="${s}">${v ? withChess(() => pieceMini(v)) : ''}${tgt ? `<i class="${v ? 'lb-cap' : 'lb-dot'}"></i>` : ''}${x === 0 ? `<em class="lb-rk">${8 - r}</em>` : ''}${y === 7 ? `<em class="lb-fl">${'abcdefgh'[c]}</em>` : ''}</div>`);
+  }
+  const pal = [6, 5, 4, 3, 2, 1].map(t => [t, -t]).flat();
+  return `<div class="lb-wrap" id="${id}">
+    <div class="lb-top"><span class="lb-ttl">${PIX('board')} ${LB.edit ? 'Редактор позиции' : (LB.name ? esc(LB.name) : 'Свободная доска')}</span>
+      <button class="link" data-lb="edit">${LB.edit ? `${ICON.check} Готово` : 'Редактор позиции ↗'}</button></div>
+    ${LB.edit ? `<div class="lb-pal">${pal.map(t => `<button class="${LB.tool === t ? 'on' : ''}" data-tool="${t}">${withChess(() => pieceMini(t))}</button>`).join('')}<button class="lb-er ${LB.tool === 0 ? 'on' : ''}" data-tool="0" title="Стереть">✕</button></div>` : ''}
+    <div class="mini-board lb bt-${db.settings.cBoardTheme || 'classic'} pt-${db.settings.cPieceTheme || 'cartoon'}" style="--mc:8">${cells.join('')}</div>
+    <div class="lb-info">${LB.edit ? '<span class="muted small">Выбери фигуру сверху и нажимай на клетки. Первыми ходят белые.</span>'
+      : `<span class="lb-turn"><i class="${turn > 0 ? 'w' : 'b'}"></i>Ход ${turn > 0 ? 'белых' : 'чёрных'}</span><span class="lb-moves" translate="no">${LB.moves.length ? lbSan() : '<span class="muted">Сделай ход на доске или выбери позицию</span>'}</span>`}</div>
+    <div class="lb-btns">
+      ${LB.edit ? `<button class="btn sm" data-lb="clear">Очистить</button><button class="btn sm" data-lb="init">Начальная</button><button class="btn sm" data-lb="flip">⇄</button>`
+        : `<button class="btn sm" data-lb="init">↺ Начальная позиция</button><button class="btn sm" data-lb="back" ${LB.moves.length ? '' : 'disabled'}>◀ Ход назад</button><button class="btn sm" data-lb="flip" title="Перевернуть доску">⇄</button>`}
+    </div>
+    ${LB.edit ? '' : `<div class="lb-btns two"><button class="btn sm primary" data-lb="play">${ICON.playFill} Играть с этой позиции</button><button class="btn sm" data-lb="analyze">${PIX('search')} Анализировать</button></div>`}
+  </div>`;
+}
+function bindLB(id, rerender){
+  const box = document.getElementById(id); if(!box) return;
+  const draw = () => { const w = document.getElementById(id); w.outerHTML = lbHTML(id); bindLB(id, rerender); };
+  box.querySelectorAll('.lb .sq').forEach(el => el.onclick = () => {
+    const s = +el.dataset.s;
+    if(LB.edit){
+      const b = LB.start.slice();
+      if(Math.abs(LB.tool) === 6) for(let i = 0; i < 64; i++) if(b[i] === LB.tool) b[i] = 0;          // король только один
+      if(Math.abs(LB.tool) === 1 && (s < 8 || s >= 56)){ toast('Пешка не может стоять на первой и последней горизонтали'); return; }
+      b[s] = b[s] === LB.tool ? 0 : LB.tool; LB.start = b; draw(); return;
+    }
+    const b = lbBoard(), turn = lbTurn();
+    if(LB.sel != null){
+      const mv = withChess(() => genMoves(b, turn).filter(m => m.from === LB.sel && m.to === s));
+      if(mv.length){ const m = mv.find(x => !x.promote || x.promote === 5) || mv[0]; LB.moves.push(m); LB.sel = null; playMoveSound(m); draw(); return; }
+    }
+    LB.sel = b[s] * turn > 0 && LB.sel !== s ? s : null; draw();
+  });
+  box.querySelectorAll('[data-tool]').forEach(t => t.onclick = () => { LB.tool = +t.dataset.tool; draw(); });
+  box.querySelectorAll('[data-lb]').forEach(t => t.onclick = () => {
+    const a = t.dataset.lb;
+    if(a === 'flip'){ LB.flip = !LB.flip; draw(); }
+    if(a === 'init'){ lbReset(); draw(); }
+    if(a === 'back'){ LB.moves.pop(); LB.sel = null; draw(); }
+    if(a === 'clear'){ LB.start = new Array(69).fill(0); LB.start[67] = 7; draw(); }
+    if(a === 'edit'){
+      if(!LB.edit){ LB.start = lbBoard(); LB.moves = []; LB.sel = null; LB.edit = true; LB.name = ''; draw(); return; }
+      const err = lbCheck(LB.start); if(err){ toast(err); return; }
+      if(!isInitial(LB.start)) LB.start[64] = 0; else LB.start = cInit();
+      LB.edit = false; draw();
+    }
+    if(a === 'play') playFromLB();
+    if(a === 'analyze') analyzeLB();
+  });
+}
+function lbCheck(b){
+  const n = v => b.slice(0, 64).filter(x => x === v).length;
+  if(n(6) !== 1 || n(-6) !== 1) return 'Нужно ровно по одному королю каждого цвета';
+  if(withChess(() => cInCheck(b, -1))) return 'Чёрный король под шахом, а ходят белые — так не бывает';
+  if(!withChess(() => genMoves(b, 1).length)) return 'У белых нет ходов в этой позиции';
+  return '';
+}
+// партия с позиции живой доски: стартуем с её начала и «проигрываем» сделанные ходы — так работает и разбор
+function launchFrom(start, moves, o){
+  launchGame(o); if(!game || game.review) return;
+  const custom = !isInitial(start);
+  if(custom){ game.start = start.slice(); game.board = start.slice(); }
+  for(const m of moves){
+    const san = cSan(game.board, m);
+    game.board = applyMove(game.board, m);
+    game.moves.push(san);
+    game.mvs.push({ from:m.from, path:m.path, caps:m.caps, to:m.to, promote:m.promote, castle:m.castle, rf:m.rf, kt:m.kt, rt:m.rt, ep:m.ep, dbl:m.dbl, san });
+    game.last = m; game.ply++; game.turn = -game.turn;
+  }
+  game.reps = new Map(); countRep();
+  game.botToken++; game.thinking = false;
+  renderAll();
+  if(game.bot && game.turn !== game.me) scheduleBot();
+}
+function playFromLB(){
+  if(playBlocked()) return;
+  const m = db.menu, mode = m.opp === 'friend' ? 'friend' : 'bot';
+  if(m.opp === 'online') toast('С позиции можно играть с ботом или с другом рядом');
+  const color = m.color === 'random' ? (Math.random() < .5 ? 'white' : 'black') : m.color;
+  launchFrom(LB.start, LB.moves, { variant:'chess', tc: m.tc, inc: m.inc, color, friend: mode === 'friend', bot: mode === 'friend' ? null : CHESS_BOTS[m.cbot || 0],
+    undo: true, friendName: (m.friendName || '').trim() || 'Друг', friendFlip: !!m.friendFlip });
+}
+function analyzeLB(){
+  if(!LB.moves.length && isInitial(LB.start)){ toast('Сначала сделай пару ходов или расставь позицию'); return; }
+  const rec = { date: Date.now(), variant:'chess', friend: true, opp: tr('Анализ'), color: 'white', tc:'0', inc:0, result:'draw', reason:'agreement',
+    moves: LB.moves.length, rating: 0, delta: 0, mv: [], imported: true };
+  if(!isInitial(LB.start)) rec.start = LB.start.slice();
+  withChess(() => { let b = LB.start.slice(); LB.moves.forEach(m => { rec.mv.push(Object.assign({}, m, { san: cSan(b, m) })); b = applyMove(b, m); }); });
+  openReview(0, null, rec);
+}
+
+/* ---------- единый конструктор партии ---------- */
+function ctorHTML(){
+  const m = db.menu, opp = ['online', 'bot', 'friend'].includes(m.opp) ? m.opp : 'bot', bots = CHESS_BOTS, bi = m.cbot || 0;
+  const main = { online: `${ICON.playFill} Найти соперника · ${tcTxt(m.tc, m.inc)}`, bot: `${ICON.playFill} Играть с ботом`, friend: `${ICON.playFill} Начать партию` }[opp];
+  return `<h2 class="ct-h">Создать партию</h2>
+    <div class="seg ct-mode">${[['online', 'online', 'Онлайн'], ['bot', 'bot', 'Бот'], ['friend', 'friend', 'Друг']].map(([id, ic, l]) => `<button class="${opp === id ? 'on' : ''}" data-op="${id}">${PIX(ic)}${l}</button>`).join('')}</div>
+    ${opp === 'bot' ? `<div class="seg sm ct-rated"><button class="${!m.casual ? 'on' : ''}" data-cas="0">Рейтинговая</button><button class="${m.casual ? 'on' : ''}" data-cas="1">Обычная</button></div>
+      <div class="ct-bots">${bots.map((b, i) => `<button class="ct-bot ${i === bi ? 'on' : ''}" data-bi="${i}" title="${esc(b.name)} · ${b.about}"><span class="ava">${botFace(b.face)}</span><small>${b.elo}</small></button>`).join('')}</div>
+      <div class="ct-bname"><b>${bots[bi].name}</b><span class="muted small">${bots[bi].elo} Эло · ${bots[bi].about}</span></div>` : ''}
+    ${opp === 'friend' ? `<div class="ct-friend"><input id="ctFriend" maxlength="16" value="${esc(m.friendName || '')}" placeholder="Имя друга"><label class="ct-flip"><button class="switch ${m.friendFlip ? 'on' : ''}" id="ctFlip"></button>Поворачивать доску</label></div>` : ''}
+    ${opp === 'online' ? `<p class="muted small ct-note">Онлайн-партии всегда рейтинговые. Подберём соперника с такими же настройками.</p>` : ''}
+    <div class="lbl">Вариант</div>
+    <div class="seg sm">${discVariants().map(v => `<button class="${v.id === m.variant ? 'on' : ''}" data-v="${v.id}">${v.label}</button>`).join('')}</div>
+    <div class="lbl">Контроль времени</div>${tcPresetsHTML(true)}
+    ${opp !== 'online' ? `<div class="ct-color"><span class="lbl">Цвет фигур</span><div class="ct-cols">${[['white', '○', 'Белые'], ['random', '◐', 'Случайно'], ['black', '●', 'Чёрные']].map(([id, g, t]) => `<button class="${m.color === id ? 'on' : ''}" data-col="${id}" title="${t}">${g}</button>`).join('')}</div></div>` : ''}
+    <button class="btn primary big wide glow" id="ctGo">${main}</button>
+    <div class="ct-sec"><button class="btn sm" id="ctLink">${PIX('adduser')} Пригласить друга</button><button class="btn sm" id="ctPgn">${PIX('book2')} Открыть PGN</button></div>`;
+}
+function bindCtor(box, rerender){
+  const m = db.menu, set = (k, v) => { m[k] = v; save(); renderMeMini(); rerender(); };
+  box.querySelectorAll('[data-op]').forEach(b => b.onclick = () => set('opp', b.dataset.op));
+  box.querySelectorAll('[data-cas]').forEach(b => b.onclick = () => set('casual', b.dataset.cas === '1'));
+  box.querySelectorAll('[data-bi]').forEach(b => b.onclick = () => set('cbot', +b.dataset.bi));
+  box.querySelectorAll('[data-v]').forEach(b => b.onclick = () => set('variant', b.dataset.v));
+  box.querySelectorAll('[data-col]').forEach(b => b.onclick = () => set('color', b.dataset.col));
+  bindPresets(box, rerender);
+  const f = box.querySelector('#ctFriend'); if(f) f.oninput = e => { m.friendName = e.target.value; save(); };
+  const fl = box.querySelector('#ctFlip'); if(fl) fl.onclick = () => set('friendFlip', !m.friendFlip);
+  box.querySelector('#ctGo').onclick = () => {
+    const opp = ['online', 'bot', 'friend'].includes(m.opp) ? m.opp : 'bot';
+    if(opp === 'online'){ startSearch(); return; }
+    m.undo = false; startGame(opp);
+    if(opp === 'bot' && m.casual && game && !game.review) game.casual = true;
+  };
+  box.querySelector('#ctLink').onclick = createLinkGame;
+  box.querySelector('#ctPgn').onclick = importPGN;
+}
+
+/* ---------- «Продолжить с места остановки» ---------- */
+function resumeGet(){ return LS.get(userKey('resume'), null); }
+function resumeSet(o){ LS.set(userKey('resume'), Object.assign({ t: Date.now() }, o)); }
+function resumeHTML(){
+  const items = [];
+  if(game && !game.over && !game.review && !game.puzzle) items.push({ ic:'swords', t:'Партия ещё идёт', s:`${tr('против')} ${esc(oppName())}`, act:'game', b:'Вернуться к партии' });
+  const r = resumeGet();
+  if(r && Date.now() - r.t < 7 * 864e5){
+    if(r.type === 'review'){ const i = me().history.findIndex(g => g.date === r.date); if(i >= 0) items.push({ ic:'search', t:'Разбор партии', s:`${tr('против')} ${esc(me().history[i].opp)} · ${tr('ход')} ${Math.ceil((r.pos || 0) / 2) || 1}`, act:'review', b:'Продолжить разбор' }); }
+    if(r.type === 'open' && BOOK[r.i]) items.push({ ic:'book2', t:'Изучение дебюта', s: esc(bookTitle(r.i)), act:'open', b:'Продолжить изучение' });
+  }
+  const tp = trainPlan(); if(tp.done > 0 && tp.done < tp.list.length) items.push({ ic:'target', t:'Ежедневная тренировка', s:`${tp.done} ${tr('из')} ${tp.list.length} ${tr('заданий')}`, act:'train', b:'Продолжить тренировку' });
+  if(!items.length) return '';
+  return `<div class="resume">${items.slice(0, 2).map(x => `<div class="card rs-item"><span class="rs-ico">${PIX(x.ic)}</span><div><small>Продолжить с места остановки</small><b>${x.t}</b><span class="muted small">${x.s}</span></div><button class="btn sm primary" data-rs="${x.act}">${x.b} ${ICON.arrow}</button></div>`).join('')}</div>`;
+}
+function bindResume(box){
+  box.querySelectorAll('[data-rs]').forEach(b => b.onclick = () => {
+    const a = b.dataset.rs, r = resumeGet();
+    if(a === 'game') go('game');
+    if(a === 'review'){ const i = me().history.findIndex(g => g.date === r.date); if(i >= 0){ openReview(i); setTimeout(() => game && game.review && setPos(r.pos || 0), 60); } }
+    if(a === 'open'){ chessTab = 'train'; trainView = 'study'; studyOpen(r.i, r.k || 0); }
+    if(a === 'train'){ chessTab = 'train'; trainView = null; renderChessClub(); }
+  });
+}
+
+/* ---------- ежедневная тренировка: 5 заданий ---------- */
+function trainMarks(){ const k = userKey('train_' + dayKey(Date.now())); return { k, v: LS.get(k, {}) }; }
+function trainMark(id){ const t = trainMarks(); t.v[id] = 1; LS.set(t.k, t.v); }
+function trainPlan(){
+  const t = trainMarks().v, today = dayKey(Date.now()), u = me();
+  const hist = (u && u.history || []).filter(g => dayKey(g.date) === today);
+  const p = withChess(() => { const keep = db.menu.variant; if(!isChessMenu()) db.menu.variant = 'chess'; const pz = todayPuzzle(), d = !!puzStore().done[pz.day]; db.menu.variant = keep; return d; });
+  const list = [
+    { id:'daily', ic:'target', t:'Реши задачу дня', ok: p },
+    { id:'tactic', ic:'hint', t:'Реши 3 задачи по тактике', ok: (t.tactic || 0) >= 3, n: Math.min(3, t.tactic || 0) + '/3' },
+    { id:'bot', ic:'bot', t:'Сыграй партию с ботом', ok: hist.some(g => (VARIANTS[g.variant] || {}).chess && !g.friend && !g.online) },
+    { id:'open', ic:'book2', t:'Изучи один дебют', ok: !!t.open },
+    { id:'review', ic:'search', t:'Разбери свою партию', ok: !!t.review }
+  ];
+  return { list, done: list.filter(x => x.ok).length };
+}
+// подсчёт решённых задач по темам
+if(typeof themedEnd === 'function'){ const _te = themedEnd; themedEnd = function(result, reason){ if(result === 'win' && game && !game.over){ const t = trainMarks(); t.v.tactic = (t.v.tactic || 0) + 1; LS.set(t.k, t.v); } return _te.apply(this, arguments); }; }
+// разбор своей партии — запоминаем, где остановились
+{ const _or = openReview; openReview = function(i, ownerKey, recIn){ _or.apply(this, arguments);
+    if(game && game.review && !recIn && (!ownerKey || ownerKey === db.current) && (VARIANTS[game.variant] || {}).chess){ trainMark('review'); resumeSet({ type:'review', date: game.rec.date, pos: 0 }); } }; }
+{ const _sp = setPos; setPos = function(i){ _sp.apply(this, arguments); const r = resumeGet(); if(game && game.review && r && r.type === 'review' && game.rec && r.date === game.rec.date){ r.pos = game.rv.pos; LS.set(userKey('resume'), r); } }; }
+
+/* ---------- дебюты: список и пошаговое изучение ---------- */
+const bookTitle = i => LANG() === 'en' ? BOOK[i][2] : BOOK[i][1];
+function bookMoves(i){ return withChess(() => { let b = cInit(); const out = []; for(const n of BOOK[i][0].split(' ')){ const m = genMoves(b, out.length % 2 ? -1 : 1).find(x => notation(x) === n); if(!m) break; out.push(m); b = applyMove(b, m); } return out; }); }
+let study = null;
+function studyOpen(i, k){ study = { i, mv: bookMoves(i), k: k || 0 }; lbReset(null, bookTitle(i)); LB.moves = study.mv.slice(0, study.k); trainView = 'study'; chessTab = 'train'; resumeSet({ type:'open', i, k: study.k }); if(current !== 'home') go('home'); else renderChessClub(); }
+
+/* ---------- эндшпили: базовые позиции против бота ---------- */
+const ENDGAMES = [
+  { t:'Мат ферзём', s:'Король и ферзь против короля', p:{ wK:'e1', wQ:'d1', bK:'e5' } },
+  { t:'Мат ладьёй', s:'Король и ладья против короля', p:{ wK:'e1', wR:'a1', bK:'e5' } },
+  { t:'Мат двумя ладьями', s:'«Лесенка» — самый быстрый мат', p:{ wK:'e1', wR:['a1', 'h1'], bK:'e5' } },
+  { t:'Проведи пешку в ферзи', s:'Король и пешка: оппозиция решает', p:{ wK:'e6', wP:'e5', bK:'e8' } },
+  { t:'Ферзь против ладьи', s:'Выиграй ладью и поставь мат', p:{ wK:'c3', wQ:'d4', bK:'e6', bR:'f7' } }
+];
+function startEndgame(i){
+  if(playBlocked()) return;
+  const e = ENDGAMES[i];
+  launchFrom(posFrom(e.p), [], { variant:'chess', tc:'0', inc:0, color:'white', friend:false, bot: CHESS_BOTS[4], undo:true });
+  if(game) game.casual = true;
+  toast(e.t + ' — ' + tr('белые начинают и выигрывают'));
+}
+
+function renderChessClub(){
+  const u = me(), m = db.menu;
+  if(!['hall', 'train', 'analysis', 'tour'].includes(chessTab)) chessTab = 'hall';
+  const tabs = [['hall', 'swords', 'Игровой зал'], ['train', 'target', 'Тренировка'], ['analysis', 'search', 'Анализ'], ['tour', 'cup2', 'Турниры']];
+  $('#homeBox').innerHTML = `
+    <div class="hero-head"><div><div class="hh-hi">Привет, <span translate="no">${esc(u.nick)}</span></div><h1 class="display">Шахматный клуб</h1><p class="hh-sub">Играй, тренируйся и разбирай партии</p></div>
+      <div class="hh-right">${onlinePill()}${discSwitch()}</div></div>
+    ${resumeHTML()}
+    <div class="ctabs">${tabs.map(([id, ic, l]) => `<button class="${chessTab === id ? 'on' : ''}" data-ct="${id}">${PIX(ic)}<span>${l}</span></button>`).join('')}</div>
+    <div id="ctBody" class="ct-body"></div>`;
+  const box = $('#homeBox');
+  box.querySelectorAll('[data-ct]').forEach(b => b.onclick = () => { chessTab = b.dataset.ct; if(chessTab !== 'train'){ trainView = null; LB.name = ''; } renderChessClub(); });
+  $('#discSw').querySelectorAll('[data-d]').forEach(b => b.onclick = () => setDiscipline(b.dataset.d));
+  bindResume(box);
+  ({ hall: renderHall, train: renderTrain, analysis: renderAnalysisTab, tour: renderTour })[chessTab]();
+}
+function renderHall(){
+  const u = me(), m = db.menu, body = $('#ctBody');
+  if(LB.name && !LB.edit && trainView == null && study) { /* позиция из изучения остаётся на доске */ }
+  const recent = u.history.map((g, i) => ({ g, i })).filter(x => (VARIANTS[x.g.variant] || {}).chess).slice(0, 3);
+  const rv = m.variant === 'c960' ? 'c960' : 'chess', games = ratedGames(u, rv, m.tc).slice().reverse();
+  const pts = games.length ? [games[0].rating - (games[0].delta || 0), ...games.map(g => g.rating)].slice(-12) : [];
+  const all = u.history.filter(g => (VARIANTS[g.variant] || {}).chess), c = countRes(all);
+  body.innerHTML = `
+    <div class="hall">
+      <div class="card hall-board">${lbHTML('lbHall')}</div>
+      <div class="card ctor" id="ctor">${ctorHTML()}</div>
+    </div>
+    <div class="hall3">
+      <div class="card"><div class="sc-head"><h2>${PIX('clock')} Последние партии</h2></div>
+        ${recent.length ? recent.map(x => `<div class="mini-rg" data-rv="${x.i}"><span class="ava round sm">${oppAvaHTML(x.g)}</span><span translate="no">${esc(x.g.opp)}</span><b class="rg-s ${x.g.result}">${x.g.result === 'win' ? '1 : 0' : x.g.result === 'loss' ? '0 : 1' : '½ : ½'}</b><i>›</i></div>`).join('') : '<p class="muted small">Шахматных партий пока нет</p>'}
+        <button class="link" id="hlAll">Вся история ${ICON.arrow}</button></div>
+      <div class="card puz-card" id="puzCard"></div>
+      <div class="card prog"><div class="sc-head"><h2>${PIX('chart')} Ваш прогресс</h2></div>
+        <div class="prog-n"><b>${fmtN(ratingOf(u, rv, m.tc))}</b><span class="muted small">${vLabel(rv)} · ${tcById(m.tc).short}</span></div>
+        <div class="prog-ch">${pts.length ? sparkSVG(pts, 260, 54) : `<div class="rc-empty">${tr("Сыграй рейтинговую партию — здесь появится график")}</div>`}</div>
+        <p class="muted small">${all.length} ${tr('партий')} • ${pct(c.win, all.length)}% ${tr('побед')}</p>
+        <button class="link" id="hlStats">Подробная статистика ${ICON.arrow}</button></div>
+    </div>`;
+  bindLB('lbHall', renderHall);
+  const rr = () => { $('#ctor').innerHTML = ctorHTML(); bindCtor($('#ctor'), rr); }; bindCtor($('#ctor'), rr);
+  bindRecent(body);
+  $('#hlAll').onclick = () => { profTab = 'history'; histF.v = 'chessAll'; go('profile'); };
+  $('#hlStats').onclick = () => { profTab = 'overview'; go('profile'); };
+  renderPuzzleCard();
+  const pc = $('#puzCard'); if(pc){ pc.insertAdjacentHTML('beforeend', `<button class="link" id="toTrain">Перейти к тренировкам ${ICON.arrow}</button>`); $('#toTrain').onclick = () => { chessTab = 'train'; renderChessClub(); }; }
+}
+function renderTrain(){
+  const body = $('#ctBody'), tp = trainPlan();
+  if(trainView === 'openings'){
+    const list = BOOK.map((b, i) => ({ i, n: b[0].split(' ').length })).filter(x => x.n >= 4);
+    body.innerHTML = `<div class="card"><div class="sc-head"><h2>${PIX('book2')} Дебюты <small class="muted">${list.length}</small></h2><button class="btn sm" data-tv="">← Назад</button></div>
+      <p class="muted small">Выбери дебют — он откроется на доске, и ты пройдёшь его ход за ходом.</p>
+      <div class="op-grid">${list.map(x => `<button class="op-item" data-op="${x.i}"><b>${esc(bookTitle(x.i))}</b><small>${Math.ceil(x.n / 2)} ${tr('ходов')}</small></button>`).join('')}</div></div>`;
+  } else if(trainView === 'study' && study){
+    const k = LB.moves.length, n = study.mv.length, done = k >= n;
+    body.innerHTML = `<div class="hall"><div class="card hall-board">${lbHTML('lbStudy')}</div>
+      <div class="card"><div class="sc-head"><h2>${PIX('book2')} ${esc(bookTitle(study.i))}</h2><button class="btn sm" data-tv="openings">← Дебюты</button></div>
+        <div class="st-prog"><i style="width:${Math.round(Math.min(k, n) / n * 100)}%"></i></div><p class="muted small">${tr('Ход')} ${Math.min(k, n)} ${tr('из')} ${n}</p>
+        <p>${done ? `<b>${ICON.check} Дебют пройден!</b> Задание «Изучи один дебют» выполнено. Попробуй сыграть эту позицию с ботом — кнопка под доской.` : 'Нажимай «Следующий ход» или сделай его сам на доске. Запомни идею: развитие фигур, борьба за центр, безопасный король.'}</p>
+        <div class="lb-btns"><button class="btn" id="stPrev" ${k ? '' : 'disabled'}>◀ Назад</button><button class="btn primary" id="stNext" ${done ? 'disabled' : ''}>Следующий ход ▶</button></div>
+        <div class="st-line" translate="no">${withChess(() => { let b = cInit(); return study.mv.map((m, j) => { const s = cSan(b, m); b = applyMove(b, m); return `<span class="${j < k ? 'done' : ''} ${j === k - 1 ? 'cur' : ''}">${j % 2 ? '' : (j / 2 + 1) + '. '}${s}</span>`; }).join(' '); })}</div></div></div>`;
+    const sync = () => { study.k = LB.moves.length; resumeSet({ type:'open', i: study.i, k: study.k }); if(study.k >= study.mv.length) trainMark('open'); renderTrain(); };
+    $('#stNext').onclick = () => { const m = study.mv[LB.moves.length]; if(m){ LB.moves.push(m); playMoveSound(m); } sync(); };
+    $('#stPrev').onclick = () => { LB.moves.pop(); sync(); };
+    bindLB('lbStudy', () => {});
+    // если ученик сам сделал правильный ход на доске — засчитываем
+    const lbBox = document.getElementById('lbStudy');
+    lbBox.addEventListener('click', () => setTimeout(() => { const ok = LB.moves.every((m, j) => study.mv[j] && notation(study.mv[j]) === notation(m)); if(ok && LB.moves.length !== study.k){ sync(); } }, 0));
+  } else if(trainView === 'endgames'){
+    body.innerHTML = `<div class="card"><div class="sc-head"><h2>${PIX('flag')} Эндшпили</h2><button class="btn sm" data-tv="">← Назад</button></div>
+      <p class="muted small">Базовые окончания: белые начинают и выигрывают. Играешь против бота «${CHESS_BOTS[4].name}», можно возвращать ходы.</p>
+      <div class="eg-grid">${ENDGAMES.map((e, i) => `<div class="eg-item"><div class="eg-b">${withChess(() => { const b = posFrom(e.p); let h = ''; for(let s = 0; s < 64; s++) h += `<div class="sq ${(((s >> 3) + (s & 7)) % 2) ? 'dark' : 'light'}">${b[s] ? pieceMini(b[s]) : ''}</div>`; return `<div class="mini-board puz-board bt-${db.settings.cBoardTheme || 'classic'} pt-${db.settings.cPieceTheme || 'cartoon'}" style="--mc:8">${h}</div>`; })}</div>
+        <div><b>${e.t}</b><p class="muted small">${e.s}</p><button class="btn sm primary" data-eg="${i}">${ICON.playFill} Играть</button></div></div>`).join('')}</div></div>`;
+  } else {
+    body.innerHTML = `<div class="card tc-head"><div><h2>${PIX('target')} Тренировочный центр</h2><p class="muted">Персональный план развития игрока на сегодня</p></div>
+        <div class="tc-prog"><div class="st-prog"><i style="width:${tp.done / tp.list.length * 100}%"></i></div><span>Ежедневная тренировка · <b>${tp.done} ${tr('из')} ${tp.list.length}</b> ${tr('заданий')}</span></div>
+        <div class="tc-tasks">${tp.list.map(x => `<div class="tc-task ${x.ok ? 'ok' : ''}"><span>${x.ok ? ICON.check : PIX(x.ic)}</span><b>${x.t}</b>${x.n && !x.ok ? `<small>${x.n}</small>` : ''}</div>`).join('')}</div></div>
+      <div class="tc-grid">
+        ${[['openings', 'book2', 'Дебюты', 'Пройди популярные начала партии ход за ходом'], ['tactic', 'hint', 'Тактика', 'Вилки, связки и маты — задачи с рейтингом'], ['endgames', 'flag', 'Эндшпили', 'Базовые окончания против бота'], ['puzzles', 'target', 'Задачи', 'Задача дня и все задачи по темам']]
+          .map(([id, ic, t, s]) => `<button class="card tc-card" data-tv="${id}"><span class="tc-ico">${PIX(ic)}</span><b>${t}</b><small>${s}</small><span class="link">Открыть раздел ${ICON.arrow}</span></button>`).join('')}
+      </div>`;
+  }
+  body.querySelectorAll('[data-tv]').forEach(b => b.onclick = () => {
+    const v = b.dataset.tv;
+    if(v === 'tactic' || v === 'puzzles'){ go('puzzles'); return; }
+    trainView = v || null; renderTrain();
+  });
+  body.querySelectorAll('[data-op]').forEach(b => b.onclick = () => studyOpen(+b.dataset.op, 0));
+  body.querySelectorAll('[data-eg]').forEach(b => b.onclick = () => startEndgame(+b.dataset.eg));
+}
+let anSel = 0;
+function renderAnalysisTab(){
+  const u = me(), body = $('#ctBody');
+  const list = u.history.map((g, i) => ({ g, i })).filter(x => (VARIANTS[x.g.variant] || {}).chess && x.g.mv && x.g.mv.length).slice(0, 30);
+  const cur = list[anSel] || list[0];
+  let rep = '';
+  if(cur){
+    const g = cur.g, side = g.color === 'black' ? -1 : 1, has = g.an && g.an.length;
+    const c = has ? reportOf(g, side) : null, cnt = id => has ? g.an.filter((a, k) => (k % 2 ? -1 : 1) === side && id.includes(a.c)).length : '—';
+    const san = (g.mv || []).map((m, k) => (k % 2 ? '' : (k / 2 + 1) + '. ') + (m.san || '')).join(' ');
+    rep = `<div class="an-rep">
+      <div class="an-r1"><div><b>Отчёт о партии</b><span class="muted small">${tr('против')} <span translate="no">${esc(g.opp)}</span> · ${new Date(g.date).toLocaleDateString(LOC())}</span></div><div class="an-acc">${c ? c.acc + '%' : '—'}<small>точность</small></div></div>
+      <div class="an-k"><span>${PIX('star')} Лучшие ходы</span><b>${cnt(['brilliant', 'great', 'best'])}</b></div>
+      <div class="an-k"><span>${PIX('hint')} Неточности</span><b>${cnt(['inacc'])}</b></div>
+      <div class="an-k"><span>${PIX('flag')} Ошибки и зевки</span><b>${cnt(['mistake', 'blunder', 'miss'])}</b></div>
+      <div class="an-k col"><span>${PIX('book2')} История ходов</span><div class="an-san" translate="no">${san || '—'}</div></div>
+      ${has ? '' : '<p class="muted small">Разбор этой партии ещё не делали — нажми «Полный разбор», движок всё посчитает.</p>'}
+      <div class="lb-btns two"><button class="btn primary" id="anOpen">${PIX('search')} Полный разбор</button><button class="btn" id="anBoard">${PIX('board')} На доску</button></div></div>`;
+  }
+  body.innerHTML = `<div class="hall">
+      <div class="card hall-board">${lbHTML('lbAn')}<div class="an-eval" id="anEval"><button class="btn sm" id="anEv">${PIX('chart')} Оценить позицию</button><span id="anEvT" class="muted small"></span></div></div>
+      <div class="card">${cur ? rep : `<h2>Отчёт о партии</h2><p class="muted">Сыграй шахматную партию или открой PGN — здесь появится отчёт: точность, лучшие ходы, неточности и ошибки.</p>`}</div>
+    </div>
+    <div class="card an-pick"><span>${PIX('book2')} Импорт PGN / выбрать свою партию</span>
+      <select id="anSel">${list.map((x, k) => `<option value="${k}" ${x === cur ? 'selected' : ''}>${new Date(x.g.date).toLocaleDateString(LOC())} — ${esc(x.g.opp)} (${RES_NAME[x.g.result] ? tr(RES_NAME[x.g.result]) : ''})</option>`).join('') || '<option>Партий пока нет</option>'}</select>
+      <button class="btn sm" id="anPgn">${PIX('board')} Открыть PGN</button></div>`;
+  bindLB('lbAn', renderAnalysisTab);
+  $('#anSel').onchange = e => { anSel = +e.target.value; renderAnalysisTab(); };
+  $('#anPgn').onclick = importPGN;
+  if(cur){
+    $('#anOpen').onclick = () => openReview(cur.i);
+    $('#anBoard').onclick = () => { lbReset(cur.g.start || null, `${tr('Партия против')} ${cur.g.opp}`); LB.moves = cur.g.mv.map(m => Object.assign({}, m)); renderAnalysisTab(); };
+  }
+  $('#anEv').onclick = () => {
+    const b = lbBoard(), t = lbTurn(), out = $('#anEvT');
+    const show = w => { const f = Math.abs(w) > WIN - 1000 ? (w > 0 ? tr('Белые ставят мат') : tr('Чёрные ставят мат')) : (w > 0 ? '+' : '') + (w / 100).toFixed(1); if(out) out.innerHTML = `${tr('Оценка')}: <b>${f}</b> <span class="muted">(${tr('плюс — лучше белым')})</span>`; };
+    if(out) out.textContent = tr('Считаю…');
+    if(SF.ok) SF.evalWhite(b, t).then(w => w == null ? show(withChess(() => evalWhite(b, t, 250))) : show(w)).catch(() => show(withChess(() => evalWhite(b, t, 250))));
+    else show(withChess(() => evalWhite(b, t, 250)));
+  };
+}
+function renderTour(){
+  const top = Object.entries(db.accounts).map(([k, a]) => ({ k, r: ratingOf(a, 'chess', db.menu.tc) })).sort((x, y) => y.r - x.r).slice(0, 3);
+  $('#ctBody').innerHTML = `<div class="card tour-main"><div><span class="soon">Скоро</span><div class="muted small">Ближайшее событие</div><h2>Еженедельный турнир</h2>
+      <p class="muted">Формат: швейцарская система, 5 туров, блиц 3+2. Турниры сейчас в разработке — когда запустим, здесь появятся участники и время начала.</p></div>
+      <button class="btn wide" disabled>${PIX('cup2')} Участвовать — скоро</button></div>
+    <div class="tc-grid two">
+      <div class="card"><h2>${PIX('swords')} Активные турниры</h2><p class="muted small">Сейчас турниров нет. А пока сыграй с ботом или найди соперника онлайн.</p><button class="btn sm" onclick="chessTab='hall';renderChessClub()">В игровой зал ${ICON.arrow}</button></div>
+      <div class="card"><h2>${PIX('cup2')} Зал славы</h2><p class="muted small">Лучшие по рейтингу в шахматах (${tcById(db.menu.tc).short}):</p>
+        ${top.map((x, i) => `<div class="top-row" data-open="${esc(x.k)}"><span class="n n${i + 1}">${i + 1}</span><span class="nm">${nickH(x.k)}</span><b>${x.r}</b></div>`).join('')}</div>
+    </div>`;
+  bindPeople($('#ctBody'));
+}
+
+
+/* ---------- ПРОФИЛЬ: шапка, рейтинги, активность, витрина, рекорды; вкладки «Обзор / История / Коллекция / Друзья» ---------- */
+const COVERS = [
+  { id:'gold',   n:'Золото',      css:'linear-gradient(120deg,#2a1d08,#7a5617 45%,#e3b04b 70%,#3a2808)' },
+  { id:'night',  n:'Ночь',        css:'linear-gradient(135deg,#0b1026,#22305e 55%,#0b1026)' },
+  { id:'board',  n:'Доска',       css:'repeating-conic-gradient(#3b2a18 0 25%,#1c140c 0 50%) 0 0/48px 48px' },
+  { id:'forest', n:'Лес',         css:'linear-gradient(135deg,#0d1f14,#2f6b3c 60%,#0d1f14)' },
+  { id:'sunset', n:'Закат',       css:'linear-gradient(120deg,#3b0d24,#c2453a 50%,#f0a33a)' },
+  { id:'ocean',  n:'Океан',       css:'linear-gradient(135deg,#04202c,#0f6e8c 55%,#7fd3e0)' },
+  { id:'royal',  n:'Королевская', css:'linear-gradient(120deg,#1b0b2e,#5b2a8a 50%,#e3b04b)', need:'r1200' },
+  { id:'fire',   n:'Огонь',       css:'radial-gradient(circle at 70% 120%,#ffcf4a,#e2541b 40%,#2a0b05 75%)', need:'streak5' }
+];
+const FRAMES = [
+  { id:'',       n:'Без рамки' },
+  { id:'gold',   n:'Золотая' },
+  { id:'silver', n:'Серебряная' },
+  { id:'neon',   n:'Неоновая', need:'win1' },
+  { id:'fire',   n:'Огненная', need:'streak5' },
+  { id:'royal',  n:'Королевская', need:'bot1400' }
+];
+const TITLES = [
+  { id:'',        n:'Без титула' },
+  { id:'novice',  n:'Новичок',          need:'first' },
+  { id:'winner',  n:'Победитель',       need:'win1' },
+  { id:'social',  n:'Душа компании',    need:'friend1' },
+  { id:'vet',     n:'Ветеран',          need:'g100' },
+  { id:'tamer',   n:'Укротитель ботов', need:'bot1400' },
+  { id:'gm',      n:'Гроссмейстер',     need:'bot2000' },
+  { id:'online',  n:'Боец онлайна',     need:'online1' }
+];
+const pfOf = u => (u && u.pf) || {};
+const achOk = (u, k, id) => { const a = ACH.find(x => x.id === id); return !a || a.ok(u, k); };
+const coverCSS = u => (COVERS.find(c => c.id === pfOf(u).cover) || COVERS[0]).css;
+let collView = null, histF = { v:'all', tc:'all', r:'all', day:null }, frTab = 'all', frQ = '', progRange = 'all', progVar = null;
+
+// рекорды и серии
+function bestStreak(list){ let s = 0, b = 0; for(const g of list.slice().reverse()){ s = g.result === 'win' ? s + 1 : 0; b = Math.max(b, s); } return b; }
+function recordsOf(u){
+  const h = u.history || [], wins = h.filter(g => g.result === 'win');
+  const rated = h.filter(g => !g.friend && !g.unrated && g.rating);
+  const best = rated.reduce((a, g) => !a || g.rating > a.rating ? g : a, null);
+  const byDay = {}; h.forEach(g => byDay[dayKey(g.date)] = (byDay[dayKey(g.date)] || 0) + 1);
+  const dayMax = Math.max(0, ...Object.values(byDay));
+  const fast = wins.filter(g => g.moves > 0 && !g.puzzle).reduce((a, g) => !a || g.moves < a.moves ? g : a, null);
+  const strong = wins.filter(g => !g.friend && g.oppElo).reduce((a, g) => !a || g.oppElo > a.oppElo ? g : a, null);
+  let acc = null; h.forEach(g => { if(g.an && g.an.length > 6){ const r = reportOf(g, g.color === 'black' ? -1 : 1); if(r.acc && (!acc || r.acc > acc.v)) acc = { v: r.acc, g }; } });
+  return [
+    ['trophy', 'Лучший рейтинг', best ? fmtN(best.rating) : '—', best ? vLabel(best.variant || '32') + ' · ' + tcById(best.tc).short : ''],
+    ['bolt', 'Серия побед', bestStreak(h) || '—', tr('подряд')],
+    ['cal', 'Партий за день', dayMax || '—', tr('рекорд')],
+    ['swords', 'Сильнейший соперник', strong ? strong.oppElo : '—', strong ? esc(strong.opp) : ''],
+    ['clock', 'Быстрая победа', fast ? Math.ceil(fast.moves / 2) + ' ' + tr('ходов') : '—', fast ? esc(fast.opp) : ''],
+    ['target', 'Лучшая точность', acc ? acc.v + '%' : '—', acc ? esc(acc.g.opp) : tr('после разбора партии')]
+  ];
+}
+// календарь игровой активности (как на GitHub)
+function activityHTML(u){
+  const W = 22, today = new Date(); today.setHours(0, 0, 0, 0);
+  const start = new Date(today); start.setDate(start.getDate() - ((today.getDay() + 6) % 7) - (W - 1) * 7);
+  const by = {}; (u.history || []).forEach(g => { const k = dayKey(g.date); const o = by[k] || (by[k] = { n:0, w:0, l:0, d:0, r:0 }); o.n++; o[g.result[0]]++; if(!g.friend && !g.unrated) o.r += g.delta || 0; });
+  let cells = '', months = '';
+  for(let w = 0; w < W; w++){
+    const col = new Date(start); col.setDate(col.getDate() + w * 7);
+    months += `<span>${col.getDate() <= 7 ? col.toLocaleDateString(LOC(), { month:'short' }).replace('.', '') : ''}</span>`;
+    for(let d = 0; d < 7; d++){
+      const day = new Date(col); day.setDate(day.getDate() + d);
+      const k = dayKey(day), o = by[k], lv = !o ? 0 : o.n >= 8 ? 4 : o.n >= 4 ? 3 : o.n >= 2 ? 2 : 1;
+      cells += day > today ? '<i class="fut"></i>' : `<i class="l${lv}" data-day="${k}" data-tip="${encodeURIComponent(JSON.stringify(o || { n:0 }))}" style="grid-column:${w + 1};grid-row:${d + 1}"></i>`;
+    }
+  }
+  const total = Object.values(by).reduce((s, o) => s + o.n, 0);
+  return `<div class="cal-wrap"><div class="cal-m" style="grid-template-columns:repeat(${W},1fr)">${months}</div><div class="cal" style="grid-template-columns:repeat(${W},1fr)">${cells}</div></div>
+    <div class="cal-leg"><span class="muted small">${total} ${tr('партий за всё время')}</span><span class="muted small">Меньше <i class="l0"></i><i class="l1"></i><i class="l2"></i><i class="l3"></i><i class="l4"></i> Больше</span></div>`;
+}
+function bindActivity(box){
+  let tip = $('#calTip'); if(!tip){ tip = document.createElement('div'); tip.id = 'calTip'; tip.className = 'cal-tip'; document.body.append(tip); }
+  box.querySelectorAll('.cal [data-day]').forEach(el => {
+    el.onmouseenter = () => {
+      const o = JSON.parse(decodeURIComponent(el.dataset.tip)), d = new Date(el.dataset.day + 'T12:00');
+      tip.innerHTML = `<b>${d.toLocaleDateString(LOC(), { day:'numeric', month:'long', weekday:'short' })}</b>` + (o.n
+        ? `<div>${tr('Партий')}: ${o.n}</div><div><span class="g">${tr('Победы')}: ${o.w}</span> · <span class="r">${tr('Поражения')}: ${o.l}</span> · ${tr('Ничьи')}: ${o.d}</div><div>${tr('Рейтинг')}: ${o.r >= 0 ? '+' : ''}${o.r}</div><small>${tr('Нажми — партии за этот день')}</small>`
+        : `<div class="muted">${tr('Партий не было')}</div>`);
+      const r = el.getBoundingClientRect(); tip.style.left = Math.min(innerWidth - 230, Math.max(8, r.left - 100)) + 'px'; tip.style.top = (r.top + scrollY - tip.offsetHeight - 10) + 'px'; tip.classList.add('show');
+    };
+    el.onmouseleave = () => tip.classList.remove('show');
+    el.onclick = () => { tip.classList.remove('show'); const o = JSON.parse(decodeURIComponent(el.dataset.tip)); if(!o.n) return; histF = { v:'all', tc:'all', r:'all', day: el.dataset.day }; profTab = 'history'; renderProfile(); };
+  });
+}
+// рейтинг по четырём дисциплинам
+function mainTcOf(u, v){ const n = {}; ratedGames(u, v).forEach(g => n[g.tc] = (n[g.tc] || 0) + 1); return Object.keys(n).sort((a, b) => n[b] - n[a])[0] || null; }
+function ratings4HTML(u){
+  return `<div class="card r4">${Object.values(VARIANTS).map(v => { const tc = mainTcOf(u, v.id); return `<button class="r4-i" data-r4="${v.id}">
+    <span class="r4-t">${variantIcon(v.id, 18)}${v.label}</span><b>${tc ? fmtN(ratingOf(u, v.id, tc)) : '—'}</b><small>${tc ? tr('Рейтинг') + ' · ' + tcById(tc).short : tr('ещё нет партий')} · <span class="link">Подробнее →</span></small></button>`; }).join('')}</div>`;
+}
+function ratingDetails(u, v){
+  const rows = TCS.map(t => { const n = ratedGames(u, v, t.id).length; return n ? `<div class="kv"><span>${t.label}</span><b>${ratingOf(u, v, t.id)} <small class="muted">· ${n} ${tr('партий')}</small></b></div>` : ''; }).join('');
+  modal(`<h2>${variantIcon(v, 26)} ${vLabel(v)}</h2>${rows || '<p class="muted">В этой дисциплине ещё нет рейтинговых партий.</p>'}`, [{ label:'Закрыть' }]);
+}
+// график «Игровой прогресс»
+function progressHTML(u){
+  const v = progVar || mainVarOf(u), tc = mainTcOf(u, v) || db.menu.tc, from = progRange === 'week' ? Date.now() - 7 * 864e5 : progRange === 'month' ? Date.now() - 30 * 864e5 : 0;
+  const games = ratedGames(u, v, tc).filter(g => g.date >= from).slice().reverse();
+  const pts = games.length ? [games[0].rating - (games[0].delta || 0), ...games.map(g => g.rating)] : [];
+  const lab = games.length ? `<div class="pg-x"><span>${new Date(games[0].date).toLocaleDateString(LOC(), { day:'numeric', month:'short' })}</span><span>${new Date(games[games.length - 1].date).toLocaleDateString(LOC(), { day:'numeric', month:'short' })}</span></div>` : '';
+  return `<div class="sc-head"><h2>${PIX('chart')} Игровой прогресс <small class="muted">${vLabel(v)} · ${tcById(tc).short}</small></h2>
+      <div class="seg xs">${[['week', 'Неделя'], ['month', 'Месяц'], ['all', 'Всё время']].map(([id, l]) => `<button class="${progRange === id ? 'on' : ''}" data-pr="${id}">${l}</button>`).join('')}</div></div>
+    ${pts.length ? `<div class="pg-ch">${sparkSVG(pts, 560, 170, true)}</div>${lab}` : `<div class="rc-empty tall">${tr('За этот период рейтинговых партий нет')}</div>`}`;
+}
+function mainVarOf(u){ const n = {}; (u.history || []).forEach(g => n[g.variant || '32'] = (n[g.variant || '32'] || 0) + 1); return Object.keys(n).sort((a, b) => n[b] - n[a])[0] || db.menu.variant; }
+const achHex = (a, on, extra) => `<div class="hexa ${on ? 'on' : ''}" title="${esc(a.tip)}"><div class="hx">${on ? PIX(a.ic || 'medal') : PIX('lock')}</div><b>${a.name}</b>${extra || ''}</div>`;
+function showcaseHTML(u, key, isMe){
+  const pf = pfOf(u), got = ACH.filter(a => a.ok(u, key));
+  let show = (pf.show || []).map(id => ACH.find(a => a.id === id)).filter(a => a && a.ok(u, key)).slice(0, 3);
+  if(!show.length && !isMe) show = got.slice(-3);
+  const slots = show.map(a => achHex(a, true)).join('') + (isMe && show.length < 3 ? `<button class="hexa add" id="scAdd"><div class="hx">+</div><b>Добавить</b></button>` : '');
+  return `<div class="sc-head"><h2>${PIX('medal')} Витрина достижений</h2></div>
+    <div class="showcase">${slots || '<p class="muted small">Пока пусто</p>'}</div>
+    <div class="sc-foot"><span class="muted small">${got.length} ${tr('из')} ${ACH.length} ${tr('получено')}</span><button class="link" data-gotab="collection">Коллекция ${ICON.arrow}</button></div>`;
+}
+function pickShowcase(){
+  const u = me(), pf = u.pf = u.pf || {}, got = ACH.filter(a => a.ok(u, db.current));
+  let sel = (pf.show || []).filter(id => got.some(a => a.id === id));
+  const draw = () => {
+    const root = modal(`<h2>${PIX('medal')} Витрина</h2><p class="muted small">Выбери до 3 наград — их увидят все в твоём профиле.</p>
+      <div class="ach-pick">${got.map(a => `<button class="${sel.includes(a.id) ? 'on' : ''}" data-a="${a.id}">${achHex(a, true)}</button>`).join('') || '<p class="muted">Пока нет полученных наград. Сыграй пару партий!</p>'}</div>`,
+      [{ label:'Отмена' }, { label:'Сохранить', cls:'primary', onClick: () => { pf.show = sel; save(); renderProfile(); toast('Витрина обновлена'); } }], 'wide');
+    root.querySelectorAll('[data-a]').forEach(b => b.onclick = () => { const id = b.dataset.a; sel = sel.includes(id) ? sel.filter(x => x !== id) : sel.length < 3 ? sel.concat(id) : (toast('Максимум 3 награды'), sel); draw(); });
+  };
+  draw();
+}
+function editProfileModal(){
+  const u = me(), pf = u.pf = u.pf || {};
+  const root = modal(`<h2>${ICON.pen} Настроить профиль</h2>
+    <label class="lbl">Статус (виден всем)</label><input id="epStatus" maxlength="60" value="${esc(pf.status || '')}" placeholder="Например: Don't worry, be happy">
+    <label class="lbl">О себе</label><textarea id="epAbout" maxlength="300" rows="4" placeholder="Например: играю с 2025 года, люблю быстрые партии…">${esc(u.about || '')}</textarea>
+    <div class="ep-links"><button class="btn sm" data-cv="cover">${PIX('board')} Обложка</button><button class="btn sm" data-cv="frame">${PIX('star')} Рамка</button><button class="btn sm" data-cv="title">${PIX('cup2')} Титул</button><button class="btn sm" data-cv="ava">${PIX('profile')} Аватарка</button></div>`,
+    [{ label:'Отмена' }, { label:'Сохранить', cls:'primary', onClick: () => {} }], 'wide');
+  const btns = root.querySelectorAll('.modal-btns .btn');
+  btns[1].onclick = () => { pf.status = $('#epStatus').value.trim(); u.about = $('#epAbout').value.trim(); closeModal(); save(); renderProfile(); toast('Профиль обновлён'); };
+  root.querySelectorAll('[data-cv]').forEach(b => b.onclick = () => { closeModal(); if(b.dataset.cv === 'ava'){ openAvatarMenu(); return; } profTab = 'collection'; collView = b.dataset.cv; renderProfile(); });
+}
+function shareProfile(nick){
+  const url = location.origin + location.pathname + '?u=' + encodeURIComponent(nick);
+  (navigator.clipboard ? navigator.clipboard.writeText(url) : Promise.reject()).then(() => toast('Ссылка на профиль скопирована'), () => modal(`<h2>Ссылка на профиль</h2><input readonly value="${esc(url)}">`, [{ label:'Закрыть' }]));
+}
+(() => { const p = new URLSearchParams(location.search), n = p.get('u'); if(n){ try{ sessionStorage.setItem('pendingProfile', n); }catch(e){} p.delete('u'); history.replaceState(null, '', location.pathname + (p.toString() ? '?' + p : '') + location.hash); } })();
+{ const _tj = tryJoinLink; tryJoinLink = async function(){ await _tj(); let n = null; try{ n = sessionStorage.getItem('pendingProfile'); sessionStorage.removeItem('pendingProfile'); }catch(e){}
+    if(n && db.current){ const k = Object.keys(db.accounts).find(k => db.accounts[k].nick.toLowerCase() === n.toLowerCase()); if(k) openPlayer(k); else toast(tr('Игрок не найден') + ': ' + n); } }; }
+
+// очные встречи со мной
+function h2h(key){ const h = (me().history || []).filter(g => g.online && g.oppKey === key); const c = countRes(h); return { h, c }; }
+function compareModal(key){
+  const a = me(), b = db.accounts[key], v = db.menu.variant, tc = db.menu.tc, { c } = h2h(key);
+  const tot = u => countRes(u.history || []), ta = tot(a), tb = tot(b || {});
+  const rows = [
+    ['Рейтинг', ratingOf(a, v, tc), ratingOf(b, v, tc)],
+    ['Всего партий', (a.history || []).length, (b.history || []).length],
+    ['Общие победы', ta.win, tb.win],
+    ['Очные встречи', `${c.win}–${c.loss}–${c.draw}`, `${c.loss}–${c.win}–${c.draw}`],
+    ['Процент побед', pct(ta.win, (a.history || []).length) + '%', pct(tb.win, (b.history || []).length) + '%'],
+    ['Лучшая серия', bestStreak(a.history || []), bestStreak(b.history || [])]
+  ];
+  const win = (x, y) => typeof x === 'number' && typeof y === 'number' ? (x > y ? 'a' : y > x ? 'b' : '') : '';
+  modal(`<h2>Сравнение игроков</h2>
+    <div class="cmp-top"><div><span class="ava round lg">${avatarHTML(a.avatar)}</span><b translate="no">${esc(a.nick)}</b></div><span class="cmp-vs">VS</span><div><span class="ava round lg">${avatarHTML(b.avatar)}</span><b translate="no">${esc(b.nick)}</b></div></div>
+    <p class="muted small" style="text-align:center">${tr('Рейтинг')}: ${vLabel(v)} · ${tcById(tc).short}. ${tr('Очные встречи — победы, поражения и ничьи в онлайн-партиях друг с другом.')}</p>
+    <div class="cmp">${rows.map(([l, x, y]) => { const w = win(x, y); return `<div class="cmp-r"><b class="${w === 'a' ? 'best' : ''}">${x}</b><span>${tr(l)}</span><b class="${w === 'b' ? 'best' : ''}">${y}</b></div>`; }).join('')}</div>`,
+    [{ label:'Закрыть' }, { label:'Вызвать на партию', cls:'primary', onClick: () => askInvite(key) }], 'wide');
+}
+
+function renderProfile(){
+  if(profView && !db.accounts[profView]) profView = null;
+  const isMe = !profView, key = profView || db.current, u = db.accounts[key];
+  if(u.history == null){ ensureHistory(key); u.history = u.history || []; }
+  if(!['overview', 'history', 'collection', 'friends'].includes(profTab)) profTab = profTab === 'ach' ? 'collection' : 'overview';
+  const pf = pfOf(u), title = TITLES.find(t => t.id === pf.title && t.id);
+  const got = ACH.filter(a => a.ok(u, key)).length, rel = isMe ? null : relation(key);
+  const friendBtn = isMe ? '' : {
+    friend: `<button class="btn sm" id="pfFriend" data-act="remove">${ICON.check} В друзьях</button>`,
+    sent: `<button class="btn sm" id="pfFriend" data-act="cancel">Заявка отправлена · отменить</button>`,
+    incoming: `<button class="btn sm primary" id="pfFriend" data-act="accept">${ICON.addUser} Принять заявку</button>`,
+    none: `<button class="btn sm primary" id="pfFriend" data-act="add">${ICON.addUser} В друзья</button>`
+  }[rel];
+  $('#profBox').innerHTML = `
+    <div class="card pf-hero">
+      <div class="pf-cover" style="background:${coverCSS(u)}">${isMe ? `<button class="pf-cov-btn" id="pfCover">${PIX('board')} Изменить обложку</button>` : ''}</div>
+      <div class="pf-row">
+        <button class="pf-ava fr-${pf.frame || 'none'}" id="avaBtn" ${isMe ? 'title="Сменить аватарку"' : 'disabled'}>${avatarHTML(u.avatar)}${isMe ? `<span class="ava-edit">${PENCIL}</span>` : ''}</button>
+        <div class="pf-main">
+          <div class="nick-line" id="nickLine"></div>
+          ${title ? `<div class="pf-title">${PIX('cup2')} ${tr(title.n)}</div>` : ''}
+          <div class="pf-meta">${statusDot(key)}<span class="muted small">· ${tr('С нами с')} ${new Date(u.created || Date.now()).toLocaleDateString(LOC(), { month:'long', year:'numeric' })}</span></div>
+          <div class="pf-acts">${isMe ? `<button class="btn sm" id="pfEdit">${ICON.pen} Редактировать</button><button class="btn sm" id="pfShare">${PIX('chat')} Поделиться</button>`
+            : `${friendBtn}<button class="btn sm" id="pfInvite" data-inv="${esc(key)}" ${statusOf(key) === 'offline' ? 'disabled' : ''}>${ICON.swords} Вызвать на партию</button><button class="btn sm" id="pfCmp">${PIX('chart')} Сравнить статистику</button>`}</div>
+        </div>
+        <div class="pf-status"><small>Статус</small><p>${pf.status ? esc(pf.status) : `<span class="muted">${isMe ? 'Статус не задан' : '—'}</span>`}</p>
+          ${isMe ? `<button class="btn sm" id="pfSetup">${PIX('settings')} Настроить профиль</button>` : ''}<span class="pf-ach">${PIX('star')} ${got} ${tr('достижений')}</span></div>
+      </div>
+    </div>
+    <div class="ptabs2"><div class="pt-l">${[['overview', 'Обзор'], ['history', 'История игр'], ['collection', 'Коллекция'], ['friends', 'Друзья']].map(([id, l]) => `<button class="${profTab === id ? 'on' : ''}" data-pt="${id}">${l}</button>`).join('')}</div>
+      ${profTab === 'overview' ? `<select id="pgVar" class="pt-sel"><option value="">${tr('Все режимы')}</option>${Object.values(VARIANTS).map(v => `<option value="${v.id}" ${progVar === v.id ? 'selected' : ''}>${v.label}</option>`).join('')}</select>` : ''}</div>
+    <div id="profTab"></div>`;
+  renderNickLine(u, isMe);
+  const box = $('#profBox');
+  if(isMe){
+    $('#avaBtn').onclick = openAvatarMenu;
+    $('#pfCover').onclick = () => { profTab = 'collection'; collView = 'cover'; renderProfile(); };
+    $('#pfEdit').onclick = $('#pfSetup').onclick = editProfileModal;
+    $('#pfShare').onclick = () => shareProfile(u.nick);
+  } else {
+    $('#pfFriend').onclick = e => { const act = e.currentTarget.dataset.act; ({ add: sendFriendRequest, accept: acceptFriend, cancel: cancelRequest, remove: removeFriend })[act](key); renderProfile(); };
+    $('#pfInvite').onclick = () => askInvite(key);
+    $('#pfCmp').onclick = () => compareModal(key);
+  }
+  box.querySelectorAll('[data-pt]').forEach(b => b.onclick = () => { profTab = b.dataset.pt; collView = null; renderProfile(); });
+  if($('#pgVar')) $('#pgVar').onchange = e => { progVar = e.target.value || null; renderProfile(); };
+  ({ overview: renderOverview, history: renderHistory, collection: renderCollection, friends: renderFriendsTab })[profTab](u, key, isMe);
+}
+function renderOverview(u, key, isMe){
+  const recent = (u.history || []).map((g, i) => ({ g, i })).slice(0, 4);
+  const common = isMe ? [] : h2h(key).h.slice(0, 4);
+  $('#profTab').innerHTML = `${ratings4HTML(u)}
+    <div class="ov-grid">
+      <div class="card ov-prog">${progressHTML(u)}</div>
+      <div class="card ov-act"><div class="sc-head"><h2>${PIX('cal')} Игровая активность</h2></div><p class="muted small">Календарь сыгранных партий</p>${activityHTML(u)}</div>
+      <div class="card"><div class="sc-head"><h2>${PIX('clock')} Последние партии</h2><button class="link" data-gotab="history">Все партии ${ICON.arrow}</button></div>
+        ${recent.length ? recent.map(x => recentRowHTML(x.g, x.i)).join('') : '<p class="muted small">Партий пока нет</p>'}</div>
+      <div class="card">${showcaseHTML(u, key, isMe)}</div>
+      ${isMe ? '' : `<div class="card"><div class="sc-head"><h2>${PIX('swords')} Общие партии</h2><button class="btn sm" id="ovCmp">${PIX('chart')} Сравнить статистику</button></div>
+        ${common.length ? common.map(g => recentRowHTML(g, me().history.indexOf(g))).join('') : '<p class="muted small">Вы ещё не играли друг с другом онлайн. Вызови на партию!</p>'}</div>`}
+      <div class="card ov-rec ${isMe ? '' : 'half'}"><div class="sc-head"><h2>${PIX('trophy')} Личные рекорды</h2></div>
+        <div class="recs">${recordsOf(u).map(([ic, l, v, s]) => `<div class="rec">${PIX(ic)}<div><small>${tr(l)}</small><b>${v}</b><span class="muted small">${s}</span></div></div>`).join('')}</div></div>
+      ${u.about ? `<div class="card ov-about"><h2>${PIX('profile')} О себе</h2><p class="about-text">${esc(u.about)}</p></div>` : ''}
+    </div>`;
+  const box = $('#profTab');
+  box.querySelectorAll('[data-gotab]').forEach(b => b.onclick = () => { profTab = b.dataset.gotab; renderProfile(); });
+  box.querySelectorAll('[data-pr]').forEach(b => b.onclick = () => { progRange = b.dataset.pr; box.querySelector('.ov-prog').innerHTML = progressHTML(u); renderOverview(u, key, isMe); });
+  box.querySelectorAll('[data-r4]').forEach(b => b.onclick = () => ratingDetails(u, b.dataset.r4));
+  const own = isMe ? key : db.current;
+  box.querySelectorAll('.ov-grid [data-rv]').forEach(r => r.onclick = () => openReview(+r.dataset.rv, r.closest('.card').querySelector('#ovCmp') ? own : key));
+  if($('#scAdd')) $('#scAdd').onclick = pickShowcase;
+  if($('#ovCmp')) $('#ovCmp').onclick = () => compareModal(key);
+  bindActivity(box);
+}
+function renderHistory(u, key){
+  const F = histF, chessAll = F.v === 'chessAll';
+  const hist = (u.history || []).map((g, i) => ({ g, i })).filter(({ g }) => {
+    const v = g.variant || '32';
+    if(chessAll ? !(VARIANTS[v] || {}).chess : F.v !== 'all' && v !== F.v) return false;
+    if(F.tc !== 'all' && g.tc !== F.tc) return false;
+    if(F.r !== 'all' && g.result !== F.r) return false;
+    if(F.day && dayKey(g.date) !== F.day) return false;
+    return true;
+  });
+  $('#profTab').innerHTML = `<div class="card">
+    <div class="hf">
+      <select data-hf="v"><option value="all">${tr('Дисциплина')}: ${tr('все')}</option><option value="chessAll" ${chessAll ? 'selected' : ''}>${tr('Все шахматы')}</option>${Object.values(VARIANTS).map(v => `<option value="${v.id}" ${F.v === v.id ? 'selected' : ''}>${v.label}</option>`).join('')}</select>
+      <select data-hf="tc"><option value="all">${tr('Время')}: ${tr('любое')}</option>${TCS.map(t => `<option value="${t.id}" ${F.tc === t.id ? 'selected' : ''}>${t.label}</option>`).join('')}</select>
+      <select data-hf="r"><option value="all">${tr('Результат')}: ${tr('любой')}</option>${['win', 'loss', 'draw'].map(r => `<option value="${r}" ${F.r === r ? 'selected' : ''}>${RES_NAME[r]}</option>`).join('')}</select>
+      ${F.day ? `<button class="chip on" id="hfDay">${new Date(F.day + 'T12:00').toLocaleDateString(LOC(), { day:'numeric', month:'long' })} ✕</button>` : ''}
+      <span class="muted small hf-n">${hist.length} ${tr('партий')}</span>
+    </div>
+    ${hist.length ? `<div class="tbl-wrap"><table class="ht"><thead><tr><th>Соперник</th><th>Дисциплина</th><th>Результат</th><th>Рейтинг</th><th>Дата</th><th>Действие</th></tr></thead><tbody>
+      ${hist.map(({ g, i }) => { const v = g.variant || '32';
+        const rt = g.friend ? '<span class="muted">—</span>' : g.unrated ? `<span class="tag-unr">${tr('без рейтинга')}</span>` : `${g.rating} <span class="delta ${g.delta >= 0 ? 'up' : 'down'}">${g.delta >= 0 ? '+' : ''}${g.delta}</span>`;
+        return `<tr class="click" data-i="${i}"><td><span class="ht-opp"><span class="ava round sm">${oppAvaHTML(g)}</span><span translate="no">${esc(g.opp)}</span>${g.oppElo ? `<span class="muted small">(${g.oppElo})</span>` : ''}</span></td>
+          <td><span class="gtype">${variantIcon(v, 18)}<span>${vLabel(v)} · ${tcTxt(g.tc, g.inc)}</span></span></td>
+          <td><span class="pill ${g.result}">${g.result === 'win' ? '1 : 0' : g.result === 'loss' ? '0 : 1' : '½ : ½'}</span></td><td>${rt}</td>
+          <td class="muted">${new Date(g.date).toLocaleDateString(LOC(), { day:'numeric', month:'short', year:'numeric' })}</td>
+          <td class="open-rv">${g.mv ? `Разбор ${ICON.arrow}` : '<span class="muted">—</span>'}</td></tr>`; }).join('')}</tbody></table></div>`
+      : '<p class="muted">Партий с такими фильтрами нет.</p>'}</div>`;
+  const box = $('#profTab');
+  box.querySelectorAll('[data-hf]').forEach(s => s.onchange = () => { histF[s.dataset.hf] = s.value; renderHistory(u, key); });
+  if($('#hfDay')) $('#hfDay').onclick = () => { histF.day = null; renderHistory(u, key); };
+  box.querySelectorAll('tr.click').forEach(tr => tr.onclick = () => openReview(+tr.dataset.i, key));
+}
+function renderCollection(u, key, isMe){
+  const box = $('#profTab'), pf = isMe ? (u.pf = u.pf || {}) : pfOf(u);
+  const setPf = (k, v) => { pf[k] = v; save(); renderProfile(); toast('Сохранено'); };
+  const head = t => `<div class="sc-head"><h2>${t}</h2><button class="btn sm" id="colBack">← Коллекция</button></div>`;
+  const lockTxt = need => { const a = ACH.find(x => x.id === need); return a ? `${PIX('lock')} ${tr(a.tip)}` : ''; };
+  if(collView === 'ach' || (!isMe && collView)){
+    const achs = ACH.map(a => ({ a, on: a.ok(u, key) }));
+    box.innerHTML = `<div class="card">${head(`${PIX('medal')} Достижения <small class="muted">${achs.filter(x => x.on).length} ${tr('из')} ${ACH.length}</small>`)}
+      ${isMe ? '<p class="muted small">Нажми на полученную награду, чтобы показать её на витрине (до 3).</p>' : ''}
+      <div class="ach-grid2">${achs.map(x => `<button class="${(pf.show || []).includes(x.a.id) ? 'pinned' : ''}" data-pin="${x.a.id}" ${isMe && x.on ? '' : 'disabled'}>${achHex(x.a, x.on, `<small>${x.a.tip}</small>`)}</button>`).join('')}</div></div>`;
+    box.querySelectorAll('[data-pin]').forEach(b => b.onclick = () => { const id = b.dataset.pin, s = pf.show || []; setPf('show', s.includes(id) ? s.filter(x => x !== id) : s.length < 3 ? s.concat(id) : (toast('Максимум 3 награды'), s)); });
+  } else if(collView === 'cover'){
+    box.innerHTML = `<div class="card">${head(`${PIX('board')} Обложки`)}<div class="cov-grid">${COVERS.map(c => { const ok = !c.need || achOk(u, key, c.need);
+      return `<button class="cov ${(pf.cover || 'gold') === c.id ? 'on' : ''}" data-cov="${c.id}" ${ok ? '' : 'disabled'}><span style="background:${c.css}"></span><b>${c.n}</b>${ok ? '' : `<small>${lockTxt(c.need)}</small>`}</button>`; }).join('')}</div></div>`;
+    box.querySelectorAll('[data-cov]').forEach(b => b.onclick = () => setPf('cover', b.dataset.cov));
+  } else if(collView === 'frame'){
+    box.innerHTML = `<div class="card">${head(`${PIX('star')} Рамки аватарки`)}<div class="cov-grid">${FRAMES.map(f => { const ok = !f.need || achOk(u, key, f.need);
+      return `<button class="frm ${(pf.frame || '') === f.id ? 'on' : ''}" data-frm="${f.id}" ${ok ? '' : 'disabled'}><span class="pf-ava fr-${f.id || 'none'}">${avatarHTML(u.avatar)}</span><b>${f.n}</b>${ok ? '' : `<small>${lockTxt(f.need)}</small>`}</button>`; }).join('')}</div></div>`;
+    box.querySelectorAll('[data-frm]').forEach(b => b.onclick = () => setPf('frame', b.dataset.frm));
+  } else if(collView === 'title'){
+    box.innerHTML = `<div class="card">${head(`${PIX('cup2')} Титулы`)}<p class="muted small">Титул показывается под ником. Открываются за достижения.</p><div class="tit-list">${TITLES.map(t => { const ok = !t.need || achOk(u, key, t.need);
+      return `<button class="tit ${(pf.title || '') === t.id ? 'on' : ''}" data-tit="${t.id}" ${ok ? '' : 'disabled'}><b>${tr(t.n)}</b>${ok ? '' : `<small>${lockTxt(t.need)}</small>`}</button>`; }).join('')}</div></div>`;
+    box.querySelectorAll('[data-tit]').forEach(b => b.onclick = () => setPf('title', b.dataset.tit));
+  } else if(collView === 'theme'){
+    const s = db.settings, row = (list, k, cur) => `<div class="tit-list">${list.map(([id, l]) => `<button class="tit ${cur === id ? 'on' : ''}" data-th="${k}:${id}"><b>${tr(l)}</b></button>`).join('')}</div>`;
+    box.innerHTML = `<div class="card">${head(`${PIX('settings')} Игровые оформления`)}
+      <div class="lbl">Доска для шашек</div>${row(BOARD_THEMES, 'boardTheme', s.boardTheme)}<div class="lbl">Шашки</div>${row(PIECE_THEMES, 'pieceTheme', s.pieceTheme)}
+      <div class="lbl">Доска для шахмат</div>${row(BOARD_THEMES, 'cBoardTheme', s.cBoardTheme)}<div class="lbl">Шахматные фигуры</div>${row(CHESS_PIECE_THEMES, 'cPieceTheme', s.cPieceTheme)}
+      <p class="muted small">Больше настроек — в разделе «Настройки».</p></div>`;
+    box.querySelectorAll('[data-th]').forEach(b => b.onclick = () => { const [k, v] = b.dataset.th.split(':'); db.settings[k] = v; save(); renderCollection(u, key, isMe); toast('Оформление применено'); });
+  } else {
+    const items = [['ach', 'medal', 'Достижения', `${ACH.filter(a => a.ok(u, key)).length} ${tr('из')} ${ACH.length}`], ['ava', 'profile', 'Аватарки', 'Готовые или своё фото'], ['cover', 'board', 'Обложки', `${COVERS.length} ${tr('вариантов')}`],
+      ['frame', 'star', 'Рамки', `${FRAMES.length - 1} ${tr('рамок')}`], ['title', 'cup2', 'Титулы', `${TITLES.length - 1} ${tr('титулов')}`], ['theme', 'settings', 'Игровые оформления', 'Доски и фигуры']];
+    box.innerHTML = `<div class="col-grid">${(isMe ? items : items.slice(0, 1)).map(([id, ic, t, s]) => `<button class="card col-i" data-cv="${id}"><span class="col-ico">${PIX(ic)}</span><b>${t}</b><small class="muted">${s}</small></button>`).join('')}</div>`;
+    box.querySelectorAll('[data-cv]').forEach(b => b.onclick = () => { if(b.dataset.cv === 'ava'){ openAvatarMenu(); return; } collView = b.dataset.cv; renderProfile(); });
+  }
+  if($('#colBack')) $('#colBack').onclick = () => { collView = null; renderProfile(); };
+}
+function renderFriendsTab(u, key, isMe){
+  const fr = friendsOf(key), s = socialGet();
+  const inc = isMe ? incomingReq() : [], sent = isMe ? s.requests.filter(r => r.from === db.current && db.accounts[r.to]) : [];
+  const q = frQ.trim().toLowerCase(), match = k => !q || (db.accounts[k] && db.accounts[k].nick.toLowerCase().includes(q));
+  const row = (k, btns) => { const a = db.accounts[k]; return `<div class="fr-row2" data-open="${esc(k)}"><span class="ava round">${avatarHTML(a.avatar)}</span>
+    <div><b>${nickH(k)}</b><span class="muted small">${statusLine(k)} · ${tr('Рейтинг')} ${ratingOf(a, db.menu.variant, db.menu.tc)}</span></div><div class="fr-acts">${btns}</div></div>`; };
+  let list = '';
+  if(frTab === 'req' && isMe){
+    list = (inc.length ? inc.map(r => row(r.from, `<button class="btn sm primary" data-fa="${esc(r.from)}">Принять</button><button class="btn sm" data-fd="${esc(r.from)}">Нет</button>`)).join('') : '<p class="muted small">Входящих заявок нет</p>')
+      + (sent.length ? `<div class="lbl">Отправленные</div>` + sent.map(r => row(r.to, `<button class="btn sm" data-fc="${esc(r.to)}">Отменить</button>`)).join('') : '');
+  } else {
+    const L = fr.filter(k => match(k) && (frTab !== 'on' || statusOf(k) !== 'offline'));
+    list = L.length ? L.map(k => row(k, k === db.current ? '' : `<button class="icon-btn" data-inv="${esc(k)}" title="Вызвать на партию" ${statusOf(k) === 'offline' ? 'disabled' : ''}>${ICON.swords}</button>`
+      + (isMe ? `<button class="icon-btn" data-fm="${esc(k)}" title="Ещё">⋯</button>` : ''))).join('') : `<p class="muted">${fr.length ? 'Никого не нашлось' : isMe ? 'Друзей пока нет.' : 'У игрока пока нет друзей.'}</p>`;
+  }
+  $('#profTab').innerHTML = `<div class="card fr-card">
+    <div class="fr-search">${ICON.search}<input id="frQ" value="${esc(frQ)}" placeholder="Поиск среди друзей"></div>
+    <div class="seg">${[['all', `Все друзья (${fr.length})`], ['on', 'Онлайн'], ...(isMe ? [['req', `Заявки${inc.length ? ' (' + inc.length + ')' : ''}`]] : [])].map(([id, l]) => `<button class="${frTab === id ? 'on' : ''}" data-ft="${id}">${l}</button>`).join('')}</div>
+    <div class="fr-list">${list}</div>
+    ${isMe ? `<button class="btn wide" onclick="go('players')">${ICON.search} Найти новых игроков</button>` : ''}</div>`;
+  const box = $('#profTab');
+  bindPeople(box);
+  const qi = $('#frQ'); qi.oninput = () => { frQ = qi.value; const pos = qi.selectionStart; renderFriendsTab(u, key, isMe); const n = $('#frQ'); n.focus(); n.setSelectionRange(pos, pos); };
+  box.querySelectorAll('[data-ft]').forEach(b => b.onclick = () => { frTab = b.dataset.ft; renderFriendsTab(u, key, isMe); });
+  box.querySelectorAll('[data-fa]').forEach(b => b.onclick = e => { e.stopPropagation(); acceptFriend(b.dataset.fa); renderProfile(); });
+  box.querySelectorAll('[data-fd]').forEach(b => b.onclick = e => { e.stopPropagation(); declineFriend(b.dataset.fd); renderProfile(); });
+  box.querySelectorAll('[data-fc]').forEach(b => b.onclick = e => { e.stopPropagation(); cancelRequest(b.dataset.fc); renderProfile(); });
+  box.querySelectorAll('[data-fm]').forEach(b => b.onclick = e => { e.stopPropagation(); const k = b.dataset.fm;
+    modal(`<h2 translate="no">${esc(db.accounts[k].nick)}</h2>`, [{ label:'Открыть профиль', onClick: () => openPlayer(k) }, { label:'Удалить из друзей', cls:'danger', onClick: () => { removeFriend(k); setTimeout(renderProfile, 300); } }, { label:'Закрыть' }]); });
+}
+
+/* ---------- запуск v17 ---------- */
+buildNav();
+if(!db.settings.v17){ db.settings.v17 = 1; db.settings.theme = 'dark'; try{ localStorage.setItem(KEY, JSON.stringify({ settings: db.settings, menu: db.menu })); }catch(e){} applyTheme(); }
 
 /* =========================================================
    14. СТАРТ
