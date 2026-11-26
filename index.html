@@ -1096,6 +1096,29 @@ h2 .pix{width:26px;height:26px}
 .pt-contour .w .cp.t1{background-image:url(icons/sA_wP.png)}
 .pt-cartoon .b .cp.t1{background-image:url(icons/sA_bP.png)}
 .pt-contour .b .cp.t1{background-image:url(icons/sA_bP.png)}
+
+/* =====================================================================
+   v16: аватарки, таблица разбора, ссылка на партию
+   ===================================================================== */
+.ava img.bot-img{background:transparent;object-fit:cover}
+.bot .ava,.pbar .ava,.rp .ava{background:var(--panel2)}
+.an-table{table-layout:fixed;border-collapse:collapse}
+.an-table td,.an-table th{vertical-align:middle;height:34px;padding:3px 4px}
+.an-table td:first-child{display:table-cell;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:13px}
+.an-table td:first-child svg{vertical-align:middle;margin-right:6px}
+.an-table th:not(:first-child),.an-table td:not(:first-child){width:58px}
+.an-table th{font-size:10px;line-height:1.2;white-space:normal}
+.link-box{display:flex;gap:6px;margin:14px 0 10px}
+.link-box input{flex:1;min-width:0;margin:0 !important;font-size:14px !important;padding:9px 10px !important}
+.link-on{display:flex;align-items:center;gap:8px;font-weight:700;margin:8px 0 10px}
+.link-on .gb-dot{background:#39b25a;animation:gbPulse 1s infinite}
+#linkCard h2 .pix{width:24px;height:24px}
+.auth-inv{background:var(--gold);color:var(--gold-ink);border-radius:12px;padding:10px 12px;font-weight:700;font-size:14px;margin:4px 0 10px}
+.actions .btn,.undo-row .btn,.rv-tools .btn{min-width:0;padding-left:8px;padding-right:8px}
+.actions .btn .pix,.undo-row .btn .pix{width:18px;height:18px}
+.an-table td:first-child{white-space:normal;overflow:visible;text-overflow:clip;font-size:12.5px;line-height:1.15}
+.an-table th:not(:first-child),.an-table td:not(:first-child){width:44px}
+.an-table td:first-child{padding-left:2px}
 </style>
 </head>
 <body>
@@ -1419,7 +1442,7 @@ const PIECE_THEMES = [['classic','Классика'],['wood','Дерево'],['g
    3. РИСУНКИ (SVG)
    ========================================================= */
 function botFace(f){
-  if(f.img) return `<img src="icons/${f.img}.png" alt="" style="background:${f.bg}">`;
+  if(f.img) return `<img src="icons/${f.img}.png" alt="" class="bot-img">`;
   const S = '#2b1d16';
   let back = '', hair = '', extra = '';
   if(f.style === 'long') back = `<path d="M22 50 C20 22 36 15 50 15 C66 15 80 24 78 50 L81 88 L64 88 L64 62 L36 62 L36 88 L19 88Z" fill="${f.hair}"/>`;
@@ -1530,7 +1553,7 @@ const CROSS = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke
 // значок варианта игры: маленькая доска 4×8 или 8×8
 function variantIcon(v, h){
   h = h || 26;
-  if(v === 'chess' || v === 'c960') return `<img class="pix" src="icons/${v === 'c960' ? 'dice' : 'cwN'}.png" style="width:${h}px;height:${h}px" alt="">`;
+  if(v === 'chess' || v === 'c960') return `<img class="pix" src="icons/${v === 'c960' ? 'dice' : 'sA_wN'}.png" style="width:${h}px;height:${h}px" alt="">`;
   const cols = v === '64' ? 8 : 4, cs = 4, W = cols*cs, H = 8*cs;
   let cells = '';
   for(let r=0;r<8;r++) for(let c=0;c<cols;c++) if((r+c)%2) cells += `<rect x="${c*cs}" y="${r*cs}" width="${cs}" height="${cs}" fill="#8b3d0e"/>`;
@@ -2329,6 +2352,7 @@ function showAuth(tab){
   const reg = tab === 'reg';
   $('#modalRoot').innerHTML = `<div class="overlay"><div class="modal">
     <img class="auth-logo" src="${CHECKER_IMG}" alt=""><h2>Шашки</h2>
+    ${(() => { try{ return sessionStorage.getItem('pendingLink'); }catch(e){ return null; } })() ? '<p class="auth-inv">Тебя пригласили на партию! Войди или создай аккаунт — и игра сразу начнётся.</p>' : ''}
     <div class="tabs"><button data-t="login" class="${!reg?'on':''}">Вход</button><button data-t="reg" class="${reg?'on':''}">Регистрация</button></div>
     <form id="authForm">
       ${reg ? '<input id="aNick" maxlength="16" placeholder="Никнейм (виден другим)" autocomplete="nickname">' : ''}
@@ -2393,6 +2417,7 @@ async function afterLogin(user, fresh){
   joinLobby(); watchProfiles();
   closeModal(); renderMeMini(); go('home', true);
   setTimeout(popFriendReqs, 600);
+  setTimeout(tryJoinLink, 900);
   toast(fresh ? `Добро пожаловать, ${me().nick}!` : `Привет, ${me().nick}!`);
 }
 async function boot(){
@@ -2657,6 +2682,7 @@ function renderOnline(){
         <div class="card"><h2>${ICON.shuffle} Случайный соперник</h2>
           <p class="muted">Подберём игрока, который тоже ищет партию с такими же настройками.</p>
           <button class="btn primary big" id="onSearch">${ICON.playFill} Найти соперника</button></div>
+        <div class="card" id="linkCard"></div>
         <div class="card"><div class="sc-head"><h2>${ICON.users} Позвать друга</h2><button class="btn sm" onclick="go('players')">${ICON.addUser} Найти друзей</button></div>
           ${fr.length ? fr.map(k => { const a = db.accounts[k]; return `
             <div class="fr-row" data-open="${esc(k)}"><span class="ava round">${avatarHTML(a.avatar)}</span>
@@ -2670,6 +2696,7 @@ function renderOnline(){
     </div>`;
   bindOpts($('#onOpts'), renderOnline);
   $('#onSearch').onclick = startSearch;
+  renderLinkCard();
   bindPeople($('#onlineBox'));
 }
 
@@ -2709,7 +2736,8 @@ function leaveLobby(){ if(lobby && sb){ try{ lobby.untrack(); }catch(e){} sb.rem
 // сообщаем серверу свой статус (только если он поменялся)
 function heartbeat(force){
   if(!lobby || !db.current) return;
-  const meta = { s: myStatus(), q: search ? { variant: search.variant, tc: search.tc, inc: search.inc, joined: search.joined } : null };
+  const meta = { s: myStatus(), q: search ? { variant: search.variant, tc: search.tc, inc: search.inc, joined: search.joined } : null,
+    lk: typeof linkGame !== 'undefined' && linkGame ? { c: linkGame.code, v: linkGame.variant, t: linkGame.tc } : null };
   const js = JSON.stringify(meta);
   if(force || js !== lastTrack){ lastTrack = js; lobby.track(meta); }
   checkOppAlive();
@@ -3301,8 +3329,9 @@ function renderPieces(){
     else old.set(+el.dataset.sq, el);
   });
   box.querySelectorAll('.mc-badge').forEach(el => el.remove());
+  const PB = (!game.review && !game.over && game.premoves.length) ? virtualBoard() : game.board;   // с премувами — «как будто уже сходили»
   for(let s=0;s<N;s++){
-    const v = game.board[s];
+    const v = PB[s];
     let el = old.get(s); old.delete(s);
     if(!v){ if(el) el.remove(); continue; }
     const cls = 'piece ' + (v > 0 ? 'w' : 'b') + (V.chess ? ' chess' : (Math.abs(v) === 2 ? ' k' : '')) + (must.has(s) ? ' must' : '');
@@ -4531,6 +4560,14 @@ function renderSettings(){
 const LANG = () => db.settings.lang === 'en' ? 'en' : 'ru';
 const LOC = () => LANG() === 'en' ? 'en-GB' : 'ru-RU';        // формат дат
 const EN = {
+  'Ссылка на партию':'Game link','Копировать':'Copy','Отправить в мессенджер':'Send via messenger','Отменить ссылку':'Cancel link','Свернуть':'Minimize',
+  'Отправь ссылку другу. Он откроет её, войдёт или создаст аккаунт — и партия сразу начнётся. Ссылка работает, пока ты на сайте.':'Send the link to a friend. They open it, log in or sign up — and the game starts right away. The link works while you are on the site.',
+  'Играть по ссылке':'Play by link','Для тех, кто не у тебя в друзьях или ещё без аккаунта: отправь ссылку — по ней сразу начнётся партия с настройками справа.':'For people who aren’t your friends or don’t have an account yet: send a link and the game with the settings on the right starts right away.',
+  'Ссылка активна · ждём соперника':'Link active · waiting for an opponent','Показать ссылку':'Show link','Создать ссылку':'Create link','Ссылка скопирована':'Link copied','Ссылка отменена':'Link cancelled',
+  'Сыграем в шахматы?':'Fancy a game of chess?','Сыграем в шашки?':'Fancy a game of checkers?','Ищем партию по ссылке…':'Looking for the game…','Это твоя же ссылка — отправь её другу':'That’s your own link — send it to a friend',
+  'Партия не найдена':'Game not found','Создатель ссылки сейчас не на сайте или уже начал другую партию. Попроси его прислать новую ссылку.':'The link creator isn’t on the site or already started another game. Ask them for a new link.',
+  'Создатель ссылки сейчас играет другую партию.':'The link creator is playing another game.','Эта ссылка уже не действует.':'This link is no longer valid.',
+  'Тебя пригласили на партию! Войди или создай аккаунт — и игра сразу начнётся.':'You’ve been invited to a game! Log in or sign up and it starts right away.',
   'Блестящий':'Brilliant','Замечательный':'Great','Прекрасный':'Excellent','Ошибка':'Mistake','Упущенный шанс':'Miss','Уровень игры':'Played like',
   'Сильная жертва, которая заметно улучшает позицию':'A strong sacrifice that clearly improves the position','Единственный хороший ход в этой позиции':'The only good move in this position',
   'Почти так же силён, как ход движка':'Almost as strong as the engine’s move','Крепкий ход, позиция почти не ухудшилась':'A solid move, the position barely changed',
@@ -5326,11 +5363,11 @@ const PUZZLES_CHESS = ["chess:...........k............B...K..Q..................
 const PUZ_CMAP = { '.':0, P:1, N:2, B:3, R:4, Q:5, K:6, p:-1, n:-2, b:-3, r:-4, q:-5, k:-6 };
 function dayNum(){ const d = new Date(); return Math.floor(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) / 864e5); }
 function todayPuzzle(){
-  const ch = isChessMenu(), L = ch ? PUZZLES_CHESS : PUZZLES, day = dayNum(), [v, b, s] = L[day % L.length].split(':');
+  const ch = isChessMenu(), own = PUZZLES.filter(x => x.startsWith(db.menu.variant + ':')), L = ch ? PUZZLES_CHESS : (own.length ? own : PUZZLES), day = dayNum(), [v, b, s] = L[day % L.length].split(':');
   const board = ch ? [...b].map(c => PUZ_CMAP[c]).concat([0, 0, 0]) : [...b].map(c => PUZ_MAP[c]);
   return { day, v, board, sol: s, no: day % L.length + 1, n: ch ? 2 : 3, chess: ch };
 }
-const puzKey = () => 'shashki_puz_' + (db.current || 'guest') + (isChessMenu() ? '_chess' : '');
+const puzKey = () => 'shashki_puz_' + (db.current || 'guest') + (isChessMenu() ? '_chess' : db.menu.variant === '64' ? '_64' : '');
 const puzTask = p => p.themed ? PZ_TIP[p.themed] : p.chess ? 'Белые начинают и ставят мат в 2 хода.' : 'Белые начинают и выигрывают за 3 хода.';
 function puzStore(){ try{ return JSON.parse(localStorage.getItem(puzKey())) || { done:{}, streak:0, last:0 }; }catch(e){ return { done:{}, streak:0, last:0 }; } }
 function puzSave(st){ try{ localStorage.setItem(puzKey(), JSON.stringify(st)); }catch(e){} }
@@ -5351,8 +5388,9 @@ function puzMini(p){
     const v = p.board[idx(r, c)];
     cells.push(`<div class="sq ${isDark(r, c) ? 'dark' : 'light'}">${v ? pieceMini(v) : ''}</div>`);
   }
+  const cols = COLS, bt = bth(), pt = pth();
   setVariant(db.menu.variant);
-  return `<div class="mini-board puz-board bt-${bth()} pt-${pth()}" style="--mc:${COLS}">${cells.join('')}</div>`;
+  return `<div class="mini-board puz-board bt-${bt} pt-${pt}" style="--mc:${cols}">${cells.join('')}</div>`;
 }
 function renderPuzzleCard(){
   const box = $('#puzCard'); if(!box) return;
@@ -5576,7 +5614,7 @@ function discSwitch(){
   return `<div class="disc-sw ${ch ? 'chess' : ''}" id="discSw" role="tablist">
     <span class="knob"></span>
     <button data-d="draughts" class="${ch ? '' : 'on'}">${PIX('chkb')}Шашки</button>
-    <button data-d="chess" class="${ch ? 'on' : ''}">${PIX('cwN')}Шахматы</button></div>`;
+    <button data-d="chess" class="${ch ? 'on' : ''}"><img class="pix" src="icons/sA_wN.png" alt="">Шахматы</button></div>`;
 }
 function setDiscipline(d){
   const m = db.menu, toChess = d === 'chess';
@@ -6086,14 +6124,97 @@ function botBookMove(){
 }
 
 /* ---------- наборы фигур: шашки — 6 тем, шахматы — 6 + «Мультяшные» и «Контурные» ---------- */
-const CHESS_PIECE_THEMES = PIECE_THEMES.concat([['cartoon', 'Мультяшные'], ['contour', 'Контурные']]);
+const CHESS_PIECE_THEMES = [['cartoon', 'Классика'], ['contour', 'Контурные']];
 Object.assign(PIECE_SOUND, { cartoon: 'classic', contour: 'wood' });
 (() => {   // «Пиксели» больше нет: переносим на похожие темы
   let ch = false;
   if(db.settings.pieceTheme === 'pixel'){ db.settings.pieceTheme = 'classic'; ch = true; }
-  if(!db.settings.cPieceTheme || db.settings.cPieceTheme === 'pixel'){ db.settings.cPieceTheme = 'cartoon'; ch = true; }
+  if(!['cartoon', 'contour'].includes(db.settings.cPieceTheme)){ db.settings.cPieceTheme = 'cartoon'; ch = true; }
   if(ch) try{ localStorage.setItem(KEY, JSON.stringify({ settings: db.settings, menu: db.menu })); }catch(e){}
 })();
+
+
+/* =========================================================
+   13i. v16: партия по ссылке — для тех, кто не в друзьях или ещё без аккаунта
+   Создатель получает ссылку ?play=КОД. Пока он на сайте, код «висит» в его статусе (Presence).
+   Друг открывает ссылку, входит или регистрируется — сайт находит создателя по коду и начинает партию.
+   ========================================================= */
+let linkGame = null;                 // { code, variant, tc, inc, color, t }
+(() => {                             // пришли по ссылке? запоминаем код до входа
+  const p = new URLSearchParams(location.search), code = p.get('play');
+  if(code && /^[a-z0-9]{4,24}$/i.test(code)){
+    try{ sessionStorage.setItem('pendingLink', code); }catch(e){}
+    p.delete('play'); history.replaceState(null, '', location.pathname + (p.toString() ? '?' + p : '') + location.hash);
+  }
+})();
+const linkURL = code => location.origin + location.pathname + '?play=' + code;
+function createLinkGame(){
+  if(playBlocked()) return;
+  if(liveOnline()){ toast('Сначала закончи онлайн-партию'); go('game'); return; }
+  if(!lobby){ toast('Нет связи с сервером'); return; }
+  const m = db.menu;
+  linkGame = { code: (uid() + uid()).replace(/[^a-z0-9]/g, '').slice(0, 12), variant: m.variant, tc: m.tc, inc: tcById(m.tc).sec ? (+m.inc || 0) : 0, color: m.color, t: Date.now() };
+  heartbeat(true);
+  showLinkModal();
+  if(current === 'online') renderLinkCard();
+}
+function cancelLink(){ linkGame = null; heartbeat(true); if(current === 'online') renderLinkCard(); toast('Ссылка отменена'); }
+function showLinkModal(){
+  const L = linkGame; if(!L) return;
+  const url = linkURL(L.code);
+  const root = modal(`<div class="search-anim"><span></span><span></span><span></span></div><h2>Ссылка на партию</h2>
+    <p class="muted">${VAR_NAMES[L.variant]} · ${tcLabel(L.tc, L.inc)}</p>
+    <div class="link-box"><input id="lkUrl" readonly value="${esc(url)}" translate="no"><button class="btn sm primary" id="lkCopy">${ICON.check} Копировать</button></div>
+    ${navigator.share ? `<button class="btn wide" id="lkShare">${PIX('chat')} Отправить в мессенджер</button>` : ''}
+    <p class="muted small">Отправь ссылку другу. Он откроет её, войдёт или создаст аккаунт — и партия сразу начнётся. Ссылка работает, пока ты на сайте.</p>`,
+    [{ label:'Отменить ссылку', onClick: cancelLink }, { label:'Свернуть', cls:'primary' }]);
+  const copy = () => { const i = root.querySelector('#lkUrl'); i.select(); (navigator.clipboard ? navigator.clipboard.writeText(url) : Promise.reject()).then(() => toast('Ссылка скопирована'), () => { document.execCommand('copy'); toast('Ссылка скопирована'); }); };
+  root.querySelector('#lkCopy').onclick = copy;
+  const sh = root.querySelector('#lkShare');
+  if(sh) sh.onclick = () => navigator.share({ title: tr('Шашки'), text: tr(isChessMenu() ? 'Сыграем в шахматы?' : 'Сыграем в шашки?'), url }).catch(() => {});
+}
+// карточка на экране «Онлайн»
+function renderLinkCard(){
+  const box = $('#linkCard'); if(!box) return;
+  box.innerHTML = `<h2>${PIX('chat')} Играть по ссылке</h2>
+    <p class="muted">Для тех, кто не у тебя в друзьях или ещё без аккаунта: отправь ссылку — по ней сразу начнётся партия с настройками справа.</p>
+    ${linkGame ? `<div class="link-on"><span class="gb-dot"></span><span>Ссылка активна · ждём соперника</span></div>
+      <div class="actions"><button class="btn" id="lkShow">Показать ссылку</button><button class="btn" id="lkOff">Отменить</button></div>`
+      : `<button class="btn primary big" id="lkMake">${ICON.addUser} Создать ссылку</button>`}`;
+  if(linkGame){ $('#lkShow').onclick = showLinkModal; $('#lkOff').onclick = cancelLink; }
+  else $('#lkMake').onclick = createLinkGame;
+}
+// создатель ссылки: к нему пришёл соперник
+netHandlers.link_join = msg => {
+  const L = linkGame;
+  if(!L || !msg.data || msg.data.code !== L.code){ netSend(msg.from, 'link_fail', {}); return; }
+  if(game && !game.over && !game.review){ netSend(msg.from, 'link_fail', { busy: 1 }); return; }
+  linkGame = null; heartbeat(true); closeModal();
+  const myColor = L.color === 'random' ? (Math.random() < .5 ? 'white' : 'black') : L.color;
+  const gid = uid(), seed = Math.floor(Math.random() * 960);
+  netSend(msg.from, 'match_start', { gid, seed, variant: L.variant, tc: L.tc, inc: L.inc, color: myColor === 'white' ? 'black' : 'white', ...meCard(L.variant, L.tc) });
+  startOnlineGame({ gid, oppKey: msg.from, opp: msg.data, color: myColor, variant: L.variant, tc: L.tc, inc: L.inc, seed });
+};
+netHandlers.link_fail = msg => modal(`<div class="big-ico">${PIX('chat')}</div><h2>Не получилось</h2><p class="muted">${msg.data && msg.data.busy ? 'Создатель ссылки сейчас играет другую партию.' : 'Эта ссылка уже не действует.'}</p>`, [{ label:'Понятно' }]);
+// тот, кто пришёл по ссылке: после входа ищем создателя в сети (до 12 секунд)
+async function tryJoinLink(){
+  let code = null; try{ code = sessionStorage.getItem('pendingLink'); }catch(e){}
+  if(!code || !db.current) return;
+  try{ sessionStorage.removeItem('pendingLink'); }catch(e){}
+  if(liveOnline()){ toast('Сначала закончи онлайн-партию'); return; }
+  toast('Ищем партию по ссылке…');
+  for(let i = 0; i < 24; i++){
+    const st = lobby ? lobby.presenceState() : {};
+    for(const [k, metas] of Object.entries(st)){
+      const meta = metas.find(x => x.lk && x.lk.c === code); if(!meta) continue;
+      if(k === db.current){ toast('Это твоя же ссылка — отправь её другу'); return; }
+      netSend(k, 'link_join', { code, ...meCard(meta.lk.v, meta.lk.t) });
+      return;
+    }
+    await new Promise(r => setTimeout(r, 500));
+  }
+  modal(`<div class="big-ico">${PIX('chat')}</div><h2>Партия не найдена</h2><p class="muted">Создатель ссылки сейчас не на сайте или уже начал другую партию. Попроси его прислать новую ссылку.</p>`, [{ label:'Понятно' }]);
+}
 
 /* =========================================================
    14. СТАРТ
