@@ -1527,6 +1527,79 @@ h2 .pix{width:26px;height:26px}
   .resume{grid-template-columns:1fr}.resume .rs-item:nth-child(2){display:none}
   .rs-item{grid-template-columns:auto 1fr}.rs-item .btn{grid-column:1 / -1}
 }
+/* =====================================================================
+   v18: наборы фигур «Классика» и «Слоновая кость», свободная доска, значки цвета, фоны
+   ===================================================================== */
+.pt-flat .cp svg,.pt-ivory .cp svg{display:none}
+.pt-flat .cp,.pt-ivory .cp{background:center bottom/contain no-repeat}
+.pt-flat .w .cp.t1{background-image:url(icons/sC_wP.png)}
+.pt-ivory .w .cp.t1{background-image:url(icons/sD_wP.png)}
+.pt-flat .b .cp.t1{background-image:url(icons/sC_bP.png)}
+.pt-ivory .b .cp.t1{background-image:url(icons/sD_bP.png)}
+.pt-flat .w .cp.t2{background-image:url(icons/sC_wN.png)}
+.pt-ivory .w .cp.t2{background-image:url(icons/sD_wN.png)}
+.pt-flat .b .cp.t2{background-image:url(icons/sC_bN.png)}
+.pt-ivory .b .cp.t2{background-image:url(icons/sD_bN.png)}
+.pt-flat .w .cp.t3{background-image:url(icons/sC_wB.png)}
+.pt-ivory .w .cp.t3{background-image:url(icons/sD_wB.png)}
+.pt-flat .b .cp.t3{background-image:url(icons/sC_bB.png)}
+.pt-ivory .b .cp.t3{background-image:url(icons/sD_bB.png)}
+.pt-flat .w .cp.t4{background-image:url(icons/sC_wR.png)}
+.pt-ivory .w .cp.t4{background-image:url(icons/sD_wR.png)}
+.pt-flat .b .cp.t4{background-image:url(icons/sC_bR.png)}
+.pt-ivory .b .cp.t4{background-image:url(icons/sD_bR.png)}
+.pt-flat .w .cp.t5{background-image:url(icons/sC_wQ.png)}
+.pt-ivory .w .cp.t5{background-image:url(icons/sD_wQ.png)}
+.pt-flat .b .cp.t5{background-image:url(icons/sC_bQ.png)}
+.pt-ivory .b .cp.t5{background-image:url(icons/sD_bQ.png)}
+.pt-flat .w .cp.t6{background-image:url(icons/sC_wK.png)}
+.pt-ivory .w .cp.t6{background-image:url(icons/sD_wK.png)}
+.pt-flat .b .cp.t6{background-image:url(icons/sC_bK.png)}
+.pt-ivory .b .cp.t6{background-image:url(icons/sD_bK.png)}
+/* свободная доска */
+.mini-board.lb{position:relative;touch-action:none;user-select:none}
+.lb-arrows{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:3}
+.lb-ghost{position:fixed;z-index:500;pointer-events:none;display:grid;place-items:center;filter:drop-shadow(0 8px 10px rgba(0,0,0,.45));transform:scale(1.12)}
+.lb-ghost .pcw{width:100%;height:100%;display:grid;place-items:center}
+.lb-ghost .cp{width:92%;height:92%}
+.lb-pal button{touch-action:none}
+.lb-pal .cp{width:88%;height:88%}
+.mini-board.lb .pcw{cursor:grab}
+/* значки цвета */
+.cico{display:inline-grid;place-items:center;width:28px;height:28px;vertical-align:middle}
+.cico .pcw{width:100%;height:100%;display:grid;place-items:center}
+.cico .cp{width:100%;height:100%}
+.cico .pix{width:24px;height:24px}
+.ct-cols button{width:54px;height:46px;display:grid;place-items:center;padding:0}
+.ct-cols .cico{width:32px;height:32px}
+.col-chip{display:inline-flex;align-items:center;gap:6px}
+/* фоны сайта */
+.bg-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.bg-card{display:grid;gap:6px;border:1px solid var(--line2);background:var(--panel2);color:var(--text);border-radius:12px;padding:6px 6px 8px;font:inherit;font-size:13px;font-weight:700;cursor:pointer}
+.bg-card.on{border-color:var(--gold);box-shadow:inset 0 0 0 1px var(--gold)}
+.bg-prev{height:54px;border-radius:8px;display:block;border:1px solid var(--line)}
+.bg-prev[data-prev="checker"]{background:repeating-conic-gradient(#1b1915 0 25%,#0e0d0b 0 50%) 0 0/24px 24px}
+.bg-prev[data-prev="gold"]{background:radial-gradient(circle at 80% 0,rgba(229,179,78,.55),transparent 60%),radial-gradient(circle at 0 100%,rgba(229,179,78,.25),transparent 55%),#0e0d0b}
+.bg-prev[data-prev="night"]{background:radial-gradient(circle at 70% 10%,#22305e,transparent 60%),linear-gradient(180deg,#0a0f22,#06070d)}
+.bg-prev[data-prev="wood"]{background:repeating-linear-gradient(95deg,#1e140c 0 14px,#24180e 14px 22px,#1a110a 22px 34px)}
+.bg-prev[data-prev="paper"]{background:#eceae6}
+.bg-prev[data-prev="sand"]{background:radial-gradient(circle at 80% 0,#f6dfb3,transparent 60%),#efe4cf}
+.bg-prev[data-prev="mint"]{background:radial-gradient(circle at 20% 0,#cdeedd,transparent 60%),#e5f1ea}
+.bg-prev[data-prev="sky"]{background:linear-gradient(180deg,#dbe9fb,#f2f4f7)}
+:root[data-theme="dark"][data-bg="gold"] body{background:radial-gradient(900px 600px at 85% -5%,rgba(229,179,78,.20),transparent 60%),radial-gradient(700px 500px at 0 105%,rgba(229,179,78,.10),transparent 60%),var(--bg);background-attachment:fixed}
+:root[data-theme="dark"][data-bg="night"]{--bg:#070a16;--panel:#0f1424;--panel2:#161c30;--line:#1f2740;--line2:#33405f;--side:#060812}
+:root[data-theme="dark"][data-bg="night"] body{background:radial-gradient(1000px 600px at 75% -10%,rgba(80,110,220,.22),transparent 60%),radial-gradient(1px 1px at 20% 30%,rgba(255,255,255,.5),transparent 60%),radial-gradient(1px 1px at 60% 70%,rgba(255,255,255,.4),transparent 60%),radial-gradient(1px 1px at 85% 40%,rgba(255,255,255,.4),transparent 60%),var(--bg);background-attachment:fixed}
+:root[data-theme="dark"][data-bg="wood"]{--bg:#140d08;--panel:#1d140d;--panel2:#271b11;--line:#33251a;--line2:#56402c;--side:#0f0a06}
+:root[data-theme="dark"][data-bg="wood"] body{background:repeating-linear-gradient(95deg,rgba(255,255,255,.012) 0 60px,rgba(0,0,0,.08) 60px 90px,transparent 90px 140px),var(--bg)}
+:root:not([data-theme="dark"])[data-bg="sand"]{--bg:#efe4cf;--side:#e4d5b8;--panel:#f8f1e3;--panel2:#ede1c8;--line:#dccbaa}
+:root:not([data-theme="dark"])[data-bg="sand"] body{background:radial-gradient(900px 500px at 85% -10%,rgba(240,190,100,.35),transparent 60%),var(--bg);background-attachment:fixed}
+:root:not([data-theme="dark"])[data-bg="mint"]{--bg:#e5f1ea;--side:#d3e7db;--panel:#f4faf6;--panel2:#e2efe7;--line:#c9dfd1}
+:root:not([data-theme="dark"])[data-bg="mint"] body{background:radial-gradient(900px 500px at 15% -10%,rgba(120,210,165,.35),transparent 60%),var(--bg);background-attachment:fixed}
+:root:not([data-theme="dark"])[data-bg="sky"]{--bg:#e9f0f8;--side:#d8e3f0;--panel:#f7f9fc;--panel2:#e4ebf4;--line:#cfd9e6}
+:root:not([data-theme="dark"])[data-bg="sky"] body{background:linear-gradient(180deg,#d7e7fb,var(--bg) 420px);background-attachment:fixed}
+@media (max-width:700px){ .bg-grid{grid-template-columns:repeat(2,minmax(0,1fr))} }
+.ct-cols .cico,.col-chip .cico{background:radial-gradient(circle,#efe9dc 0 62%,#d9d0bd 63% 100%);border-radius:50%;padding:2px}
+.ct-cols .cico .pix,.col-chip .cico .pix{width:80%;height:80%}
 </style>
 </head>
 <body>
@@ -3734,7 +3807,8 @@ function renderPieces(){
   // v9: шашки, которые стоят на месте, не пересоздаются (раньше вся доска перерисовывалась каждый ход)
   const old = new Map();
   box.querySelectorAll('.piece').forEach(el => {
-    if(el.classList.contains('dragging') || el.classList.contains('moving') || el.classList.contains('captured')) el.remove();
+    if(drag && drag.moved && drag.el === el && el.classList.contains('dragging') && !el.classList.contains('captured')) old.set(+el.dataset.sq, el);
+    else if(el.classList.contains('dragging') || el.classList.contains('moving') || el.classList.contains('captured')) el.remove();
     else old.set(+el.dataset.sq, el);
   });
   box.querySelectorAll('.mc-badge').forEach(el => el.remove());
@@ -3745,8 +3819,11 @@ function renderPieces(){
     if(!v){ if(el) el.remove(); continue; }
     const cls = 'piece ' + (v > 0 ? 'w' : 'b') + (V.chess ? ' chess' : (Math.abs(v) === 2 ? ' k' : '')) + (must.has(s) ? ' must' : '');
     if(!el){ el = document.createElement('div'); el.dataset.sq = s; box.appendChild(el); }
-    if(el.className !== cls) el.className = cls;
-    placeEl(el, s);
+    const held = !!(drag && drag.moved && drag.el === el && (v > 0) === el.classList.contains('w'));
+    if(!held && drag && drag.el === el && drag.moved) drag = null;        // поднятую фигуру взяли — отпускаем
+    const cls2 = held ? cls + ' dragging' : cls;
+    if(el.className !== cls2) el.className = cls2;
+    if(!held) placeEl(el, s);
     setHTML(el, V.chess ? `<div class="cp t${Math.abs(v)}">${cpSVG(Math.abs(v))}</div>` : `<div class="disc">${Math.abs(v) === 2 ? CROWN : ''}</div>`);
   }
   old.forEach(el => el.remove());
@@ -4913,7 +4990,7 @@ function renderSettings(){
       <div class="theme-grid">${BOARD_THEMES.map(([id,l]) => `<button class="tcard ${s.boardTheme===id?'on':''}" data-bt="${id}">${themePreview(id, s.pieceTheme)}${l}</button>`).join('')}</div></div>
     <div class="set"><div><b>Вид шашек</b><p>Внешний вид шашек.</p></div>
       <div class="theme-grid">${PIECE_THEMES.map(([id,l]) => `<button class="tcard ${s.pieceTheme===id?'on':''}" data-pt="${id}">${themePreview(s.boardTheme, id)}${l}</button>`).join('')}</div></div>
-    <div class="set set-head"><div><b class="set-ttl">${PIX('cwN')} Шахматы</b></div></div>
+    <div class="set set-head"><div><b class="set-ttl">${PIX('sA_wN')} Шахматы</b></div></div>
     <div class="set"><div><b>Доска для шахмат</b><p>Цвет и текстура клеток.</p></div>
       <div class="theme-grid">${BOARD_THEMES.map(([id,l]) => `<button class="tcard ${s.cBoardTheme===id?'on':''}" data-cbt="${id}">${themePreviewChess(id, s.cPieceTheme)}${l}</button>`).join('')}</div></div>
     <div class="set"><div><b>Шахматные фигуры</b><p>Внешний вид фигур.</p></div>
@@ -4969,6 +5046,23 @@ function renderSettings(){
 const LANG = () => db.settings.lang === 'en' ? 'en' : 'ru';
 const LOC = () => LANG() === 'en' ? 'en-GB' : 'ru-RU';        // формат дат
 const EN = {
+  "Слоновая кость":"Ivory",
+  "Мультяшные":"Cartoon",
+  "Фон сайта":"Site background",
+  "Узор за карточками. У светлой и тёмной темы — свои варианты.":"The pattern behind the cards. Light and dark themes have their own options.",
+  "Шахматный узор":"Checker pattern",
+  "Золотая дымка":"Golden haze",
+  "Ночное небо":"Night sky",
+  "Тёмное дерево":"Dark wood",
+  "Бумага":"Paper",
+  "Песок":"Sand",
+  "Мята":"Mint",
+  "Утро":"Morning",
+  "Случайно":"Random",
+  "Играю за":"I play as",
+  "Перетащи фигуру мышкой или нажми на неё. Правая кнопка — стрелки":"Drag a piece or click it. Right mouse button draws arrows",
+  "Перетаскивай фигуры из ряда сверху на доску, а лишние — за край доски. Можно и кликами. Первыми ходят белые.":"Drag pieces from the row above onto the board, and drag extra ones off the edge. Clicks work too. White moves first.",
+  "Нажми, чтобы выбрать, или перетащи на доску":"Click to pick or drag onto the board",
   "Игра":"Play",
   "Сообщество":"Community",
   "Аккаунт":"Account",
@@ -6375,7 +6469,7 @@ function pickPromo(ms, done){
 /* ---------- задачи по темам со своим рейтингом ---------- */
 const PZ_THEMES = [
   ['mate1', 'Мат в 1 ход', 'target', 1], ['mate2', 'Мат в 2 хода', 'target', 2], ['mate3', 'Мат в 3 хода', 'target', 3],
-  ['fork', 'Вилка', 'cwN', 0], ['pin', 'Связка', 'cwB', 0], ['mix', 'Микс', 'dice', 0]
+  ['fork', 'Вилка', 'sA_wN', 0], ['pin', 'Связка', 'sA_wB', 0], ['mix', 'Микс', 'dice', 0]
 ];
 const PZ_TIP = { mate1:'Поставь мат одним ходом.', mate2:'Белые ставят мат в 2 хода.', mate3:'Белые ставят мат в 3 хода.',
   fork:'Найди ход, который нападает сразу на две фигуры, и выиграй материал.', pin:'Свяжи фигуру соперника — она не сможет уйти — и выиграй материал.' };
@@ -6400,7 +6494,7 @@ function renderPuzzles(){
   if(!isChessMenu()){
     box.innerHTML = `<div class="page-head"><div><div class="eyebrow">Тренировка</div><h1 class="display">Задачи</h1></div>${discSwitch()}</div>
       <div class="card"><p>Задачи по темам и свой рейтинг в задачах сейчас есть в шахматах. Для шашек — задача дня на главной.</p>
-      <button class="btn primary" id="pzToChess">${PIX('cwN')} Перейти к шахматам</button></div>`;
+      <button class="btn primary" id="pzToChess">${PIX('sA_wN')} Перейти к шахматам</button></div>`;
     $('#pzToChess').onclick = () => { setDiscipline('chess'); setTimeout(renderPuzzles, 300); };
     $('#discSw').querySelectorAll('[data-d]').forEach(b => b.onclick = () => { setDiscipline(b.dataset.d); setTimeout(renderPuzzles, 300); });
     return;
@@ -6549,7 +6643,7 @@ const ENGINE = (() => {
 
 /* ---------- темы: у шашек и шахмат свои ---------- */
 const bth = () => V.chess ? (db.settings.cBoardTheme || 'classic') : db.settings.boardTheme;
-const pth = () => V.chess ? (db.settings.cPieceTheme || 'cartoon') : db.settings.pieceTheme;
+const pth = () => V.chess ? (db.settings.cPieceTheme || 'flat') : db.settings.pieceTheme;
 function themePreviewChess(bt, pt){
   return `<div class="tprev bt-${bt} pt-${pt}">
     <div class="sq light"><span class="pcw chess b"><span class="cp t2">${cpSVG(2)}</span></span></div><div class="sq dark"></div>
@@ -6802,7 +6896,7 @@ Object.assign(PIECE_SOUND, { cartoon: 'classic', contour: 'wood' });
 (() => {   // «Пиксели» больше нет: переносим на похожие темы
   let ch = false;
   if(db.settings.pieceTheme === 'pixel'){ db.settings.pieceTheme = 'classic'; ch = true; }
-  if(!['cartoon', 'contour'].includes(db.settings.cPieceTheme)){ db.settings.cPieceTheme = 'cartoon'; ch = true; }
+  if(!['flat', 'ivory', 'cartoon', 'contour'].includes(db.settings.cPieceTheme)){ db.settings.cPieceTheme = 'flat'; ch = true; }
   if(ch) try{ localStorage.setItem(KEY, JSON.stringify({ settings: db.settings, menu: db.menu })); }catch(e){}
 })();
 
@@ -7231,7 +7325,7 @@ function ctorHTML(){
     <div class="lbl">Вариант</div>
     <div class="seg sm">${discVariants().map(v => `<button class="${v.id === m.variant ? 'on' : ''}" data-v="${v.id}">${v.label}</button>`).join('')}</div>
     <div class="lbl">Контроль времени</div>${tcPresetsHTML(true)}
-    ${opp !== 'online' ? `<div class="ct-color"><span class="lbl">Цвет фигур</span><div class="ct-cols">${[['white', '○', 'Белые'], ['random', '◐', 'Случайно'], ['black', '●', 'Чёрные']].map(([id, g, t]) => `<button class="${m.color === id ? 'on' : ''}" data-col="${id}" title="${t}">${g}</button>`).join('')}</div></div>` : ''}
+    ${opp !== 'online' ? `<div class="ct-color"><span class="lbl">Цвет фигур</span><div class="ct-cols">${[['white', 'Белые'], ['random', 'Случайно'], ['black', 'Чёрные']].map(([id, t]) => `<button class="${m.color === id ? 'on' : ''}" data-col="${id}" title="${t}">${colorIco(id)}</button>`).join('')}</div></div>` : ''}
     <button class="btn primary big wide glow" id="ctGo">${main}</button>
     <div class="ct-sec"><button class="btn sm" id="ctLink">${PIX('adduser')} Пригласить друга</button><button class="btn sm" id="ctPgn">${PIX('book2')} Открыть PGN</button></div>`;
 }
@@ -7818,6 +7912,223 @@ function renderFriendsTab(u, key, isMe){
 /* ---------- запуск v17 ---------- */
 buildNav();
 if(!db.settings.v17){ db.settings.v17 = 1; db.settings.theme = 'dark'; try{ localStorage.setItem(KEY, JSON.stringify({ settings: db.settings, menu: db.menu })); }catch(e){} applyTheme(); }
+
+
+/* =========================================================
+   13k. v18: новые наборы фигур, перетаскивание и стрелки на свободной доске, иконки цвета, фоны сайта
+   ========================================================= */
+/* ---------- наборы шахматных фигур: «Классика» (новая, по умолчанию) и «Слоновая кость» ---------- */
+CHESS_PIECE_THEMES.splice(0, CHESS_PIECE_THEMES.length, ['flat', 'Классика'], ['ivory', 'Слоновая кость'], ['cartoon', 'Мультяшные'], ['contour', 'Контурные']);
+Object.assign(PIECE_SOUND, { flat: 'classic', ivory: 'wood' });
+DEF_SETTINGS.cPieceTheme = 'flat';
+if(!db.settings.v18){ db.settings.v18 = 1; db.settings.cPieceTheme = 'flat'; try{ localStorage.setItem(KEY, JSON.stringify({ settings: db.settings, menu: db.menu })); }catch(e){} }
+const cpTheme = () => db.settings.cPieceTheme || 'flat';
+
+/* ---------- переключатель «Шашки / Шахматы»: работает с любого экрана ---------- */
+function setDiscipline(d){
+  const m = db.menu, toChess = d === 'chess';
+  if(toChess === isChessMenu()) return;
+  if(toChess){ m.dvar = m.variant; m.variant = m.cvar && VARIANTS[m.cvar] ? m.cvar : 'chess'; if(m.cbot == null) m.cbot = 1; }
+  else { m.cvar = m.variant; m.variant = m.dvar && !(VARIANTS[m.dvar] || {}).chess ? m.dvar : '32'; }
+  save(); renderMeMini();
+  document.querySelectorAll('.disc-sw').forEach(sw => sw.classList.toggle('chess', toChess));
+  clearTimeout(setDiscipline.t);
+  setDiscipline.t = setTimeout(() => { if(current === 'home') renderHome(); else if(current === 'bots') renderBots(); else if(current === 'puzzles') renderPuzzles(); }, 240);
+  toast(toChess ? 'Режим: шахматы' : 'Режим: шашки');
+}
+// раньше кнопки привязывались к первому переключателю на странице (а он мог быть на скрытом экране «Задачи»)
+document.addEventListener('click', e => { const b = e.target.closest('.disc-sw [data-d]'); if(b){ e.stopPropagation(); setDiscipline(b.dataset.d); } }, true);
+
+/* ---------- значки цвета: белая пешка, кубик «случайно», чёрная пешка ---------- */
+function colorIco(id){
+  if(id === 'random') return `<span class="cico">${PIX('dice')}</span>`;
+  if(isChessMenu()) return `<span class="cico pt-${cpTheme()}">${withChess(() => pieceMini(id === 'white' ? 1 : -1))}</span>`;
+  return `<span class="cico">${PIX(id === 'white' ? 'chkw' : 'chkb')}</span>`;
+}
+
+/* ---------- свободная доска: перетаскивание мышкой, стрелки правой кнопкой, редактор ---------- */
+LB.arrows = []; LB.circles = [];
+function lbArrowsSVG(){
+  const c = s => { let r = s >> 3, f = s & 7; if(LB.flip){ r = 7 - r; f = 7 - f; } return [f * 100 + 50, r * 100 + 50]; };
+  const ar = LB.arrows.map(([a, b]) => {
+    const [x1, y1] = c(a), [x2, y2] = c(b), dx = x2 - x1, dy = y2 - y1, L = Math.hypot(dx, dy), ux = dx / L, uy = dy / L;
+    const ex = x2 - ux * 34, ey = y2 - uy * 34, px = -uy, py = ux;
+    return `<line x1="${x1}" y1="${y1}" x2="${ex}" y2="${ey}" stroke="rgba(255,170,0,.85)" stroke-width="17" stroke-linecap="round"/>
+      <polygon points="${x2 - ux * 6},${y2 - uy * 6} ${ex + px * 26},${ey + py * 26} ${ex - px * 26},${ey - py * 26}" fill="rgba(255,170,0,.85)"/>`;
+  }).join('');
+  const ci = LB.circles.map(s => { const [x, y] = c(s); return `<circle cx="${x}" cy="${y}" r="44" fill="none" stroke="rgba(255,170,0,.85)" stroke-width="8"/>`; }).join('');
+  return `<svg class="lb-arrows" viewBox="0 0 800 800">${ar}${ci}</svg>`;
+}
+function lbHTML(id){
+  if(!LB.start) lbReset();
+  const b = lbBoard(), turn = lbTurn(), last = LB.moves[LB.moves.length - 1], th = cpTheme();
+  const legal = LB.edit || LB.sel == null ? [] : withChess(() => genMoves(b, turn).filter(m => m.from === LB.sel));
+  const cells = [];
+  for(let y = 0; y < 8; y++) for(let x = 0; x < 8; x++){
+    const r = LB.flip ? 7 - y : y, c = LB.flip ? 7 - x : x, s = r * 8 + c, v = b[s];
+    const cls = ['sq', (r + c) % 2 ? 'dark' : 'light'];
+    if(last && (s === last.from || s === last.to)) cls.push('lb-last');
+    if(s === LB.sel) cls.push('lb-sel');
+    const tgt = legal.some(m => m.to === s);
+    cells.push(`<div class="${cls.join(' ')}" data-s="${s}">${v ? withChess(() => pieceMini(v)) : ''}${tgt ? `<i class="${v ? 'lb-cap' : 'lb-dot'}"></i>` : ''}${x === 0 ? `<em class="lb-rk">${8 - r}</em>` : ''}${y === 7 ? `<em class="lb-fl">${'abcdefgh'[c]}</em>` : ''}</div>`);
+  }
+  const pal = [6, 5, 4, 3, 2, 1].map(t => [t, -t]).flat();
+  return `<div class="lb-wrap" id="${id}">
+    <div class="lb-top"><span class="lb-ttl">${PIX('board')} ${LB.edit ? 'Редактор позиции' : (LB.name ? esc(LB.name) : 'Свободная доска')}</span>
+      <button class="link" data-lb="edit">${LB.edit ? `${ICON.check} Готово` : 'Редактор позиции ↗'}</button></div>
+    ${LB.edit ? `<div class="lb-pal pt-${th}">${pal.map(t => `<button class="${LB.tool === t ? 'on' : ''}" data-tool="${t}" title="Нажми, чтобы выбрать, или перетащи на доску">${withChess(() => pieceMini(t))}</button>`).join('')}<button class="lb-er ${LB.tool === 0 ? 'on' : ''}" data-tool="0" title="Стереть">✕</button></div>` : ''}
+    <div class="mini-board lb bt-${db.settings.cBoardTheme || 'classic'} pt-${th}" style="--mc:8">${cells.join('')}${lbArrowsSVG()}</div>
+    <div class="lb-info">${LB.edit ? '<span class="muted small">Перетаскивай фигуры из ряда сверху на доску, а лишние — за край доски. Можно и кликами. Первыми ходят белые.</span>'
+      : `<span class="lb-turn"><i class="${turn > 0 ? 'w' : 'b'}"></i>Ход ${turn > 0 ? 'белых' : 'чёрных'}</span><span class="lb-moves" translate="no">${LB.moves.length ? lbSan() : '<span class="muted">Перетащи фигуру мышкой или нажми на неё. Правая кнопка — стрелки</span>'}</span>`}</div>
+    <div class="lb-btns">
+      ${LB.edit ? `<button class="btn sm" data-lb="clear">Очистить</button><button class="btn sm" data-lb="init">Начальная</button><button class="btn sm" data-lb="flip">⇄</button>`
+        : `<button class="btn sm" data-lb="init">↺ Начальная позиция</button><button class="btn sm" data-lb="back" ${LB.moves.length ? '' : 'disabled'}>◀ Ход назад</button><button class="btn sm" data-lb="flip" title="Перевернуть доску">⇄</button>`}
+    </div>
+    ${LB.edit ? '' : `<div class="lb-btns two"><button class="btn sm primary" data-lb="play">${ICON.playFill} Играть с этой позиции</button><button class="btn sm" data-lb="analyze">${PIX('search')} Анализировать</button></div>`}
+  </div>`;
+}
+let LBD = null, LBR = null;              // LBD — тащим фигуру, LBR — рисуем стрелку правой кнопкой
+const lbRedraw = id => { const w = document.getElementById(id); if(!w) return; w.outerHTML = lbHTML(id); bindLB(id, lbRedraw.cb[id]); };
+lbRedraw.cb = {};
+function lbPlace(s, v){
+  const b = LB.start.slice();
+  if(Math.abs(v) === 6) for(let i = 0; i < 64; i++) if(b[i] === v) b[i] = 0;
+  if(Math.abs(v) === 1 && (s < 8 || s >= 56)){ toast('Пешка не может стоять на первой и последней горизонтали'); return false; }
+  b[s] = v; LB.start = b; return true;
+}
+function bindLB(id, rerender){
+  const box = document.getElementById(id); if(!box) return;
+  lbRedraw.cb[id] = rerender;
+  const draw = () => lbRedraw(id);
+  const board = box.querySelector('.lb');
+  board.addEventListener('contextmenu', e => e.preventDefault());
+  box.querySelectorAll('.lb .sq').forEach(el => {
+    el.onpointerdown = e => {
+      const s = +el.dataset.s;
+      if(e.button === 2){ LBR = { id, s }; return; }
+      if(e.button !== 0) return;
+      if(LB.arrows.length || LB.circles.length){ LB.arrows = []; LB.circles = []; const svg = box.querySelector('.lb-arrows'); if(svg) svg.innerHTML = ''; }
+      const b = LB.edit ? LB.start : lbBoard(), v = b[s];
+      if(!v || (!LB.edit && v * lbTurn() <= 0)) return;
+      e.preventDefault();
+      LBD = { id, from: s, v, x0: e.clientX, y0: e.clientY, moved: false };
+    };
+    el.onclick = () => {
+      if(Date.now() - (LB.skipClick || 0) < 250) return;
+      const s = +el.dataset.s;
+      if(LB.edit){ const b = LB.start.slice(); if(b[s] === LB.tool){ b[s] = 0; LB.start = b; } else if(LB.tool === 0){ b[s] = 0; LB.start = b; } else lbPlace(s, LB.tool); draw(); return; }
+      const b = lbBoard(), turn = lbTurn();
+      if(LB.sel != null && lbTry(LB.sel, s)){ draw(); return; }
+      LB.sel = b[s] * turn > 0 && LB.sel !== s ? s : null; draw();
+    };
+  });
+  box.querySelectorAll('[data-tool]').forEach(t => {
+    t.onclick = () => { if(Date.now() - (LB.skipClick || 0) < 250) return; LB.tool = +t.dataset.tool; draw(); };
+    t.onpointerdown = e => { const v = +t.dataset.tool; if(e.button !== 0 || !v) return; e.preventDefault(); LBD = { id, from: null, v, x0: e.clientX, y0: e.clientY, moved: false }; };
+  });
+  box.querySelectorAll('[data-lb]').forEach(t => t.onclick = () => {
+    const a = t.dataset.lb;
+    LB.arrows = []; LB.circles = [];
+    if(a === 'flip'){ LB.flip = !LB.flip; draw(); }
+    if(a === 'init'){ lbReset(); draw(); }
+    if(a === 'back'){ LB.moves.pop(); LB.sel = null; draw(); }
+    if(a === 'clear'){ LB.start = new Array(69).fill(0); LB.start[67] = 7; draw(); }
+    if(a === 'edit'){
+      if(!LB.edit){ LB.start = lbBoard(); LB.moves = []; LB.sel = null; LB.edit = true; LB.name = ''; draw(); return; }
+      const err = lbCheck(LB.start); if(err){ toast(err); return; }
+      if(!isInitial(LB.start)) LB.start[64] = 0; else LB.start = cInit();
+      LB.edit = false; draw();
+    }
+    if(a === 'play') playFromLB();
+    if(a === 'analyze') analyzeLB();
+  });
+}
+function lbTry(from, to){
+  const b = lbBoard(), mv = withChess(() => genMoves(b, lbTurn()).filter(m => m.from === from && m.to === to));
+  if(!mv.length) return false;
+  const m = mv.find(x => !x.promote || x.promote === 5) || mv[0];
+  LB.moves.push(m); LB.sel = null; playMoveSound(m);
+  const r = lbRedraw.cb; if(typeof study !== 'undefined' && study && trainView === 'study' && LB.moves.every((x, j) => study.mv[j] && notation(study.mv[j]) === notation(x))){ study.k = LB.moves.length; resumeSet({ type:'open', i: study.i, k: study.k }); if(study.k >= study.mv.length) trainMark('open'); setTimeout(renderTrain, 0); }
+  return true;
+}
+const lbSqAt = (id, x, y) => { const el = document.elementFromPoint(x, y); const sq = el && el.closest(`#${id} .lb .sq`); return sq ? +sq.dataset.s : null; };
+window.addEventListener('pointermove', e => {
+  if(!LBD) return;
+  if(!LBD.moved){
+    if(Math.hypot(e.clientX - LBD.x0, e.clientY - LBD.y0) < 5) return;
+    LBD.moved = true;
+    const box = document.getElementById(LBD.id); if(!box){ LBD = null; return; }
+    const sz = box.querySelector('.lb .sq').getBoundingClientRect().width;
+    if(!LB.edit && LBD.from != null){ LB.sel = LBD.from; lbRedraw(LBD.id); }
+    const g = document.createElement('div');
+    g.className = `lb-ghost pt-${cpTheme()}`; g.style.width = g.style.height = sz + 'px';
+    g.innerHTML = withChess(() => pieceMini(LBD.v));
+    document.body.append(g); LBD.ghost = g;
+    if(LBD.from != null){ const src = document.querySelector(`#${LBD.id} .lb .sq[data-s="${LBD.from}"] .pcw`); if(src) src.style.opacity = '.25'; }
+  }
+  const g = LBD.ghost, w = parseFloat(g.style.width);
+  g.style.left = (e.clientX - w / 2) + 'px'; g.style.top = (e.clientY - w / 2) + 'px';
+});
+window.addEventListener('pointerup', e => {
+  if(LBR && e.button === 2){
+    const t = lbSqAt(LBR.id, e.clientX, e.clientY), a = LBR.s, id = LBR.id; LBR = null;
+    if(t == null) return;
+    if(t === a){ const i = LB.circles.indexOf(a); i >= 0 ? LB.circles.splice(i, 1) : LB.circles.push(a); }
+    else { const i = LB.arrows.findIndex(([x, y]) => x === a && y === t); i >= 0 ? LB.arrows.splice(i, 1) : LB.arrows.push([a, t]); }
+    const svg = document.querySelector(`#${id} .lb-arrows`); if(svg) svg.outerHTML = lbArrowsSVG();
+    return;
+  }
+  if(!LBD) return;
+  const d = LBD; LBD = null;
+  if(!d.moved) return;
+  d.ghost && d.ghost.remove();
+  LB.skipClick = Date.now();
+  const t = lbSqAt(d.id, e.clientX, e.clientY);
+  if(LB.edit){
+    if(d.from != null && d.from === t){ lbRedraw(d.id); return; }
+    const keep = LB.start.slice();
+    if(d.from != null){ const b = LB.start.slice(); b[d.from] = 0; LB.start = b; }      // унесли за край доски — фигура удалена
+    if(t != null && !lbPlace(t, d.v)) LB.start = keep;
+    lbRedraw(d.id); return;
+  }
+  if(t != null && t !== d.from) lbTry(d.from, t);
+  lbRedraw(d.id);
+});
+
+/* ---------- фоны сайта: по два варианта для светлой и тёмной темы ---------- */
+const BG_THEMES = {
+  dark:  [['checker', 'Шахматный узор'], ['gold', 'Золотая дымка'], ['night', 'Ночное небо'], ['wood', 'Тёмное дерево']],
+  light: [['paper', 'Бумага'], ['sand', 'Песок'], ['mint', 'Мята'], ['sky', 'Утро']]
+};
+function applyBg(){
+  const dark = db.settings.theme === 'dark', k = dark ? 'bgDark' : 'bgLight';
+  document.documentElement.dataset.bg = db.settings[k] || (dark ? 'checker' : 'paper');
+}
+{ const _at = applyTheme; applyTheme = function(){ _at.apply(this, arguments); applyBg(); }; }
+applyBg();
+{ const _rs = renderSettings; renderSettings = function(){
+    _rs.apply(this, arguments);
+    const s = db.settings, dark = s.theme === 'dark', k = dark ? 'bgDark' : 'bgLight', cur = s[k] || (dark ? 'checker' : 'paper');
+    const row = document.createElement('div'); row.className = 'set';
+    row.innerHTML = `<div><b>Фон сайта</b><p>Узор за карточками. У светлой и тёмной темы — свои варианты.</p></div>
+      <div class="bg-grid">${BG_THEMES[dark ? 'dark' : 'light'].map(([id, l]) => `<button class="bg-card ${cur === id ? 'on' : ''}" data-bgt="${id}"><span class="bg-prev" data-prev="${id}"></span>${l}</button>`).join('')}</div>`;
+    const first = $('#setList .set'); if(first) first.after(row); else $('#setList').prepend(row);
+    row.querySelectorAll('[data-bgt]').forEach(b => b.onclick = () => { db.settings[k] = b.dataset.bgt; save(); applyBg(); renderSettings(); });
+  }; }
+
+/* ---------- выбор цвета в старых экранах («Против бота», «С другом») ---------- */
+function optsHTML(o){
+  const m = db.menu, noTime = m.tc === '0';
+  const colors = [['white', 'Белые'], ['random', 'Случайно'], ['black', 'Чёрные']];
+  return `
+    <div class="lbl">Вариант</div>
+    <div class="var-list">${discVariants().map(v => `<button class="var ${v.id===m.variant?'on':''}" data-v="${v.id}">${variantIcon(v.id, 40)}<span><b>${v.label}</b><small>${v.size}</small></span></button>`).join('')}</div>
+    <div class="lbl">Контроль времени</div>
+    ${tcPresetsHTML(true)}
+    ${o.color ? `<div class="lbl">Играю за</div><div class="chips">${colors.map(([id,l]) => `<button class="chip col-chip ${id===m.color?'on':''}" data-col="${id}">${colorIco(id)} ${l}</button>`).join('')}</div>` : ''}
+    ${o.undo ? `<div class="opt-line"><div><b>↶ Возврат ходов</b><p>${o.undo === 'friend' ? 'Можно отменять ходы.' : 'Можно отменять ходы, но партия будет без рейтинга.'}</p></div><button class="switch ${m.undo?'on':''}" data-undo="1"></button></div>` : ''}`;
+}
+{ const _bo = bindOpts; bindOpts = function(box, rerender){ _bo.apply(this, arguments); bindPresets(box, rerender); }; }
 
 /* =========================================================
    14. СТАРТ
