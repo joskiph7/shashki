@@ -1600,6 +1600,16 @@ h2 .pix{width:26px;height:26px}
 @media (max-width:700px){ .bg-grid{grid-template-columns:repeat(2,minmax(0,1fr))} }
 .ct-cols .cico,.col-chip .cico{background:radial-gradient(circle,#efe9dc 0 62%,#d9d0bd 63% 100%);border-radius:50%;padding:2px}
 .ct-cols .cico .pix,.col-chip .cico .pix{width:80%;height:80%}
+/* v19: шкала оценки у свободной доски */
+.lb-row{display:flex;gap:8px;align-items:stretch;justify-content:center}
+.lb-row .mini-board.lb{flex:1;margin:0;min-width:0}
+.lb-eval{width:22px;flex:none;border-radius:6px;background:#2b2a27;position:relative;overflow:hidden;border:1px solid var(--line2)}
+.lb-eval .w{position:absolute;left:0;right:0;bottom:0;background:#f1efe9;transition:height .45s cubic-bezier(.3,.9,.4,1)}
+.lb-eval.flip .w{bottom:auto;top:0}
+.lb-eval::after{content:"";position:absolute;left:0;right:0;top:50%;border-top:1px dashed rgba(229,179,78,.7)}
+.lbe-t{position:absolute;left:0;right:0;bottom:3px;text-align:center;font-size:9px;font-weight:800;color:#222;z-index:1;writing-mode:horizontal-tb}
+.lbe-t.dark{bottom:auto;top:3px;color:#eee}
+.lb-eval.flip .lbe-t{bottom:auto;top:3px}.lb-eval.flip .lbe-t.dark{top:auto;bottom:3px}
 </style>
 </head>
 <body>
@@ -5046,6 +5056,7 @@ function renderSettings(){
 const LANG = () => db.settings.lang === 'en' ? 'en' : 'ru';
 const LOC = () => LANG() === 'en' ? 'en-GB' : 'ru-RU';        // формат дат
 const EN = {
+  "Шкала оценки: белая часть — перевес белых":"Evaluation bar: the white part shows White's advantage",
   "Слоновая кость":"Ivory",
   "Мультяшные":"Cartoon",
   "Фон сайта":"Site background",
@@ -8129,6 +8140,39 @@ function optsHTML(o){
     ${o.undo ? `<div class="opt-line"><div><b>↶ Возврат ходов</b><p>${o.undo === 'friend' ? 'Можно отменять ходы.' : 'Можно отменять ходы, но партия будет без рейтинга.'}</p></div><button class="switch ${m.undo?'on':''}" data-undo="1"></button></div>` : ''}`;
 }
 { const _bo = bindOpts; bindOpts = function(box, rerender){ _bo.apply(this, arguments); bindPresets(box, rerender); }; }
+
+
+/* =========================================================
+   13l. v19: шкала оценки у свободной доски (как в разборе: слева от доски)
+   ========================================================= */
+const lbEvalCache = new Map();
+{ const _h = lbHTML; lbHTML = function(id){
+    let h = _h.apply(this, arguments);
+    const bar = LB.edit ? '' : `<div class="lb-eval ${LB.flip ? 'flip' : ''}" title="Шкала оценки: белая часть — перевес белых"><div class="w" style="height:50%"></div><span class="lbe-t">0.0</span></div>`;
+    h = h.replace('<div class="mini-board lb ', `<div class="lb-row">${bar}<div class="mini-board lb `).replace('<div class="lb-info">', '</div><div class="lb-info">');
+    return h;
+  }; }
+{ const _b = bindLB; bindLB = function(id){ _b.apply(this, arguments); lbEval(id); }; }
+function lbEvalShow(id, w){
+  const el = document.querySelector(`#${id} .lb-eval`); if(!el) return;
+  const mate = Math.abs(w) > WIN - 1000, frac = mate ? (w > 0 ? 1 : 0) : winPct(w) / 100;
+  el.querySelector('.w').style.height = (frac * 100).toFixed(1) + '%';
+  const t = el.querySelector('.lbe-t');
+  t.textContent = Math.abs(w) >= WIN ? '#' : mate ? (w > 0 ? '+M' : '−M') + Math.max(1, Math.ceil((WIN - Math.abs(w)) / 2)) : (w > 0 ? '+' : w < 0 ? '−' : '') + Math.abs(w / 100).toFixed(1);
+  t.classList.toggle('dark', w < 0);
+  el.title = `${tr('Оценка')}: ${t.textContent} (${tr('плюс — лучше белым')})`;
+}
+function lbEval(id){
+  if(LB.edit || !document.querySelector(`#${id} .lb-eval`)) return;
+  const b = lbBoard(), t = lbTurn(), key = b.join(',') + '|' + t;
+  if(lbEvalCache.has(key)){ lbEvalShow(id, lbEvalCache.get(key)); return; }
+  const done = w => { lbEvalCache.set(key, w); if(lbBoard().join(',') + '|' + lbTurn() === key) lbEvalShow(id, w); };
+  const moves = withChess(() => genMoves(b, t));
+  if(!moves.length){ done(withChess(() => cInCheck(b, t)) ? (t > 0 ? -WIN : WIN) : 0); return; }
+  const own = () => withChess(() => evalWhite(b, t, 250));
+  if(SF.ok && db.settings.sf !== false) SF.evalWhite(b, t).then(w => done(w == null ? own() : w)).catch(() => done(own()));
+  else setTimeout(() => done(own()), 10);
+}
 
 /* =========================================================
    14. СТАРТ
