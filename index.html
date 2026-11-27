@@ -4,6 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Шашки и Шахматы</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0e0d0b">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Шашки">
+<link rel="apple-touch-icon" href="icons/app-180.png">
 <link rel="icon" type="image/png" href="icons/sA_wN.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Oswald:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -1617,6 +1624,15 @@ h2 .pix{width:26px;height:26px}
 .an-sum b{font-size:24px;line-height:1.1;color:var(--gold)}
 .an-sum span{font-size:11px;color:var(--muted)}
 .an-sum p{grid-column:1 / -1;margin:0}
+/* v22: приложение */
+.set-app{border:1px solid rgba(229,179,78,.45);border-radius:14px;padding:14px !important;margin-bottom:8px;background:rgba(229,179,78,.06)}
+.set-app b .pix{width:20px;height:20px;vertical-align:-4px;margin-right:4px}
+.set-app .btn .pix{width:18px;height:18px}
+.inst-steps{text-align:left;line-height:1.6;padding-left:20px}
+.inst-steps li{margin:6px 0}
+/* в установленном приложении: отступы от «чёлки» и системных панелей */
+html.standalone body{padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}
+html.standalone .sidebar{padding-top:calc(18px + env(safe-area-inset-top))}
 </style>
 </head>
 <body>
@@ -5070,6 +5086,15 @@ function renderSettings(){
 const LANG = () => db.settings.lang === 'en' ? 'en' : 'ru';
 const LOC = () => LANG() === 'en' ? 'en-GB' : 'ru-RU';        // формат дат
 const EN = {
+  "Приложение":"App",
+  "Установить":"Install",
+  "Установлено":"Installed",
+  "Установить приложение":"Install the app",
+  "Приложение установлено":"App installed",
+  "Устанавливаем…":"Installing…",
+  "Ты сейчас в установленном приложении. Обновления приходят сами — достаточно перезапустить его.":"You are in the installed app. Updates arrive automatically — just restart it.",
+  "Поставь «Шашки и Шахматы» как отдельное приложение: своя иконка на рабочем столе или телефоне, окно без адресной строки, быстрый запуск. Для игры нужен интернет.":"Install Checkers & Chess as a separate app: its own icon on your desktop or phone, a window without the address bar, quick launch. An internet connection is needed to play.",
+  "Если пункта нет — значит, приложение уже установлено или браузер это не поддерживает (например, Firefox на компьютере).":"If the option is missing, the app is already installed or your browser doesn’t support it (e.g. Firefox on desktop).",
   "Потеря 0–2 % шанса на победу":"Lost 0–2% winning chance",
   "Потеря 2–5 % шанса на победу":"Lost 2–5% winning chance",
   "Потеря 5–10 % шанса на победу":"Lost 5–10% winning chance",
@@ -8348,6 +8373,38 @@ function reportOf(rec, side){
     row.querySelectorAll('[data-and]').forEach(b => b.onclick = () => { db.settings.anDepth = b.dataset.and; save(); renderSettings(); toast('Новые разборы будут с этой глубиной'); });
   }; }
 // «Лучше было: …» — для всех слабых ходов и записью как в книгах
+
+
+/* =========================================================
+   13n. v22: ПРИЛОЖЕНИЕ (PWA) — установка на телефон и компьютер, своя иконка, окно без адресной строки
+   ========================================================= */
+let installEvt = null;
+const isStandalone = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+const isIOS = () => /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; if(current === 'settings') renderSettings(); });
+window.addEventListener('appinstalled', () => { installEvt = null; toast('Приложение установлено'); if(current === 'settings') renderSettings(); });
+if('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')){
+  window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+}
+if(isStandalone()) document.documentElement.classList.add('standalone');
+async function installApp(){
+  if(installEvt){ installEvt.prompt(); const r = await installEvt.userChoice.catch(() => null); installEvt = null; if(r && r.outcome === 'accepted') toast('Устанавливаем…'); renderSettings(); return; }
+  modal(`<h2>${PIX('pad')} Установить приложение</h2>
+    ${isIOS() ? `<ol class="inst-steps"><li>Открой сайт в <b>Safari</b>.</li><li>Нажми кнопку <b>«Поделиться»</b> (квадрат со стрелкой вверх).</li><li>Выбери <b>«На экран „Домой“»</b> и нажми «Добавить».</li></ol>`
+      : `<ol class="inst-steps"><li><b>Компьютер (Chrome, Edge):</b> значок установки справа в адресной строке (монитор со стрелкой) или меню ⋮ → «Установить приложение».</li>
+         <li><b>Android (Chrome):</b> меню ⋮ → «Установить приложение» или «Добавить на главный экран».</li><li><b>iPhone:</b> Safari → «Поделиться» → «На экран „Домой“».</li></ol>`}
+    <p class="muted small">Если пункта нет — значит, приложение уже установлено или браузер это не поддерживает (например, Firefox на компьютере).</p>`, [{ label:'Понятно' }]);
+}
+{ const _rs3 = renderSettings; renderSettings = function(){
+    _rs3.apply(this, arguments);
+    const row = document.createElement('div'); row.className = 'set set-app';
+    row.innerHTML = isStandalone()
+      ? `<div><b>${PIX('pad')} Приложение</b><p>Ты сейчас в установленном приложении. Обновления приходят сами — достаточно перезапустить его.</p></div><span class="pill win">Установлено</span>`
+      : `<div><b>${PIX('pad')} Приложение</b><p>Поставь «Шашки и Шахматы» как отдельное приложение: своя иконка на рабочем столе или телефоне, окно без адресной строки, быстрый запуск. Для игры нужен интернет.</p></div>
+         <button class="btn primary" id="instApp">${PIX('play')} Установить</button>`;
+    $('#setList').prepend(row);
+    const b = $('#instApp'); if(b) b.onclick = installApp;
+  }; }
 
 /* =========================================================
    14. СТАРТ
