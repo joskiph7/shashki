@@ -2436,6 +2436,10 @@ function cApply(b, m){
 }
 const C_LET = { 2:'n', 3:'b', 4:'r', 5:'q' };
 const cNotation = m => sqName(m.from) + sqName(m.to) + (m.promote ? C_LET[m.promote] : '');
+function sfFind(ms, u){
+  if(!u) return null;
+  return ms.find(x => notation(x) === u) || ms.find(x => x.castle && x.rf != null && sqName(x.from) + sqName(x.rf) === u) || null;
+}
 const C_ASCII = { 1:'', 2:'N', 3:'B', 4:'R', 5:'Q', 6:'K' };
 const C_FIG = { 1:'', 2:'♘', 3:'♗', 4:'♖', 5:'♕', 6:'♔' };
 // запись хода как в книгах: ♘f3, exd5, O-O, e8=♕+, ♕h7#
@@ -4087,7 +4091,10 @@ function scheduleBot(){
       if(!game || game.id !== gid || game.botToken !== token) return;
       setVariant(game.variant);
       const ms = genMoves(game.board, side);
-      finish(ms.find(x => notation(x) === n) || ms[0]);
+      const fm = sfFind(ms, n);
+      if(fm){ finish(fm); return; }
+      (ENGINE.ask({ variant: game.variant, board: game.board, side, bot: game.bot, time: timeMs }) || Promise.resolve(null))
+        .then(n2 => { if(!game || game.id !== gid || game.botToken !== token) return; setVariant(game.variant); const g2 = genMoves(game.board, side); finish(sfFind(g2, n2) || chooseBotMove(game.board, side, game.bot, timeMs)); });
     });
     else finish(chooseBotMove(game.board, side, game.bot, timeMs));
   }, delay);
@@ -4423,7 +4430,7 @@ $('#rvHint').onclick = () => {
   if(V.chess && SF.ok){
     SF.best(b0, t0, { sfTime: 900 }).then(n => {
       if(!game || game.board !== b0) return;
-      show(genMoves(b0, t0).find(x => notation(x) === n) || searchBest(b0, t0, 30, 900));
+      show(sfFind(genMoves(b0, t0), n) || searchBest(b0, t0, 30, 900));
     });
     return;
   }
@@ -6730,7 +6737,7 @@ const SF = (() => {
     queue = job.catch(() => {});
     return job;
   }
-  const is960 = b => !(b[67] === 7 && b[68] === 0 && (b.indexOf(6) & 7) === 4 && (b.indexOf(-6) & 7) === 4) && !!b[64];
+  const is960 = b => !!(V && V.c960);
   const score = (kind, v) => kind === 'cp' ? +v : (+v > 0 ? WIN - (2 * +v - 1) : -(WIN - 2 * Math.abs(+v)));
   // поиск: [[первый ход, оценка за того, кто ходит], …] по линиям MultiPV
   async function search(b, side, go, multipv, strength){
@@ -6771,7 +6778,7 @@ const SF = (() => {
       const ms = genMoves(b, side);
       const r = await search(b, side, 'go depth 13 movetime 500', Math.min(2, ms.length));
       const list = [];
-      for(const [n, sc] of r.lines){ const m = ms.find(x => notation(x) === n); if(m && !list.some(x => x.m === m)) list.push({ m, sc }); }
+      for(const [n, sc] of r.lines){ const m = sfFind(ms, n); if(m && !list.some(x => x.m === m)) list.push({ m, sc }); }
       const pn = notation(played);
       if(!list.some(x => notation(x.m) === pn)){
         const pm = ms.find(x => notation(x) === pn) || played, nb = applyMove(b, pm);
@@ -8226,8 +8233,8 @@ async function sfPosition(b, side, D){
   if(!ms.length) return { lines: [], ev: cInCheck(b, side) ? -WIN : 0, n: 0 };
   const r = await SF.search(b, side, `go depth ${D} movetime ${AN_CAP[D] || 5000}`, Math.min(3, ms.length));
   const lines = [];
-  for(const [u, sc] of r.lines){ const m = ms.find(x => notation(x) === u); if(m && !lines.some(x => x.m === m)) lines.push({ m, sc }); }
-  if(!lines.length) lines.push({ m: ms.find(x => notation(x) === r.best) || ms[0], sc: 0 });
+  for(const [u, sc] of r.lines){ const m = sfFind(ms, u); if(m && !lines.some(x => x.m === m)) lines.push({ m, sc }); }
+  if(!lines.length) lines.push({ m: sfFind(ms, r.best) || ms[0], sc: 0 });
   return { lines, ev: lines[0].sc, n: ms.length };
 }
 // классификация одного хода
