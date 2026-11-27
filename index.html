@@ -1610,6 +1610,13 @@ h2 .pix{width:26px;height:26px}
 .lbe-t{position:absolute;left:0;right:0;bottom:3px;text-align:center;font-size:9px;font-weight:800;color:#222;z-index:1;writing-mode:horizontal-tb}
 .lbe-t.dark{bottom:auto;top:3px;color:#eee}
 .lb-eval.flip .lbe-t{bottom:auto;top:3px}.lb-eval.flip .lbe-t.dark{top:auto;bottom:3px}
+/* v20: сводка точности в разборе */
+.an-sum{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0 10px}
+.an-sum > div{border:1px solid var(--line);border-radius:12px;padding:8px 10px;display:grid;gap:1px;background:var(--panel2)}
+.an-sum small{color:var(--muted);font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.an-sum b{font-size:24px;line-height:1.1;color:var(--gold)}
+.an-sum span{font-size:11px;color:var(--muted)}
+.an-sum p{grid-column:1 / -1;margin:0}
 </style>
 </head>
 <body>
@@ -3607,7 +3614,7 @@ function launchGame(o){
     game.seed = o.seed != null ? o.seed : Math.floor(Math.random() * 960);
     game.start = cInit(c960Back(game.seed)); game.board = game.start.slice();
   }
-  if(V.chess && SF.ok) SF.start().catch(() => {});
+  if(V.chess){ SF.retry(); if(SF.ok) SF.start().catch(() => {}); }
   countRep();
   setPanelMode(false);
   $('#undoRow').hidden = !game.undo;
@@ -4074,7 +4081,7 @@ function scheduleBot(){
     if(bookMv){ finish(bookMv); return; }
     const own = () => ENGINE.ask({ variant: game.variant, board: game.board, side, bot: game.bot, time: timeMs }) || Promise.resolve(null);
     const pr = V.chess && game.bot.sf && SF.ok
-      ? SF.best(game.board, side, Object.assign({}, game.bot, { sfTime: Math.max(150, Math.min(game.bot.sfTime || 800, timeMs)) })).then(n => n || own())
+      ? SF.best(game.board, side, Object.assign({}, game.bot, { sfTime: Math.max(150, Math.min(game.bot.sfTime || 800, timeMs)) })).then(n => { if(!n && !scheduleBot.warned){ scheduleBot.warned = 1; toast('Stockfish не ответил — этот ход бот сделал встроенным движком'); } return n || own(); })
       : own();
     if(pr) pr.then(n => {
       if(!game || game.id !== gid || game.botToken !== token) return;
@@ -4463,7 +4470,7 @@ function renderReviewExtras(){
     if(!lineMatches(rv.pos)) note = `<span><b>${notation(m)}</b><small>Свой вариант — без оценки</small></span>`;
     else if(an && an[rv.pos-1]){
       const a = an[rv.pos-1];
-      const better = (a.c === 'blunder' || a.c === 'inacc' || a.c === 'good') && a.b !== notation(m) ? ` Лучше: ${a.b}` : '';
+      const better = ['blunder', 'mistake', 'miss', 'inacc', 'good', 'excellent'].includes(a.c) && a.b !== notation(m) ? ` ${tr('Лучше')}: ${a.bs || a.b}` : '';
       note = `${mcIcon(a.c, 34)}<span>${m.san || notation(m)} — ${MC[a.c].name}<small>${a.c === 'book' && a.o ? tr('Дебют') + ': ' + a.o : MC[a.c].tip + '.'}${better}</small></span>`;
     } else note = `<span><b>${notation(m)}</b><small>Оценка хода появится после анализа</small></span>`;
   }
@@ -5056,6 +5063,22 @@ function renderSettings(){
 const LANG = () => db.settings.lang === 'en' ? 'en' : 'ru';
 const LOC = () => LANG() === 'en' ? 'en-GB' : 'ru-RU';        // формат дат
 const EN = {
+  "Потеря 0–2 % шанса на победу":"Lost 0–2% winning chance",
+  "Потеря 2–5 % шанса на победу":"Lost 2–5% winning chance",
+  "Потеря 5–10 % шанса на победу":"Lost 5–10% winning chance",
+  "Потеря 10–15 % шанса на победу":"Lost 10–15% winning chance",
+  "Потеря 15 % шанса на победу и больше":"Lost 15% or more winning chance",
+  "Совпадает с лучшим ходом движка":"Matches the engine’s best move",
+  "Глубина разбора партий":"Game review depth",
+  "Чем глубже, тем точнее оценки, но дольше ждать. Быстрый — около минуты на партию.":"Deeper is more accurate but slower. Fast takes about a minute per game.",
+  "Быстрый · 14":"Fast · 14",
+  "Стандартный · 18":"Standard · 18",
+  "Глубокий · 22":"Deep · 22",
+  "Новые разборы будут с этой глубиной":"New reviews will use this depth",
+  "глубина":"depth",
+  "средняя потеря в сотых долях пешки":"average loss in hundredths of a pawn",
+  "Лучше":"Better",
+  "Stockfish не ответил — этот ход бот сделал встроенным движком":"Stockfish didn’t answer — the bot used the built-in engine for this move",
   "Шкала оценки: белая часть — перевес белых":"Evaluation bar: the white part shows White's advantage",
   "Слоновая кость":"Ivory",
   "Мультяшные":"Cartoon",
@@ -6676,7 +6699,7 @@ $('#rvPrev').innerHTML = PIX('back'); $('#rvNext').innerHTML = PIX('fwd');
    ========================================================= */
 const SF = (() => {
   const BASE = 'https://unpkg.com/stockfish@19.0.1/bin/stockfish-19-lite-single';
-  let w = null, ready = null, queue = Promise.resolve(), onLine = null, failed = false;
+  let w = null, ready = null, queue = Promise.resolve(), onLine = null, failed = false, busy = false;
   function start(){
     if(ready) return ready;
     ready = new Promise((res, rej) => {
@@ -6684,8 +6707,8 @@ const SF = (() => {
         // поток создаётся из «обёртки», которая подключает файл с CDN; путь к .wasm передаётся после #
         const blob = new Blob(['importScripts(' + JSON.stringify(BASE + '.js') + ');'], { type: 'text/javascript' });
         w = new Worker(URL.createObjectURL(blob) + '#' + encodeURIComponent(BASE + '.wasm'));
-        const to = setTimeout(() => { failed = true; rej(new Error('timeout')); }, 25000);
-        w.onmessage = e => { if(typeof e.data === 'string' && onLine) onLine(e.data); };
+        const to = setTimeout(() => { failed = true; rej(new Error('timeout')); }, 60000);
+        w.onmessage = e => { if(typeof e.data !== 'string') return; if(e.data.startsWith('bestmove')) busy = false; if(onLine) onLine(e.data); };
         w.onerror = () => { clearTimeout(to); failed = true; rej(new Error('load')); };
         onLine = l => { if(l === 'uciok'){ clearTimeout(to); onLine = null; w.postMessage('isready'); res(); } };
         w.postMessage('uci');
@@ -6699,8 +6722,10 @@ const SF = (() => {
     const job = queue.then(() => start()).then(() => new Promise((res, rej) => {
       const got = [];
       const to = setTimeout(() => { onLine = null; w.postMessage('stop'); rej(new Error('slow')); }, limitMs || 15000);
-      onLine = l => { got.push(l); if(until(l)){ clearTimeout(to); onLine = null; res(got); } };
-      cmds.forEach(c => w.postMessage(c));
+      const go = () => { onLine = l => { got.push(l); if(until(l)){ clearTimeout(to); onLine = null; res(got); } }; if(cmds.some(c => c.startsWith('go'))) busy = true; cmds.forEach(c => w.postMessage(c)); };
+      if(!busy){ go(); return; }
+      w.postMessage('stop');                                   // прошлый расчёт ещё идёт — останавливаем и ждём его «bestmove»
+      let n = 0; const iv = setInterval(() => { if(!busy || ++n > 150){ clearInterval(iv); busy = false; go(); } }, 20);
     }));
     queue = job.catch(() => {});
     return job;
@@ -6716,7 +6741,7 @@ const SF = (() => {
       strength && strength.elo ? 'setoption name UCI_Elo value ' + Math.max(1320, Math.min(3190, strength.elo)) : null,
       'position fen ' + cFen(b, side), go
     ].filter(Boolean);
-    const got = await run(cmds, l => l.startsWith('bestmove'));
+    const got = await run(cmds, l => l.startsWith('bestmove'), 60000);
     const best = {};
     for(const l of got){
       const m = l.match(/^info .*?multipv (\d+) .*?score (cp|mate) (-?\d+).*? pv (\S+)/);
@@ -6728,7 +6753,8 @@ const SF = (() => {
     return { lines: out, best: bm && bm !== '(none)' ? bm : null };
   }
   return {
-    start,
+    start, search,
+    retry(){ if(failed){ failed = false; ready = null; busy = false; try{ w && w.terminate(); }catch(e){} w = null; } },
     get ok(){ return !failed && db.settings.sf !== false; },
     // ход бота: сила ограничена Эло (у Stockfish минимум 1320)
     async best(b, side, bot){
@@ -6763,8 +6789,8 @@ const SF = (() => {
 Object.assign(CHESS_BOTS[3], { sf: true, sfElo: 1500, sfTime: 600 });
 Object.assign(CHESS_BOTS[4], { sf: true, sfElo: 1800, sfTime: 800 });
 Object.assign(CHESS_BOTS[5], { sf: true, sfElo: 2200, sfTime: 1000 });
-CHESS_BOTS.push({ elo:3200, name:'Робот Стокфиш', about:'Настоящий Stockfish на полной силе', depth:30, random:0, noise:0, time:2600,
-  sf: true, sfTime: 1200, face:{ bg:'#cfe8ff', skin:'#c9d1d9', hair:'#888', style:'short', shirt:'#4a76b8', img:'bot' } });
+CHESS_BOTS.push({ elo:3200, name:'Робот Стокфиш', about:'Настоящий Stockfish на полной силе', depth:30, random:0, noise:0, time:4000,
+  sf: true, sfTime: 2500, face:{ bg:'#cfe8ff', skin:'#c9d1d9', hair:'#888', style:'short', shirt:'#4a76b8', img:'bot' } });
 
 // разбор шахматной партии силами Stockfish (если он загрузился); иначе — встроенный движок
 async function runAnalysisSF(rec, onProg, onDone, alive){
@@ -8173,6 +8199,148 @@ function lbEval(id){
   if(SF.ok && db.settings.sf !== false) SF.evalWhite(b, t).then(w => done(w == null ? own() : w)).catch(() => done(own()));
   else setTimeout(() => done(own()), 10);
 }
+
+
+/* =========================================================
+   13m. v20: ОЦЕНКА ХОДОВ ПО МЕТОДИЧКЕ (модель Lichess + расширенные категории)
+   1) Оценка Stockfish (сантипешки, за белых) → шанс на победу W(cp) = 100 / (1 + e^(−0.00368208·cp)).
+   2) Потеря хода L = max(0, W_лучший − W_сыгранный), обе оценки — за того, кто ходил.
+   3) Категории: Лучший (совпал с движком), Превосходный 0–2, Хороший 2–5, Неточность 5–10, Ошибка 10–15, Зевок 15+ п.п.
+   4) Точность хода = 103.1668·e^(−0.04354·L) − 3.1669 (0…100). Партия: среднее взвешенного (по «остроте» позиции) и гармонического.
+   5) Вынужденные ходы в точность не входят. Мат считается отдельно (как 100 % / 0 %). ACPL — средняя потеря, оценки обрезаны до ±1000.
+   ========================================================= */
+const AN_DEPTHS = { fast: 14, std: 18, deep: 22 }, AN_CAP = { 14: 5000, 18: 14000, 22: 35000 };
+const anDepth = () => AN_DEPTHS[db.settings.anDepth] || 14;
+const W_ = sc => winPct(sc);                                  // шанс на победу (0…100) для оценки «за ходящего»
+const cpClamp = sc => Math.abs(sc) > WIN - 1000 ? Math.sign(sc) * 1000 : Math.max(-1000, Math.min(1000, sc));
+Object.assign(MC.excellent, { tip:'Потеря 0–2 % шанса на победу' });
+Object.assign(MC.good, { tip:'Потеря 2–5 % шанса на победу' });
+Object.assign(MC.inacc, { tip:'Потеря 5–10 % шанса на победу' });
+Object.assign(MC.mistake, { tip:'Потеря 10–15 % шанса на победу' });
+Object.assign(MC.blunder, { tip:'Потеря 15 % шанса на победу и больше' });
+Object.assign(MC.best, { tip:'Совпадает с лучшим ходом движка' });
+
+// одна позиция: до 3 лучших ходов (MultiPV 3) с оценкой за того, кто ходит
+async function sfPosition(b, side, D){
+  const ms = genMoves(b, side);
+  if(!ms.length) return { lines: [], ev: cInCheck(b, side) ? -WIN : 0, n: 0 };
+  const r = await SF.search(b, side, `go depth ${D} movetime ${AN_CAP[D] || 5000}`, Math.min(3, ms.length));
+  const lines = [];
+  for(const [u, sc] of r.lines){ const m = ms.find(x => notation(x) === u); if(m && !lines.some(x => x.m === m)) lines.push({ m, sc }); }
+  if(!lines.length) lines.push({ m: ms.find(x => notation(x) === r.best) || ms[0], sc: 0 });
+  return { lines, ev: lines[0].sc, n: ms.length };
+}
+// классификация одного хода
+function classifyV2(o){
+  const { loss, isBest, forced, wb, wa, second, prev, sac } = o;
+  if(forced) return 'forced';
+  let c = isBest ? 'best' : loss < 2 ? 'excellent' : loss < 5 ? 'good' : loss < 10 ? 'inacc' : loss < 15 ? 'mistake' : 'blunder';
+  // упущенный шанс: соперник только что ошибся, у нас был заметный перевес — и мы его упустили
+  if(['inacc', 'mistake', 'blunder'].includes(c) && prev && ['mistake', 'blunder', 'miss'].includes(prev.c) && wb >= 60 && loss >= 8) c = 'miss';
+  // замечательный: единственный хороший ход (второй по силе заметно хуже) в непростой позиции
+  if(c === 'best' && second != null && wb - W_(second) >= 15 && wb > 20 && wb < 95) c = 'great';
+  // блестящий: лучший или почти лучший ход с жертвой фигуры; после жертвы позиция не плохая;
+  // до хода перевес не был подавляющим, и без этого хода подавляющего перевеса тоже не было бы
+  if(['best', 'great', 'excellent'].includes(c) && loss < 2 && sac && wa >= 50 && wb < 97 && (second == null || W_(second) < 85)) c = 'brilliant';
+  return c;
+}
+async function runAnalysisSF(rec, onProg, onDone, alive){
+  const line = rec.mv, n = line.length, D = anDepth();
+  setVariant(rec.variant);
+  const boards = [rec.start ? rec.start.slice() : initBoard()];
+  for(let k = 0; k < n; k++) boards.push(applyMove(boards[k], line[k]));
+  const books = line.map((m, k) => !rec.start ? bookAt(line, k) : null);
+  const P = [];
+  for(let i = 0; i <= n; i++){
+    if(alive && !alive()) return;
+    setVariant(rec.variant);
+    const side = i % 2 ? -1 : 1;
+    // позиции внутри дебютной теории считаем быстрее — для них нужна только оценка для «остроты» партии
+    const d = i < n && books[i] && (i === 0 || books[i - 1]) ? Math.min(10, D) : D;
+    try{ P[i] = await sfPosition(boards[i], side, d); }
+    catch(e){ runAnalysis.noSF = true; runAnalysis(rec, onProg, onDone, alive); return; }
+    if(onProg) onProg(Math.min(i, n), n);
+  }
+  if(alive && !alive()) return;
+  setVariant(rec.variant);
+  const an = [];
+  for(let k = 0; k < n; k++){
+    const side = k % 2 ? -1 : 1, pn = notation(line[k]), p = P[k];
+    const best = p.lines[0], second = p.lines[1], inLines = p.lines.find(x => notation(x.m) === pn);
+    const isBest = notation(best.m) === pn;
+    const evBest = best.sc, evPlayed = isBest ? best.sc : inLines ? inLines.sc : -P[k + 1].ev;
+    const wb = W_(evBest), wa = W_(evPlayed), loss = isBest ? 0 : Math.max(0, wb - wa);
+    const forced = p.n === 1;
+    const a = { b: notation(best.m), bs: cSan(boards[k], best.m, true), wb: Math.round(wb * 10) / 10, wa: Math.round(wa * 10) / 10,
+      w: Math.round(W_(p.ev * side) * 10) / 10, cpl: forced ? 0 : Math.max(0, cpClamp(evBest) - cpClamp(evPlayed)), sf: 1 };
+    if(books[k]){ a.c = 'book'; a.o = books[k]; a.acc = 100; }
+    else {
+      a.c = classifyV2({ loss, isBest, forced, wb, wa, second: second ? second.sc : null, prev: an[k - 1], sac: isSacrifice(boards[k], line[k]) });
+      a.acc = forced ? null : Math.round(moveAcc(loss) * 10) / 10;
+    }
+    an.push(a);
+  }
+  rec.an = an; rec.anV = 2; rec.anD = D;
+  if(onDone) onDone(an);
+}
+// итог партии для одной стороны (точность как у Lichess: взвешенное по волатильности + гармоническое среднее)
+function reportOf(rec, side){
+  const c = { good:0, inacc:0, blunder:0, best:0, forced:0, all:0, acc:0, perf:0, acpl:0 };
+  const an = rec.an || [], n = an.length;
+  const ws = an.map(a => a.w != null ? a.w : 50);
+  const win = Math.max(2, Math.min(8, Math.round(n / 10)));
+  const sd = xs => { const m = xs.reduce((s, v) => s + v, 0) / xs.length; return Math.sqrt(xs.reduce((s, v) => s + (v - m) ** 2, 0) / xs.length); };
+  const accs = [], wts = []; let cplSum = 0, cplN = 0;
+  an.forEach((a, i) => {
+    if((i % 2 ? -1 : 1) !== side) return;
+    c.all++;
+    if(['brilliant', 'great', 'best', 'excellent', 'good', 'book'].includes(a.c)) c.good++;
+    if(['brilliant', 'great', 'best'].includes(a.c)) c.best++;
+    if(a.c === 'inacc' || a.c === 'mistake') c.inacc++;
+    if(a.c === 'blunder' || a.c === 'miss') c.blunder++;
+    if(a.c === 'forced'){ c.forced++; return; }                 // вынужденные ходы точность не завышают
+    if(a.c !== 'book' && a.cpl != null){ cplSum += a.cpl; cplN++; }
+    if(a.acc == null) return;
+    const st = Math.max(0, Math.min(i - win + 2, n - win)), wnd = ws.slice(st, st + win);
+    accs.push(a.acc); wts.push(Math.max(.5, Math.min(12, wnd.length > 1 ? sd(wnd) : .5)));
+  });
+  if(accs.length){
+    const wMean = accs.reduce((s, v, i) => s + v * wts[i], 0) / wts.reduce((s, v) => s + v, 0);
+    const hMean = accs.length / accs.reduce((s, v) => s + 1 / Math.max(v, 1), 0);
+    c.acc = Math.round((wMean + hMean) / 2 * 10) / 10;
+  } else c.acc = c.all ? Math.round((c.good + c.forced) / c.all * 100) : 0;
+  c.acpl = cplN ? Math.round(cplSum / cplN) : 0;
+  c.perf = Math.round((Math.max(300, Math.min(2900, 400 + 0.24 * c.acc * c.acc))) / 25) * 25;
+  return c;
+}
+// сводка вверху таблицы разбора: точность и средняя потеря у обоих
+{ const _rre = renderReviewExtras; renderReviewExtras = function(){
+    _rre.apply(this, arguments);
+    const rec = game && game.rec; if(!rec || !rec.an || !V.chess || rec.anV !== 2) return;
+    const a = reportOf(rec, game.me), b = reportOf(rec, -game.me), box = $('#anBox'); if(!box) return;
+    box.insertAdjacentHTML('afterbegin', `<div class="an-sum">
+      <div><small translate="no">${esc((game.owner || me()).nick)}</small><b>${a.acc}%</b><span>${tr('точность')} · ACPL ${a.acpl}</span></div>
+      <div><small translate="no">${esc(rec.opp)}</small><b>${b.acc}%</b><span>${tr('точность')} · ACPL ${b.acpl}</span></div>
+      <p class="muted small">Stockfish, ${tr('глубина')} ${rec.anD || 14}. ACPL — ${tr('средняя потеря в сотых долях пешки')}.</p></div>`);
+  }; }
+// старые разборы шахмат (до v20) пересчитываем по новой формуле
+{ const _or2 = openReview; openReview = function(i, ownerKey, recIn){
+    const owner = ownerKey && ownerKey !== db.current ? db.accounts[ownerKey] : me();
+    const g = recIn || (owner && owner.history && owner.history[i]);
+    if(g && g.an && (VARIANTS[g.variant] || {}).chess && g.anV !== 2 && SF.ok) g.an = null;
+    return _or2.apply(this, arguments);
+  }; }
+// настройка глубины разбора
+{ const _rs2 = renderSettings; renderSettings = function(){
+    _rs2.apply(this, arguments);
+    const sw = $('#setList [data-k="sf"]'), cur = db.settings.anDepth || 'fast'; if(!sw) return;
+    const row = document.createElement('div'); row.className = 'set';
+    row.innerHTML = `<div><b>Глубина разбора партий</b><p>Чем глубже, тем точнее оценки, но дольше ждать. Быстрый — около минуты на партию.</p></div>
+      <div class="chips" style="margin:0">${[['fast', 'Быстрый · 14'], ['std', 'Стандартный · 18'], ['deep', 'Глубокий · 22']].map(([id, l]) => `<button class="chip ${cur === id ? 'on' : ''}" data-and="${id}">${l}</button>`).join('')}</div>`;
+    sw.closest('.set').after(row);
+    row.querySelectorAll('[data-and]').forEach(b => b.onclick = () => { db.settings.anDepth = b.dataset.and; save(); renderSettings(); toast('Новые разборы будут с этой глубиной'); });
+  }; }
+// «Лучше было: …» — для всех слабых ходов и записью как в книгах
 
 /* =========================================================
    14. СТАРТ
