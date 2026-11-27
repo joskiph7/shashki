@@ -1647,6 +1647,37 @@ html.standalone .sidebar{padding-top:calc(18px + env(safe-area-inset-top))}
   #squares .sq.light::before,#squares .sq.light:not(.dot)::after{color:var(--dark)}
   #squares .sq.dark::before,#squares .sq.dark:not(.dot)::after{color:var(--light)}
 }
+/* v24: экран партии на телефоне */
+.g-head,.m-bar{display:none}
+@media (max-width:600px){
+  body.in-game .sidebar,body.in-game .topbar,body.in-game .crumb-slot{display:none !important}
+  body.in-game main{padding-top:0}
+  body.in-game .g-head{display:grid;grid-template-columns:44px 1fr 44px;align-items:center;height:52px;margin:0 -4px 4px;position:sticky;top:0;z-index:30;background:var(--bg)}
+  .g-back{width:44px;height:44px;border:0;background:none;color:var(--text);display:grid;place-items:center;cursor:pointer}
+  .g-back svg{width:26px;height:26px}
+  .g-logo{display:flex;align-items:center;justify-content:center;gap:8px;font-size:18px}
+  .g-logo .lg{transform:scale(.8)}
+  /* плашки игроков — карточки */
+  body.in-game .pbar{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:8px 10px;min-height:60px}
+  body.in-game .pbar .ava{width:44px;height:44px}
+  body.in-game .clock{font-size:20px;min-width:92px;border-radius:10px}
+  /* доска во всю ширину */
+  :root{--cell:clamp(28px,min(calc((100vh - 300px) / 8),calc((100vw - 26px) / var(--cols))),76px)}
+  @supports (height:100svh){ :root{--cell:clamp(28px,min(calc((100svh - 300px) / 8),calc((100vw - 26px) / var(--cols))),76px)} }
+  :root{--fr:4px}
+  body.in-game .game-wrap{gap:10px}
+  body.in-game .board-col{gap:8px;width:100%}
+  body.in-game .board-row{gap:4px}
+  /* нижняя панель кнопок */
+  body.in-game .m-bar{display:grid;gap:8px;width:100%}
+  .m-bar .btn{width:100%;justify-content:center;padding:13px 12px;font-size:16px;font-weight:800;border-radius:12px;display:flex;align-items:center;gap:8px}
+  .m-bar .btn .pix{width:20px;height:20px}
+  .m-bar .btn.dark{background:#3b3a37;border-color:#3b3a37;color:#fff}
+  :root:not([data-theme="dark"]) .m-bar .btn.dark{background:#4a4845;border-color:#4a4845}
+  /* дубли кнопок в боковой колонке на телефоне не нужны */
+  body.in-game #playActions,body.in-game #undoRow,body.in-game #btnExit{display:none !important}
+  body.in-game .side-col{width:100%}
+}
 </style>
 </head>
 <body>
@@ -5099,6 +5130,7 @@ function renderSettings(){
 const LANG = () => db.settings.lang === 'en' ? 'en' : 'ru';
 const LOC = () => LANG() === 'en' ? 'en-GB' : 'ru-RU';        // формат дат
 const EN = {
+  "Анализ партии":"Game review","Выйти из партии":"Leave game",
   "Приложение":"App",
   "Установить":"Install",
   "Установлено":"Installed",
@@ -8433,6 +8465,46 @@ async function installApp(){
       if(y === ROWS - 1) el.dataset.fl = files[c];
     }
   }; }
+
+
+/* =========================================================
+   13p. v24: экран партии на телефоне — как на макете:
+   шапка «← Шашки и Шахматы», плашки игроков, доска во всю ширину, внизу большие кнопки
+   ========================================================= */
+(() => {
+  const scr = $('#scr-game'); if(!scr) return;
+  scr.insertAdjacentHTML('afterbegin', `<div class="g-head"><button class="g-back" id="gBack" title="Назад">${SVGI('<path d="M19 12H5M11 6l-6 6 6 6"/>')}</button>
+    <span class="g-logo"><span class="lg"><i class="pw"></i><i class="pb"></i></span><b>Шашки и Шахматы</b></span><span class="g-sp"></span></div>`);
+  $('.board-col').insertAdjacentHTML('afterend', '<div class="m-bar" id="mBar"></div>');
+  $('#gBack').onclick = () => $('#btnExit').click();
+})();
+const mBtn = (id, cls, ic, t) => `<button class="btn ${cls}" data-mb="${id}">${ic ? PIX(ic) : ''}<span>${t}</span></button>`;
+function renderMBar(){
+  const bar = $('#mBar'); if(!bar || !game) return;
+  if(game.review){ bar.innerHTML = ''; return; }
+  let h = '';
+  if(game.over){
+    if(!game.puzzle && me() && me().history[0] && me().history[0].mv) h += mBtn('an', 'primary', 'search', 'Анализ партии');
+    h += mBtn('exit', '', 'door', 'Выйти из партии');
+  } else {
+    const acts = !$('#playActions').hidden && !game.puzzle;
+    if(acts) h += mBtn('resign', 'dark', 'flag', 'Сдаться');
+    if(acts && !$('#btnDraw').hidden && !$('#btnDraw').disabled) h += mBtn('draw', '', 'draw', 'Ничья');
+    if(game.undo) h += mBtn('undo', '', 'undo', 'Вернуть ход');
+    h += mBtn('exit', '', 'door', 'Выйти из партии');
+  }
+  bar.innerHTML = h;
+  bar.querySelectorAll('[data-mb]').forEach(b => b.onclick = () => {
+    const a = b.dataset.mb;
+    if(a === 'resign') $('#btnResign').click();
+    if(a === 'draw') $('#btnDraw').click();
+    if(a === 'undo') $('#btnUndo').click();
+    if(a === 'exit') $('#btnExit').click();
+    if(a === 'an') openReview(0);
+  });
+}
+{ const _ra = renderAll; renderAll = function(){ _ra.apply(this, arguments); renderMBar(); }; }
+{ const _go = go; go = function(name){ const r = _go.apply(this, arguments); document.body.classList.toggle('in-game', current === 'game'); if(current === 'game') renderMBar(); return r; }; }
 
 /* =========================================================
    14. СТАРТ
