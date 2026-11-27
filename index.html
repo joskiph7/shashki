@@ -1633,6 +1633,20 @@ h2 .pix{width:26px;height:26px}
 /* в установленном приложении: отступы от «чёлки» и системных панелей */
 html.standalone body{padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}
 html.standalone .sidebar{padding-top:calc(18px + env(safe-area-inset-top))}
+/* v23: телефон — доска почти во всю ширину, координаты в углах клеток */
+@media (max-width:600px){
+  :root{--fr:5px;--cell:clamp(28px,min(calc((100vh - 300px) / 8),calc((100vw - 38px) / var(--cols))),72px)}
+  @supports (height:100svh){ :root{--cell:clamp(28px,min(calc((100svh - 300px) / 8),calc((100vw - 38px) / var(--cols))),72px)} }
+  .board-frame .ranks,.board-frame .files{visibility:hidden}
+  .board-col{width:auto;max-width:100%}
+  .board-row{gap:5px}
+  .evalbar{width:12px}
+  .evalbar .lbl{display:none}
+  #squares .sq[data-rk]::before{content:attr(data-rk);position:absolute;left:2px;top:1px;font-size:10px;font-weight:800;line-height:1;pointer-events:none;z-index:1}
+  #squares .sq[data-fl]:not(.dot)::after{content:attr(data-fl);position:absolute;right:2px;bottom:1px;font-size:10px;font-weight:800;line-height:1;pointer-events:none;z-index:1}
+  #squares .sq.light::before,#squares .sq.light:not(.dot)::after{color:var(--dark)}
+  #squares .sq.dark::before,#squares .sq.dark:not(.dot)::after{color:var(--light)}
+}
 </style>
 </head>
 <body>
@@ -3829,7 +3843,6 @@ function renderSquares(){
     if(tg.has(s) && (db.settings.hints || pm)){ el.classList.add('dot'); if(pm) el.classList.add('pre'); }
     if(s === chk) el.classList.add('hl-check');
     if(preSq.has(s)) el.classList.add('hl-pre');
-    if(preNum.has(s) && game.premoves.length > 1) el.innerHTML = `<span class="pm-n">${preNum.get(s)}</span>`;
   }
 }
 
@@ -4071,15 +4084,15 @@ function tryPremove(){
   const pm = game.premoves.shift();
   const ms = legalMine().filter(m => m.from === pm.from && m.to === pm.to).sort((a,b) => b.caps.length - a.caps.length);
   if(!ms.length){
-    game.premoves = [];
-    renderSquares(); renderStatus(); renderBars();
+    game.premoves = []; clearSel();
+    renderSquares(); renderPieces(); renderStatus(); renderBars();
     toast('Премув отменён — так ходить нельзя');
     return;
   }
   const gid = game.id;
   setTimeout(() => {
     if(game && game.id === gid && myTurn()) makeMove(ms[0]);
-    else if(game){ game.premoves = []; renderSquares(); }
+    else if(game){ game.premoves = []; renderSquares(); renderPieces(); }
   }, 30);
 }
 
@@ -8404,6 +8417,21 @@ async function installApp(){
          <button class="btn primary" id="instApp">${PIX('play')} Установить</button>`;
     $('#setList').prepend(row);
     const b = $('#instApp'); if(b) b.onclick = installApp;
+  }; }
+
+
+/* =========================================================
+   13o. v23: доска крупнее на телефоне — координаты прямо в клетках
+   ========================================================= */
+{ const _bb = buildBoard; buildBoard = function(){
+    _bb.apply(this, arguments);
+    const files = 'abcdefgh';
+    for(let y = 0; y < ROWS; y++) for(let x = 0; x < COLS; x++){
+      const r = game.flipped ? ROWS - 1 - y : y, c = game.flipped ? COLS - 1 - x : x, el = game.sqEls[idx(r, c)];
+      if(!el) continue;
+      if(x === 0) el.dataset.rk = game.flipped ? y + 1 : ROWS - y;
+      if(y === ROWS - 1) el.dataset.fl = files[c];
+    }
   }; }
 
 /* =========================================================
